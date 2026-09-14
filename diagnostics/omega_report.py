@@ -1827,14 +1827,26 @@ def render_ci(paquete):
         lines.extend(ci_kv([(str(c), _icono_status(s))]))
 
     lines.extend(ci_banner("{0} FRAMEWORK CONSTANTS".format(ICON_NUM)))
-    lines.extend(ci_kv([
-        ("{0} ALPHA".format(ICON_FORM), _fmt_ci(globals().get("ALPHA"))),
-        ("{0} BETA".format(ICON_FORM), _fmt_ci(globals().get("BETA"))),
-        ("{0} PHI".format(ICON_STAR), _fmt_ci(globals().get("PHI"))),
-        ("{0} S_REF".format(ICON_FORM), _fmt_ci(globals().get("S_REF"))),
-        ("{0} KAPPA".format(ICON_FORM), _fmt_ci(globals().get("KAPPA"))),
-        ("{0} OMEGA_EFF".format(ICON_ORBIT), _fmt_ci(globals().get("OMEGA_EFF"))),
-    ]))
+    const_eq = [
+        ("ALPHA", "26/27", globals().get("ALPHA")),
+        ("BETA", "1/27", globals().get("BETA")),
+        ("PHI", "(1+√5)/2", globals().get("PHI")),
+        ("S_REF", "e/π", globals().get("S_REF")),
+        ("S_REF_7", "S_REF+β·ln(7)", globals().get("S_REF_7")),
+        ("R_FIN", "1+1/27", globals().get("R_FIN")),
+        ("KAPPA", "π/4", globals().get("KAPPA")),
+        ("GOLDEN_ANG", "360/φ²", globals().get("GOLDEN_ANG")),
+        ("THETA_CUBE", "asin(1/√27)", globals().get("THETA_CUBE_DEG")),
+        ("OMEGA_EFF", "π·(1-√β)", globals().get("OMEGA_EFF")),
+        ("T_PERIOD", "2π/ω_d", globals().get("T_PERIOD")),
+        ("LAMBDA_UCF", "β^(π/β+β·φ²)", globals().get("LAMBDA_UCF")),
+        ("OMEGA_RED", "(π/e)·(1-β²)", globals().get("OMEGA_RED")),
+    ]
+    const_pares = []
+    for name, eq, val in const_eq:
+        const_pares.append(("{0} {1}".format(ICON_FORM, name), eq))
+        const_pares.append(("{0} valor".format(ICON_NUM), _fmt_ci(val)))
+    lines.extend(ci_kv(const_pares))
 
     lines.extend(ci_banner("{0} LAYER STATUS".format(ICON_LAYER)))
     names = globals().get("LAYER_NAMES") or {}
@@ -1881,23 +1893,32 @@ def render_ci(paquete):
         pares = []
         if not isinstance(data, dict):
             return pares
+
+        def _add(k, v, prefix=""):
+            label = "{0}{1}".format(prefix, k) if prefix else str(k)
+            kl = str(k).lower()
+            if isinstance(v, dict):
+                for sk, sv in v.items():
+                    _add(sk, sv, prefix=label + ".")
+                return
+            if isinstance(v, list):
+                pares.append((label, "n={0}".format(len(v))))
+                return
+            if "formula" in kl or kl in {"eq", "ecuacion", "ecuación"}:
+                pares.insert(0, ("{0} {1}".format(ICON_FORM, label), str(v)))
+                return
+            if kl in {"status", "available"}:
+                pares.append((label, _icono_status(v)))
+                return
+            if kl in {"prediction", "value", "valor", "observed", "result", "l7", "e_m_computed"}:
+                pares.append(("{0} {1}".format(ICON_NUM, label), _fmt_ci(v)))
+                return
+            pares.append((label, _fmt_ci(v)))
+
         for k, v in data.items():
             if k in {"id", "title"}:
                 continue
-            if isinstance(v, dict):
-                for sk, sv in v.items():
-                    if isinstance(sv, dict):
-                        for tk, tv in sv.items():
-                            if not isinstance(tv, (dict, list)):
-                                pares.append(("{0}.{1}.{2}".format(k, sk, tk), _fmt_ci(tv)))
-                    elif isinstance(sv, list):
-                        pares.append(("{0}.{1}".format(k, sk), "n={0}".format(len(sv))))
-                    else:
-                        pares.append(("{0}.{1}".format(k, sk), _icono_status(sv) if str(sk).lower() in {"status", "available"} else _fmt_ci(sv)))
-            elif isinstance(v, list):
-                pares.append((str(k), "n={0}".format(len(v))))
-            else:
-                pares.append((str(k), _icono_status(v) if str(k).lower() in {"status", "available"} else _fmt_ci(v)))
+            _add(k, v)
         return pares
 
     cosmo = _payload(vals.get("cosmo") or {})
