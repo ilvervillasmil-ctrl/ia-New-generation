@@ -256,5 +256,23 @@
     "rate": 100.0,
     "previo": 1370,
     "estado": "STABLE"
+  },
+  {
+    "utc": "2026-09-14T20:20:46.062908+00:00",
+    "sha": "13a05e7d9e91",
+    "ref": "refs/heads/main",
+    "run_id": "34889586581",
+    "run_number": "40",
+    "workflow": "CI Pipeline",
+    "event": "push",
+    "total": 1567,
+    "passed": 1567,
+    "failures": 0,
+    "errors": 0,
+    "failed": 0,
+    "skipped": 0,
+    "rate": 100.0,
+    "previo": 1370,
+    "estado": "IMPROVEMENT"
   }
 ]

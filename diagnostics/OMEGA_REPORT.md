@@ -2,17 +2,17 @@
 
 | Campo | Valor |
 | :--- | :--- |
-| ⏱️ Generated | 2026-09-14 10:42:47 UTC |
+| ⏱️ Generated | 2026-09-14 20:20:46 UTC |
 | Ω Version | 2.6.4 |
 | 📚 Framework | UCF v3.2 (Universal Coherence Framework) |
 | 🔹 Author | Ilver Villasmil |
-| 📡 Commit | 245c472 |
+| 📡 Commit | 13a05e7 |
 
 ## 🧬 Estado Fenomenológico
 
 | Métrica | Valor | Nota |
 | :--- | ---: | :--- |
-| Estado | **INTEGRACIÓN AVANZADA ⟨◐⟩**  ⚠️ **CODE 9999 — LOOP DETECTADO** |  |
+| Estado | **INTEGRACIÓN AVANZADA ⟨◐⟩** |  |
 | C_struct (Estructural) | **0.7396** | ← real, limitada por α=0.9630 |
 | C_global (Normalizada) | 0.7680 | ← C_struct / α, relativa al máximo |
 | C_CI (Pass Rate) | 1.0000 | ← proxy del CI, no es C_Ω |
@@ -20,15 +20,12 @@
 | L7 (Integración) | 0.796589 | ← INTEGRATED |
 | Umbral crítico (0.72) | ✅ SOBRE | ← debajo = entropía acelerada |
 | Umbral survival (0.10) | ✅ SOBRE | ← debajo = cohesión mínima comprometida |
-| Tendencia | → ESTABLE |  |
+| Tendencia | ↑ CRECIENDO (+197) |  |
 
 > **Nota semántica v2.1:** C_struct ≠ C_global ≠ C_CI.
 > Solo C_struct es la coherencia estructural real del framework.
 > C_struct nunca puede ser 1.0 — β = 1/27 es el residuo irreducible.
 > **L7** es emergente: verifica que la integración real ocurrió. L6 orienta. L7 verifica.
-
-> ⚠️ **CODE 9999**: El sistema lleva 5+ runs consecutivos sin variación.
-> β > 0 garantiza que ningún sistema real es estáticamente perfecto.
 
 ## 🆔 Código Diagnóstico
 
@@ -77,8 +74,8 @@
 
 | Metric | Value |
 | :--- | ---: |
-| Total Tests | **1370** |
-| Passed | 1370 |
+| Total Tests | **1567** |
+| Passed | 1567 |
 | Failed | 0 |
 | Skipped | 0 |
 | Pass Rate | 100.00%  (C_CI = 1.0000) |
@@ -88,7 +85,7 @@
 Últimos 10 runs:
 
 ```
-1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1370
+1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1567
 ```
 
 ## 📐 Constants Integrity
@@ -155,6 +152,7 @@
 | Módulo | Estado |
 | :--- | :---: |
 | formulas.action  (formulas/action.py) | ✅ activo |
+| formulas.anti_loop  (formulas/anti_loop.py) | ✅ activo |
 | formulas.coherence  (formulas/coherence.py) | ✅ activo |
 | formulas.constants  (formulas/constants.py) | ✅ activo |
 | formulas.cosmology  (formulas/cosmology.py) | ✅ activo |
@@ -338,10 +336,10 @@ ALPHA + BETA = 1.0  ← conservación estructural
 
 | Métrica | Valor | Fuente |
 | :--- | :---: | :--- |
-| Tests discovered | 64 | tests/ |
+| Tests discovered | 92 | tests/ |
 | Tests executed | True | diagnostics/test_results.xml |
-| Modules listed | 40 | discovery |
-| History runs | 19 | diagnostics/coherence_history.json |
+| Modules listed | 41 | discovery |
+| History runs | 20 | diagnostics/coherence_history.json |
 | Engine startup | OK | core.engine.Engine |
 
 ## 🧩 Engine State
@@ -350,7 +348,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | :--- | :---: | :--- |
 | available | True | core.engine |
 | startup | OK | Engine(...) |
-| estado | <formulas.coherence.SessionStateOmega object at 0x7f4e88d78190> | Engine.estado |
+| estado | <formulas.coherence.SessionStateOmega object at 0x7ff813132850> | Engine.estado |
 | invocador_id | omega | constructor |
 | error |  | ArranqueError |
 
@@ -366,19 +364,19 @@ ALPHA + BETA = 1.0  ← conservación estructural
 
 |  | Artefacto | Bytes | Parse | Tipo |
 | :---: | :--- | ---: | :---: | :--- |
-| ✅ | diagnostics/OMEGA_REPORT.md | 19076 | True | md |
-| ✅ | diagnostics/coherence_history.json | 5477 | True | json |
-| ✅ | diagnostics/test_results.xml | 165748 | True | xml |
+| ✅ | diagnostics/OMEGA_REPORT.md | 45940 | True | md |
+| ✅ | diagnostics/coherence_history.json | 5872 | True | json |
+| ✅ | diagnostics/test_results.xml | 190732 | True | xml |
 
 ## 🔎 Audit Coverage
 
 | Métrica | Valor |
 | :--- | ---: |
-| python_files_discovered | 43 |
-| repo_files | 160 |
-| modules_importable | 43 |
+| python_files_discovered | 44 |
+| repo_files | 193 |
+| modules_importable | 44 |
 | modules_failed_import | 0 |
-| public_symbols_discovered | 474 |
+| public_symbols_discovered | 478 |
 | layers_discovered | 11 |
 | formulas_discovered | 46 |
 | validations_discovered | 0 |
@@ -456,8 +454,9 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | ✅ | core.engine | core/engine.py | 20 |  |
 | ✅ | core.greetings | core/greetings.py | 3 |  |
 | ✅ | core.validator | core/validator.py | 13 |  |
-| ✅ | formulas | formulas/__init__.py | 25 |  |
+| ✅ | formulas | formulas/__init__.py | 26 |  |
 | ✅ | formulas.action | formulas/action.py | 7 |  |
+| ✅ | formulas.anti_loop | formulas/anti_loop.py | 3 |  |
 | ✅ | formulas.coherence | formulas/coherence.py | 30 |  |
 | ✅ | formulas.constants | formulas/constants.py | 91 |  |
 | ✅ | formulas.cosmology | formulas/cosmology.py | 25 |  |
@@ -498,18 +497,18 @@ ALPHA + BETA = 1.0  ← conservación estructural
 
 | Métrica | Valor |
 | :--- | ---: |
-| files | 160 |
+| files | 193 |
 | directories | 8 |
-| python | 120 |
+| python | 159 |
 | markdown | 22 |
 | json | 2 |
 | yaml | 1 |
 | xml | 1 |
 | txt | 1 |
-| other | 13 |
-| bytes | 2166867 |
+| other | 7 |
+| bytes | 1821587 |
 
-<details><summary>📄 Archivos (160)</summary>
+<details><summary>📄 Archivos (193)</summary>
 
 | Path | Tipo | Bytes |
 | :--- | :--- | ---: |
@@ -530,30 +529,29 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | package-lock.json | json | 107 |
 | SYSTEM_BRAIN.md | markdown | 25546 |
 | main.py | python | 1914 |
-| 22222I-VILLASMIL-Ω FORMULA.pdf | other | 182602 |
 | ROADMAP_PHASES_1_4.md | markdown | 16464 |
 | Arquitectura Unificada.md | markdown | 5723 |
 | demo_greetings.py | python | 1200 |
 | README.md | markdown | 1034 |
 | The_Inescapable_Residue.md | markdown | 5240 |
 | README extenden.md | markdown | 11288 |
-| 2222licence.pdf | other | 26817 |
 | LICENSE.md | markdown | 2473 |
-| 2222readname.pdf | other | 110832 |
-| 2222 INSTRUCTIONS.pdf | other | 243324 |
 | IMPLEMENTATION_SUMMARY.md | markdown | 5744 |
-| 2222pyton.pdf | other | 104353 |
-| 2222astract.pdf | other | 106316 |
 | README_consciousness.md | markdown | 13560 |
+| tests/test_creacion_materia_por_observacion.py | python | 12625 |
 | tests/test_validator_integrity.py | python | 8639 |
 | tests/test_psychometry_domain.py | python | 19875 |
 | tests/test_entropy.py | python | 2515 |
 | tests/test_L2_Laws.py | python | 4214 |
+| tests/test_constant_errors.py | python | 12778 |
 | tests/test_security_edge_cases.py | python | 7677 |
 | tests/test_structure_exists_without_movement | other | 1258 |
+| tests/test_uis_prime_architecture.py | python | 3805 |
 | tests/test_torus_formula.py | python | 21075 |
 | tests/test_rh_omega_riemann.py | python | 24527 |
+| tests/arbolaxiomatico.py | python | 28001 |
 | tests/test_lambda_asymptote.py | python | 2922 |
+| tests/Life.py | python | 6428 |
 | tests/coherencia_total.py | python | 549 |
 | tests/test_metaconsciousness.py | python | 1663 |
 | tests/test_economic_cycles.py | python | 5509 |
@@ -566,18 +564,25 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests/test_cosmology import lambda_ucf_planck | other | 3972 |
 | tests/test_greetings.py | python | 2045 |
 | tests/test_entropy_fractality.py | python | 5284 |
+| tests/test_uis_omega_master_equation.py | python | 20247 |
+| tests/onepi.py | python | 2214 |
 | tests/test_climate_system.py | python | 2461 |
 | tests/test_information_tracking.py | python | 22061 |
 | tests/test_metabolic_scaling.py | python | 16206 |
 | tests/test_dream_coherence.py | python | 4925 |
+| tests/test_primos_constants_extractor_uis.py | python | 9776 |
 | tests/infinite_torus_rh.py | python | 12889 |
 | tests/test_oscillator_regimes.py | python | 1738 |
 | tests/test_identity_information.py | python | 15436 |
 | tests/test_24_law_coherence.py | python | 20099 |
+| tests/test_solar_cycle.py | python | 8622 |
+| tests/test_part1_fractal_primes.py | python | 5318 |
 | tests/test_cosmology.py | python | 3213 |
+| tests/test_electron_puro.py | python | 4715 |
 | tests/test_phi_dynamics.py | python | 2809 |
 | tests/test_ley_omega_universal.py | python | 26346 |
 | tests/test_music_432Hz.py | python | 9387 |
+| tests/test_anclaje_Ri_R.py | python | 6277 |
 | tests/test_psychometry_d.py | python | 19875 |
 | tests/test_consciousness_levels.py | python | 26737 |
 | tests/test_constants.py | python | 1472 |
@@ -587,29 +592,52 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests/test_negentropy.py | python | 1452 |
 | tests/test_fake_perfection.py | python | 1609 |
 | tests/test_neuroscience_logic.py | python | 4330 |
+| tests/test_fuerza_debil_vpsi.py | python | 1371 |
 | tests/test_lambda_ucf_regression.py | python | 1013 |
+| tests/test_trading.py | python | 11162 |
 | tests/test_tension.py | python | 3120 |
+| tests/Beal.py | python | 5357 |
 | tests/test_coherence_engine.py | python | 3134 |
 | tests/test_omega_falsification_births.py | python | 13397 |
+| tests/test_convergencia_estructural.py | python | 1237 |
+| tests/test_anti_loop.py | python | 3928 |
 | tests/Test_Harmonic_Ratio.py | python | 2709 |
 | tests/test_integration_cross_module.py | python | 5045 |
+| tests/Ien_pi.py | python | 30170 |
+| tests/test_es_primo_tradicional.py | python | 2691 |
+| tests/test_uis_integridad_estructural.py | python | 1754 |
 | tests/test_layer_integration.py | python | 4730 |
 | tests/test_dynamics.py | python | 5572 |
 | tests/Test_Fractal_Dimension.py | python | 2822 |
+| tests/test_identidad.py | python | 10554 |
 | tests/test_technological_predictions.py | python | 37119 |
 | tests/test_presence.py | python | 335 |
+| tests/test_soberania_consciente.py | python | 3254 |
 | tests/test_olv_vulnerability.py | python | 1419 |
+| tests/test_frecuencia_materia.py | python | 4722 |
 | tests/_coherencia_total.py | python | 549 |
+| tests/test_de_novo_predictions.py | python | 2528 |
+| tests/test_master_formula_invariants.py | python | 22089 |
+| tests/Pi.py | python | 30776 |
 | tests/test_MLS_AI.py | python | 16760 |
 | tests/test_cosmological_constant.py | python | 7160 |
 | tests/test_hubble_tension_resolution.py | python | 3644 |
+| tests/test_automedicion.py | python | 13125 |
 | tests/test_seven_laws.py | python | 13580 |
+| tests/test_angulo_obs.py | python | 8568 |
 | tests/coherence_total_universal_test.py | python | 1623 |
 | tests/test_resonance_extended.py | python | 663 |
+| tests/yuceUIS.py | python | 24265 |
+| tests/test_is_prime_uis_xtreme.py | python | 1420 |
+| tests/test_teoremas_cosmicos.py | python | 1261 |
 | tests/test_graph_domain.py | python | 24837 |
+| tests/test_dentidadEstructuralFermat.py | python | 2473 |
+| tests/test_fuerza_fuerte_vpsi.py | python | 1374 |
 | tests/test_black_hole_formation.py | python | 15617 |
 | tests/Ω-STRESS-01.py | python | 4406 |
 | tests/test_omega_brain_collapse.py | python | 3470 |
+| tests/test_usi_omeha_mega_unified.py | python | 29907 |
+| tests/final_equation_beta.py | python | 11216 |
 | tests/test_self_prediction.py | python | 8970 |
 | tests/test_coherence_normalization.py | python | 4713 |
 | tests/test_language_domain.py | python | 22906 |
@@ -618,6 +646,9 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests/test_interaction.py | python | 1415 |
 | tests/test_stability.py | python | 6602 |
 | tests/test_universal.py | python | 15119 |
+| tests/Decimal.py | python | 713 |
+| tests/constants_table.py | python | 21604 |
+| tests/test_Fractal_Dimension.py | python | 2822 |
 | tests/test_resonance_processor.py | python | 8256 |
 | tests/test_resonance.py | python | 616 |
 | tests/test_coherence_identity.py | python | 3940 |
@@ -639,9 +670,9 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | core/greetings.py | python | 2367 |
 | core/validator.py | python | 9568 |
 | core/engine.py | python | 13385 |
-| diagnostics/OMEGA_REPORT.md | markdown | 19076 |
-| diagnostics/coherence_history.json | json | 5477 |
-| diagnostics/test_results.xml | xml | 165748 |
+| diagnostics/OMEGA_REPORT.md | markdown | 45940 |
+| diagnostics/coherence_history.json | json | 5872 |
+| diagnostics/test_results.xml | xml | 190732 |
 | diagnostics/omega_report.py | python | 128910 |
 | diagnostics/omega_diary_publisher.py | python | 15390 |
 | formulas/neuroscience_logic.py | python | 884 |
@@ -654,6 +685,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | formulas/constants.py | python | 23255 |
 | formulas/__init__.py | python | 1 |
 | formulas/energy.py | python | 1135 |
+| formulas/anti_loop.py | python | 5574 |
 | formulas/resonance_extended.py | python | 1766 |
 | formulas/integration_laws.py | python | 744 |
 | formulas/logic.md | markdown | 617 |
@@ -678,7 +710,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 
 ## 🔗 Dependency Graph
 
-- aristas: `409`
+- aristas: `503`
 
 <details><summary>🔗 Aristas</summary>
 
@@ -692,6 +724,9 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | main | core.diagnostics | from |
 | main | layers | from |
 | demo_greetings | core.greetings | from |
+| tests.test_creacion_materia_por_observacion | math | import |
+| tests.test_creacion_materia_por_observacion | pytest | import |
+| tests.test_creacion_materia_por_observacion | numpy | import |
 | tests.test_validator_integrity | pytest | import |
 | tests.test_validator_integrity | math | import |
 | tests.test_validator_integrity | core.validator | from |
@@ -707,6 +742,9 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests.test_entropy | formulas.entropy | from |
 | tests.test_L2_Laws | unittest | import |
 | tests.test_L2_Laws | layers.l2_ego | from |
+| tests.test_constant_errors | math | import |
+| tests.test_constant_errors | sys | import |
+| tests.test_constant_errors | pathlib | from |
 | tests.test_security_edge_cases | math | import |
 | tests.test_security_edge_cases | pytest | import |
 | tests.test_security_edge_cases | formulas.constants | from |
@@ -720,14 +758,21 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests.test_security_edge_cases | formulas.metaconsciousness | from |
 | tests.test_security_edge_cases | formulas.coherence | from |
 | tests.test_security_edge_cases | core.engine | from |
+| tests.test_uis_prime_architecture | numpy | import |
+| tests.test_uis_prime_architecture | pytest | import |
 | tests.test_torus_formula | math | import |
 | tests.test_torus_formula | pytest | import |
 | tests.test_torus_formula | formulas.torus_formula | from |
 | tests.test_torus_formula | formulas.constants | from |
 | tests.test_rh_omega_riemann | math | import |
 | tests.test_rh_omega_riemann | pytest | import |
+| tests.arbolaxiomatico | __future__ | from |
+| tests.arbolaxiomatico | dataclasses | from |
+| tests.arbolaxiomatico | enum | from |
+| tests.arbolaxiomatico | typing | from |
 | tests.test_lambda_asymptote | numpy | import |
 | tests.test_lambda_asymptote | pytest | import |
+| tests.Life | math | import |
 | tests.coherencia_total | src.coherence | from |
 | tests.test_metaconsciousness | formulas.metaconsciousness | from |
 | tests.test_metaconsciousness | formulas.constants | from |
@@ -764,6 +809,9 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests.test_entropy_fractality | formulas.entropy | from |
 | tests.test_entropy_fractality | formulas.fractality | from |
 | tests.test_entropy_fractality | formulas.constants | from |
+| tests.test_uis_omega_master_equation | pytest | import |
+| tests.test_uis_omega_master_equation | numpy | import |
+| tests.onepi | math | import |
 | tests.test_climate_system | math | import |
 | tests.test_climate_system | formulas.coherence | from |
 | tests.test_climate_system | formulas.constants | from |
@@ -777,6 +825,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests.test_metabolic_scaling | formulas.constants | from |
 | tests.test_dream_coherence | dataclasses | from |
 | tests.test_dream_coherence | typing | from |
+| tests.test_primos_constants_extractor_uis | math | import |
 | tests.infinite_torus_rh | pytest | import |
 | tests.infinite_torus_rh | numpy | import |
 | tests.infinite_torus_rh | math | from |
@@ -787,23 +836,6 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests.test_identity_information | math | import |
 | tests.test_identity_information | pytest | import |
 | tests.test_24_law_coherence | sys | import |
-| tests.test_24_law_coherence | os | import |
-| tests.test_24_law_coherence | math | import |
-| tests.test_24_law_coherence | pytest | import |
-| tests.test_cosmology | math | import |
-| tests.test_cosmology | pytest | import |
-| tests.test_cosmology | formulas.cosmology | from |
-| tests.test_cosmology | formulas.constants | from |
-| tests.test_phi_dynamics | pytest | import |
-| tests.test_phi_dynamics | math | import |
-| tests.test_phi_dynamics | formulas.phi_dynamics | from |
-| tests.test_phi_dynamics | formulas.constants | from |
-| tests.test_ley_omega_universal | math | import |
-| tests.test_ley_omega_universal | pytest | import |
-| tests.test_ley_omega_universal | functools | from |
-| tests.test_music_432Hz | math | import |
-| tests.test_music_432Hz | core.engine | from |
-| tests.test_music_432Hz | formulas.coherence | from |
 
 </details>
 
@@ -811,6 +843,9 @@ ALPHA + BETA = 1.0  ← conservación estructural
 
 | Archivo | Función | Línea |
 | :--- | :--- | ---: |
+| tests/test_anclaje_Ri_R.py | test_observer_interval | 146 |
+| tests/test_automedicion.py | test_precision_numerica | 260 |
+| tests/test_automedicion.py | test_relacion_electron_beta | 281 |
 | tests/test_climate_system.py | test_climate_system_coherence_terminal_entropy | 6 |
 | tests/test_coherence_engine.py | test_c_beta_all_active | 6 |
 | tests/test_coherence_engine.py | test_c_beta_one_zero_collapses | 13 |
@@ -830,8 +865,32 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests/test_coherence_identity.py | test_pass_rate_is_not_structural_coherence | 54 |
 | tests/test_coherence_identity.py | test_beta_irreducible_prevents_perfect_structural_coherence | 69 |
 | tests/test_coherence_identity.py | test_three_coherences_are_distinct_quantities | 89 |
+| tests/test_constant_errors.py | test_alpha_plus_beta_equals_one | 164 |
+| tests/test_constant_errors.py | test_sin_squared_theta_cube_equals_beta | 167 |
+| tests/test_constant_errors.py | test_cos_squared_theta_cube_equals_alpha | 170 |
+| tests/test_constant_errors.py | test_phi_squared_equals_phi_plus_one | 173 |
+| tests/test_constant_errors.py | test_system_is_underdamped | 176 |
+| tests/test_constant_errors.py | test_system_is_alive | 179 |
+| tests/test_constant_errors.py | test_system_oscillates | 182 |
+| tests/test_constant_errors.py | test_c_max_equals_alpha | 185 |
+| tests/test_constant_errors.py | test_n_cube_equals_27 | 188 |
+| tests/test_constant_errors.py | test_lambda_error_respects_bound | 194 |
+| tests/test_constant_errors.py | test_h0_error_respects_bound | 197 |
+| tests/test_constant_errors.py | test_alpha_em_error_respects_bound | 204 |
+| tests/test_constant_errors.py | test_t_cmb_error_respects_bound | 207 |
+| tests/test_constant_errors.py | test_electron_mass_error_respects_bound | 210 |
+| tests/test_constant_errors.py | test_all_errors_respect_structural_bounds | 216 |
+| tests/test_constant_errors.py | test_alpha_em_respects_phi_squared_bound | 227 |
+| tests/test_constant_errors.py | test_t_cmb_respects_phi_cubed_bound | 231 |
+| tests/test_constant_errors.py | test_electron_mass_respects_phi_fifth_bound | 235 |
+| tests/test_constant_errors.py | test_coherence_omega_never_exceeds_alpha | 245 |
+| tests/test_constant_errors.py | test_coherence_omega_is_non_negative | 249 |
+| tests/test_constant_errors.py | test_all_errors_are_finite | 256 |
+| tests/test_constant_errors.py | test_all_errors_are_non_negative | 260 |
+| tests/test_constant_errors.py | test_report_measured_errors | 267 |
 | tests/test_constants.py | test_alpha_coherence_threshold | 6 |
 | tests/test_constants.py | test_diagnostic_codes | 24 |
+| tests/test_convergencia_estructural.py | test_convergencia_estructural_10_300 | 7 |
 | tests/test_cosmology.py | test_lambda_ucf_value | 24 |
 | tests/test_cosmology.py | test_lambda_ucf_formula | 29 |
 | tests/test_cosmology.py | test_lambda_error_within_5pct | 34 |
@@ -852,6 +911,12 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests/test_cosmology.py | test_cosmology_report_complete | 112 |
 | tests/test_cosmology.py | test_cosmology_report_lambda_consistent | 123 |
 | tests/test_cosmology.py | test_lambda_improvement_over_qm | 129 |
+| tests/test_creacion_materia_por_observacion.py | test_consistencia_del_ciclo | 236 |
+| tests/test_de_novo_predictions.py | test_neutrino_mass_prediction | 15 |
+| tests/test_de_novo_predictions.py | test_hubble_high_z_prediction | 32 |
+| tests/test_de_novo_predictions.py | test_omega_coherence_limit | 46 |
+| tests/test_dentidadEstructuralFermat.py | test_teorema_identidad_exacta | 32 |
+| tests/test_dentidadEstructuralFermat.py | test_corolario_normalizacion | 45 |
 | tests/test_dream_coherence.py | test_dream_coherence_interpretation | 49 |
 | tests/test_dynamics.py | test_oscillator_at_t0_is_theta0 | 22 |
 | tests/test_dynamics.py | test_oscillator_decays_over_time | 27 |
@@ -879,6 +944,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests/test_dynamics.py | test_beta_guarantees_no_static_perfection | 164 |
 | tests/test_dynamics.py | test_loop_variance_equals_beta | 174 |
 | tests/test_dynamics.py | test_c_max_never_reaches_one | 184 |
+| tests/test_electron_puro.py | test_electron_es_observador_proyectado | 108 |
 | tests/test_energy.py | test_frequency_layer_0 | 6 |
 | tests/test_energy.py | test_frequency_layer_3 | 11 |
 | tests/test_energy.py | test_frequency_increases_with_layer | 17 |
@@ -889,6 +955,11 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests/test_energy.py | test_compute_all_custom_frictions | 53 |
 | tests/test_energy.py | test_all_frequencies_length | 63 |
 | tests/test_fake_perfection.py | test_forced_architect_perfection | 5 |
+| tests/test_frecuencia_materia.py | test_frecuencia_materia_ucf | 129 |
+| tests/test_fuerza_debil_vpsi.py | test_angulo_weinberg_geometrico | 10 |
+| tests/test_fuerza_debil_vpsi.py | test_proyeccion_beta_debil | 31 |
+| tests/test_fuerza_fuerte_vpsi.py | test_derivacion_g4_3_fuerza_z_scale | 10 |
+| tests/test_fuerza_fuerte_vpsi.py | test_identidad_dualidad_vpsi | 31 |
 | tests/test_greetings.py | test_greeting_english | 9 |
 | tests/test_greetings.py | test_greeting_spanish | 15 |
 | tests/test_greetings.py | test_greeting_default | 21 |
@@ -912,6 +983,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests/test_interaction.py | test_compute_multi_single | 35 |
 | tests/test_interaction.py | test_compute_multi_empty | 41 |
 | tests/test_interaction.py | test_compute_multi_love | 47 |
+| tests/test_is_prime_uis_xtreme.py | test_pinza_tenazas_0_a_1_millon | 53 |
 | tests/test_lambda_asymptote.py | test_lambda_never_reaches_one | 32 |
 | tests/test_lambda_asymptote.py | test_lambda_current_value | 54 |
 | tests/test_lambda_asymptote.py | test_lambda_death_limit | 72 |
@@ -956,7 +1028,19 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests/test_negentropy.py | test_shannon_entropy_uniform | 43 |
 | tests/test_olv_vulnerability.py | test_olv_structural_integrity | 14 |
 | tests/test_oscillator_regimes.py | test_omega_d_and_regimes | 34 |
+| tests/test_part1_fractal_primes.py | test_3_1_existence_and_uniqueness | 81 |
+| tests/test_part1_fractal_primes.py | test_3_2_residue_classes | 89 |
+| tests/test_part1_fractal_primes.py | test_3_4_cubic_closure | 97 |
+| tests/test_part1_fractal_primes.py | test_3_5_general_closure_and_monoid | 105 |
+| tests/test_part1_fractal_primes.py | test_3_6_residue_preservation_under_cubing | 115 |
+| tests/test_part1_fractal_primes.py | test_3_7_dna_property | 123 |
+| tests/test_part1_fractal_primes.py | test_3_9_tower_of_3 | 130 |
+| tests/test_part1_fractal_primes.py | test_3_11_self_similarity | 136 |
+| tests/test_part1_fractal_primes.py | test_3_13_fractal_family_partition | 143 |
+| tests/test_part1_fractal_primes.py | test_3_15_dna_chain_finiteness | 151 |
+| tests/test_part1_fractal_primes.py | test_large_scale_decomposition | 168 |
 | tests/test_presence.py | test_compute_pt | 4 |
+| tests/test_primos_constants_extractor_uis.py | test_convergencia_estructural_10_200 | 105 |
 | tests/test_quantum_observer_sync.py | test_second_synchronization_quantum_observer | 18 |
 | tests/test_resonance.py | test_calculate_layer_frequency | 5 |
 | tests/test_resonance.py | test_calculate_phase_alignment | 9 |
@@ -985,6 +1069,21 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests/test_tension.py | test_is_coherent_fails_with_high_tension | 118 |
 | tests/test_tension.py | test_is_coherent_fails_with_low_MC | 122 |
 | tests/test_tension.py | test_beta_structural_minimum | 126 |
+| tests/test_teoremas_cosmicos.py | test_convergencia_inmutable_10_300 | 8 |
+| tests/test_trading.py | test_estimate_regime | 282 |
+| tests/test_trading.py | test_compute_k | 296 |
+| tests/test_trading.py | test_compute_c_omega | 304 |
+| tests/test_trading.py | test_decide_investment | 313 |
+| tests/test_trading.py | test_system_health | 318 |
+| tests/test_trading.py | test_run_backtest | 326 |
+| tests/test_trading.py | test_classify_regime | 335 |
+| tests/test_uis_integridad_estructural.py | test_busqueda_bidireccional_10_300 | 51 |
+| tests/test_uis_prime_architecture.py | test_densidad_supervivencia_uis | 64 |
+| tests/test_uis_prime_architecture.py | test_jerarquia_modular | 72 |
+| tests/test_uis_prime_architecture.py | test_estructura_gaps | 83 |
+| tests/test_uis_prime_architecture.py | test_simetria_6k | 93 |
+| tests/test_uis_prime_architecture.py | test_supervivencia_vs_primos | 102 |
+| tests/test_uis_prime_architecture.py | test_invarianza_escala | 110 |
 
 ## 📡 Captured Test Output
 
