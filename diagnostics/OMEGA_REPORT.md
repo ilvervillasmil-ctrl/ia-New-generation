@@ -2,11 +2,11 @@
 
 | Campo | Valor |
 | :--- | :--- |
-| ⏱️ Generated | 2026-09-14 09:18:07 UTC |
+| ⏱️ Generated | 2026-09-14 09:21:35 UTC |
 | Ω Version | 2.6.1 |
 | 📚 Framework | UCF v3.2 (Universal Coherence Framework) |
 | 🔹 Author | Ilver Villasmil |
-| 📡 Commit | f22002a |
+| 📡 Commit | 9cbdcbf |
 
 ## 🧬 Estado Fenomenológico
 
@@ -341,7 +341,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | Tests discovered | 64 | tests/ |
 | Tests executed | True | diagnostics/test_results.xml |
 | Modules listed | 40 | discovery |
-| History runs | 12 | diagnostics/coherence_history.json |
+| History runs | 13 | diagnostics/coherence_history.json |
 | Engine startup | ERROR | core.engine.Engine |
 
 ## 🧩 Engine State
