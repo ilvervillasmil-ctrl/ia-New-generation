@@ -1,12 +1,12 @@
-# Ω OMEGA DIAGNOSTIC REPORT v2.6.1
+# Ω OMEGA DIAGNOSTIC REPORT v2.6.2
 
 | Campo | Valor |
 | :--- | :--- |
-| ⏱️ Generated | 2026-09-14 09:21:35 UTC |
-| Ω Version | 2.6.1 |
+| ⏱️ Generated | 2026-09-14 09:35:19 UTC |
+| Ω Version | 2.6.2 |
 | 📚 Framework | UCF v3.2 (Universal Coherence Framework) |
 | 🔹 Author | Ilver Villasmil |
-| 📡 Commit | 9cbdcbf |
+| 📡 Commit | 102d635 |
 
 ## 🧬 Estado Fenomenológico
 
@@ -341,7 +341,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | Tests discovered | 64 | tests/ |
 | Tests executed | True | diagnostics/test_results.xml |
 | Modules listed | 40 | discovery |
-| History runs | 13 | diagnostics/coherence_history.json |
+| History runs | 14 | diagnostics/coherence_history.json |
 | Engine startup | ERROR | core.engine.Engine |
 
 ## 🧩 Engine State
@@ -364,14 +364,11 @@ ALPHA + BETA = 1.0  ← conservación estructural
 
 ## 💾 Diagnostic Artifacts
 
-|  | Artefacto | Presente |
-| :---: | :--- | :---: |
-| ❌ | diagnostics/axioms_report.json | False |
-| ❌ | diagnostics/generatividad_report.json | False |
-| ❌ | diagnostics/contratos_report.json | False |
-| ❌ | diagnostics/evaluaciones.json | False |
-| ✅ | diagnostics/test_results.xml | True |
-| ✅ | diagnostics/coherence_history.json | True |
+|  | Artefacto | Bytes | Parse | Tipo |
+| :---: | :--- | ---: | :---: | :--- |
+| ✅ | diagnostics/OMEGA_REPORT.md | 13200 | True | md |
+| ✅ | diagnostics/coherence_history.json | 3527 | True | json |
+| ✅ | diagnostics/test_results.xml | 165748 | True | xml |
 
 ## 📡 Evidence Provenance
 
