@@ -3,13 +3,19 @@
 OMEGA REPORT v2.6
 Genera un reporte diagnóstico honesto del sistema a partir del propio repositorio.
 
+Changelog v2.6.1:
+  - SEPARA: md_table = Markdown; render_ci = cajas Unicode 46 cols
+  - QUITA: duplicación Markdown+caja en la misma función
+  - QUITA: print(report) en stdout; tee del workflow
+  - TARJETA por entidad (no caja por celda)
+  - MANTIENE: auditoría v2.6 intacta
+
 Changelog v2.6:
   - AGREGA: tablas Markdown alineadas + md_cell
   - AGREGA: tests solo XML; Omega ya no escribe coherence_history
   - AGREGA: JSON desde paquete (cero regex)
   - AGREGA: inventario/Engine/CI evidence/fórmulas con provenance
   - CONSERVA: todas las secciones científicas v2.4
-  - CONSERVA: cajas Unicode como complemento visual
 
 Changelog v2.5:
   - AGREGA: cajas Unicode estilo Omega SPARTACO (md_table → ┌─┐)
@@ -51,11 +57,12 @@ REPO_ROOT = DIAGNOSTICS_DIR.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-VERSION = "2.6"
+VERSION = "2.6.1"
 
 ICON_OMEGA = "Ω"
 ICON_OK = "✅"
 ICON_FAIL = "❌"
+ICON_ERR = "🚨"
 ICON_WARN = "⚠️"
 ICON_INFO = "ℹ️"
 ICON_SKIP = "⏭️"
@@ -91,6 +98,24 @@ ICON_RES = "🎯"
 ICON_BAN = "🚫"
 ICON_ITEM = "🔹"
 ICON_CUBE = "🧱"
+ICON_STAR = "⭐"
+ICON_WAVE = "🌊"
+ICON_ATOM = "⚛️"
+ICON_EARTH = "🌍"
+ICON_BOLT = "⚡"
+ICON_FIRE = "🔥"
+ICON_MOON = "🌙"
+ICON_SUN = "☀️"
+ICON_SCALE = "⚖️"
+ICON_ORBIT = "🪐"
+ICON_PULSE = "💓"
+ICON_SEED = "🌱"
+ICON_LENS = "🔬"
+ICON_GEAR = "🛠️"
+ICON_MAP = "🗺️"
+ICON_FLAG = "🚩"
+ICON_PIN = "📌"
+ICON_BOX = "🗃️"
 
 
 def _icono_status(valor):
@@ -1117,7 +1142,9 @@ def economic_cycles_validation() -> dict:
 ANCHO_MIN = 8
 ANCHO_MAX = 42
 ANCHO_TOTAL = 52
+ANCHO_TOTAL_CI = 46
 CAMPO_MAX = 18
+CAMPO_MAX_CI = 16
 
 
 def _ancho_vis(texto: str) -> int:
@@ -1172,6 +1199,8 @@ def _envolver(texto: str, ancho: int):
     if _ancho_vis(s) <= ancho:
         return [s]
     palabras = s.split(" ")
+    if palabras and _ancho_vis(palabras[0]) <= 2 and len(palabras) >= 2:
+        palabras = [palabras[0] + " " + palabras[1]] + palabras[2:]
     lineas = []
     actual = ""
     for p in palabras:
@@ -1247,21 +1276,25 @@ def _anchos(headers, filas):
 
 
 def _tabla_apilada(headers, filas):
-    inner = max(8, ANCHO_TOTAL - 2)
+    """Tarjeta POR FILA, no caja por celda. Usado por renderer CI."""
     out = []
     for fila in filas:
+        title_bits = []
+        pairs = []
         for j, enc in enumerate(headers):
             val = fila[j] if j < len(fila) else ""
-            labs = _envolver(str(enc), inner)
-            vals = _envolver(str(val), inner)
-            ali = _alinea_celda(val)
-            out.append("┌" + ("─" * inner) + "┐")
-            for t in labs:
-                out.append("│" + _pad(t, inner, "left") + "│")
-            out.append("├" + ("─" * inner) + "┤")
-            for i, t in enumerate(vals):
-                out.append("│" + _pad(t, inner, ali if i == 0 else "left") + "│")
-            out.append("└" + ("─" * inner) + "┘")
+            if j == 0:
+                title_bits.append(str(val))
+            elif j == 1 and len(headers) > 2:
+                title_bits.append(str(val))
+            else:
+                pairs.append((str(enc), str(val)))
+        if len(headers) <= 2:
+            pairs = [(str(headers[j]), str(fila[j]) if j < len(fila) else "") for j in range(len(headers))]
+            title = ""
+        else:
+            title = " · ".join(x for x in title_bits if x)
+        out.extend(ci_card(title, pairs))
     return out
 
 
@@ -1350,10 +1383,375 @@ def md_table(headers: list[str], rows: list[list[str]], align=None) -> str:
     out = ["| " + " | ".join(headers) + " |", "| " + " | ".join(marks) + " |"]
     for row in body_rows:
         out.append("| " + " | ".join(row) + " |")
-    caja = _tabla_caja(headers, body_rows)
-    return "\n".join(out) + "\n\n```\n" + "\n".join(caja) + "\n```"
+    return "\n".join(out)
 
 
+
+
+
+def _ci_limite():
+    return ANCHO_TOTAL_CI
+
+
+def _ci_campo_valor_anchos():
+    inner = ANCHO_TOTAL_CI - 2
+    w0 = CAMPO_MAX_CI
+    w1 = inner - 1 - w0
+    if w1 < 12:
+        w0 = max(8, inner - 1 - 12)
+        w1 = inner - 1 - w0
+    return w0, max(8, w1)
+
+
+def ci_card(title, pairs):
+    w0, w1 = _ci_campo_valor_anchos()
+    inner = w0 + 1 + w1
+    out = []
+    top = "┌" + ("─" * inner) + "┐"
+    mid = "├" + ("─" * w0) + "┼" + ("─" * w1) + "┤"
+    bot = "└" + ("─" * w0) + "┴" + ("─" * w1) + "┘"
+    if title:
+        out.append(top)
+        for i, t in enumerate(_envolver(str(title), inner)):
+            out.append("│" + _pad(t, inner, "left") + "│")
+        out.append(mid)
+    else:
+        out.append("┌" + ("─" * w0) + "┬" + ("─" * w1) + "┐")
+    for i, (campo, valor) in enumerate(pairs):
+        labs = _envolver(str(campo), w0)
+        vals = _envolver(str(valor), w1)
+        alto = max(len(labs), len(vals))
+        ali = _alinea_celda(valor)
+        for r in range(alto):
+            lab = labs[r] if r < len(labs) else ""
+            val = vals[r] if r < len(vals) else ""
+            a = ali if r == 0 else "left"
+            out.append("│" + _pad(lab, w0, "left") + "│" + _pad(val, w1, a) + "│")
+        if i < len(pairs) - 1:
+            out.append(mid)
+    out.append(bot)
+    return out
+
+
+def ci_kv(pares):
+    return ci_card("", [(str(k), v) for k, v in pares])
+
+
+def ci_table(headers, filas):
+    headers = [str(h) for h in headers]
+    pintadas = []
+    for fila in filas:
+        celdas = ["" if c is None else str(c) for c in list(fila)]
+        if len(celdas) < len(headers):
+            celdas += [""] * (len(headers) - len(celdas))
+        pintadas.append(celdas[: len(headers)])
+    if len(headers) <= 2:
+        if not headers:
+            return []
+        if len(headers) == 1:
+            return ci_card(headers[0], [(headers[0], r[0] if r else "") for r in pintadas])
+        pares = []
+        # if first row looks like headered records use cards when many rows with long text
+        return ci_card("", [(r[0], r[1] if len(r) > 1 else "") for r in pintadas])
+    return _tabla_apilada(headers, pintadas)
+
+
+def ci_banner(titulo):
+    inner = ANCHO_TOTAL_CI
+    bar = "═" * inner
+    t = str(titulo)
+    if _ancho_vis(t) > inner:
+        t = _envolver(t, inner)[0]
+    return [bar, _pad(t, inner, "left"), bar]
+
+
+def ci_sep():
+    return "─" * ANCHO_TOTAL_CI
+
+
+def _fmt_ci(v):
+    if v is None:
+        return "N/D"
+    if isinstance(v, bool):
+        return "True" if v else "False"
+    if isinstance(v, float):
+        if abs(v) >= 1e4 or (abs(v) > 0 and abs(v) < 1e-3):
+            return "{0:.4e}".format(v)
+        return "{0:.6f}".format(v)
+    return str(v)
+
+
+def render_ci(paquete):
+    lines = []
+    gen = (paquete.get("generated") or {}) if isinstance(paquete.get("generated"), dict) else {}
+    metrics = paquete.get("metrics") or {}
+    diag = paquete.get("diagnostic") or {}
+    tests = paquete.get("tests") or {}
+    engine = paquete.get("engine") or {}
+    status = paquete.get("system_status") or {}
+    vals = paquete.get("validations") or {}
+    modules = paquete.get("modules") or []
+    history = paquete.get("history") or []
+    checks = paquete.get("const_checks") or []
+    ci_ev = paquete.get("ci_evidence") or {}
+    states = metrics.get("states") or {}
+    energies = metrics.get("energies") or {}
+    l7 = metrics.get("l7") or {}
+
+    lines.extend(ci_banner("{0} OMEGA DIAGNOSTIC REPORT · v{1}".format(ICON_OMEGA, VERSION)))
+    lines.extend(ci_kv([
+        ("{0} Generated".format(ICON_TIME), gen.get("utc") or ""),
+        ("{0} Framework".format(ICON_AX), "UCF v3.2"),
+        ("{0} Commit".format(ICON_SRC), gen.get("sha") or ""),
+    ]))
+
+    lines.extend(ci_banner("{0} ESTADO FENOMENOLÓGICO".format(ICON_COH)))
+    lines.extend(ci_kv([
+        ("{0} Estado".format(ICON_COH), "{0} {1}".format(diag.get("symbol") or "", diag.get("pheno") or "")),
+        ("{0} C_struct".format(ICON_MET), _fmt_ci(metrics.get("C_struct"))),
+        ("{0} C_global".format(ICON_MET), _fmt_ci(metrics.get("C_global_norm"))),
+        ("{0} C_CI".format(ICON_TEST), _fmt_ci(metrics.get("C_CI"))),
+        ("{0} phi_eff".format(ICON_FORM), _fmt_ci(metrics.get("phi_eff"))),
+        ("{0} L7".format(ICON_LAYER), _fmt_ci(metrics.get("L7"))),
+        ("{0} Tendencia".format(ICON_HIST), diag.get("trend")),
+    ]))
+
+    lines.extend(ci_banner("{0} CÓDIGO DIAGNÓSTICO".format(ICON_ID)))
+    lines.extend(ci_kv([
+        ("{0} Código".format(ICON_ID), diag.get("code")),
+        ("{0} Nombre".format(ICON_FLAG), diag.get("name")),
+        ("{0} C_struct".format(ICON_MET), _fmt_ci(metrics.get("C_struct"))),
+        ("{0} Desc".format(ICON_ITEM), diag.get("desc")),
+    ]))
+
+    lines.extend(ci_banner("{0} SYSTEM STATUS".format(ICON_MET)))
+    lines.extend(ci_kv([
+        ("{0} C_struct".format(ICON_COH), _fmt_ci(metrics.get("C_struct"))),
+        ("{0} C_global".format(ICON_MET), _fmt_ci(metrics.get("C_global_norm"))),
+        ("{0} L7".format(ICON_LAYER), _fmt_ci(metrics.get("L7"))),
+        ("{0} Entropy".format(ICON_WAVE), _fmt_ci(metrics.get("entropy"))),
+        ("{0} Harmony".format(ICON_PULSE), _fmt_ci(metrics.get("harmony"))),
+        ("{0} Energy".format(ICON_BOLT), _fmt_ci(metrics.get("total_energy"))),
+        ("{0} Zeta".format(ICON_ORBIT), _fmt_ci(metrics.get("zeta"))),
+        ("{0} Period".format(ICON_TIME), _fmt_ci(metrics.get("period"))),
+        ("{0} Source".format(ICON_SRC), metrics.get("coherence_source")),
+    ]))
+
+    lines.extend(ci_banner("{0} TEST RESULTS".format(ICON_TEST)))
+    lines.extend(ci_kv([
+        ("{0} Source".format(ICON_SRC), tests.get("source")),
+        ("{0} Executed".format(ICON_RES), tests.get("executed")),
+        ("{0} Total".format(ICON_NUM), tests.get("total")),
+        ("{0} Passed".format(ICON_OK), tests.get("passed")),
+        ("{0} Failed".format(ICON_FAIL), tests.get("failed")),
+        ("{0} Skipped".format(ICON_SKIP), tests.get("skipped")),
+        ("{0} Rate".format(ICON_MET), tests.get("pass_rate")),
+    ]))
+
+    lines.extend(ci_banner("{0} COHERENCE HISTORY".format(ICON_HIST)))
+    if history:
+        last = history[-1] if isinstance(history[-1], dict) else {}
+        lines.extend(ci_kv([
+            ("{0} Runs".format(ICON_NUM), len(history)),
+            ("{0} Last passed".format(ICON_OK), last.get("passed")),
+            ("{0} Last failed".format(ICON_FAIL), last.get("failed")),
+            ("{0} Estado".format(ICON_COH), last.get("estado") or last.get("pass_rate")),
+        ]))
+    else:
+        lines.extend(ci_kv([("{0} Historial".format(ICON_INFO), "N/D")]))
+
+    lines.extend(ci_banner("{0} CONSTANTS INTEGRITY".format(ICON_SCALE)))
+    for c, s in checks:
+        lines.extend(ci_kv([(str(c), _icono_status(s))]))
+
+    lines.extend(ci_banner("{0} FRAMEWORK CONSTANTS".format(ICON_NUM)))
+    lines.extend(ci_kv([
+        ("{0} ALPHA".format(ICON_FORM), _fmt_ci(globals().get("ALPHA"))),
+        ("{0} BETA".format(ICON_FORM), _fmt_ci(globals().get("BETA"))),
+        ("{0} PHI".format(ICON_STAR), _fmt_ci(globals().get("PHI"))),
+        ("{0} S_REF".format(ICON_FORM), _fmt_ci(globals().get("S_REF"))),
+        ("{0} KAPPA".format(ICON_FORM), _fmt_ci(globals().get("KAPPA"))),
+        ("{0} OMEGA_EFF".format(ICON_ORBIT), _fmt_ci(globals().get("OMEGA_EFF"))),
+    ]))
+
+    lines.extend(ci_banner("{0} LAYER STATUS".format(ICON_LAYER)))
+    names = globals().get("LAYER_NAMES") or {}
+    fric = globals().get("LAYER_FRICTIONS") or {}
+    ranges = globals().get("LAYER_HEALTHY_RANGES") or {}
+    ang = globals().get("GOLDEN_ANG") or 0
+    for idx, key in enumerate(["L0", "L1", "L2", "L3", "L4", "L5", "L6", "L7"]):
+        st = (states or {}).get(key) or {}
+        phi = st.get("phi", fric.get(key))
+        lohi = ranges.get(key)
+        rango = "[{0:.2f}, {1:.2f}]".format(lohi[0], lohi[1]) if lohi else "N/D"
+        title = "{0} {1} · {2}".format(ICON_LAYER, key, names.get(key, key))
+        lines.extend(ci_card(title, [
+            ("Friction", _fmt_ci(phi) if phi is not None else "N/D"),
+            ("Spiral Angle", "{0:.1f} deg".format((idx * ang) % 360) if key != "L7" else "{0:.1f} deg".format((7 * ang) % 360)),
+            ("Healthy Range", rango),
+        ]))
+
+    lines.extend(ci_banner("{0} MODULE STATUS".format(ICON_PKG)))
+    for item in modules:
+        if isinstance(item, (list, tuple)) and len(item) >= 2:
+            name, st = item[0], item[1]
+        else:
+            name, st = str(item), ""
+        path = ""
+        if "(" in str(name) and str(name).endswith(")"):
+            core, path = str(name).rsplit("(", 1)
+            name = core.strip()
+            path = path[:-1]
+        lines.extend(ci_card("{0} {1}".format(ICON_PKG, name), [
+            ("Estado", st),
+            ("Path", path),
+        ]))
+
+    lines.extend(ci_banner("{0} DOMAIN VALIDATIONS".format(ICON_AX)))
+    mapping = [
+        (ICON_EARTH, "Cosmological Constant", vals.get("cosmo") or {}),
+        (ICON_ORBIT, "Hubble Tension", {}),
+        (ICON_WAVE, "Economic Cycles", vals.get("econ") or {}),
+        (ICON_ATOM, "Quantum Gravity", vals.get("qg") or {}),
+        (ICON_GEN, "Neuroscience", vals.get("neuro") or {}),
+        (ICON_SEED, "Genetic Code", vals.get("genetic") or {}),
+        (ICON_MOON, "Black Hole", vals.get("bh") or {}),
+    ]
+    cosmo = vals.get("cosmo") or {}
+    if isinstance(cosmo, dict) and "lambda" in cosmo:
+        mapping[0] = (ICON_EARTH, "Cosmological Constant", cosmo.get("lambda") or {})
+        mapping[1] = (ICON_ORBIT, "Hubble Tension", cosmo.get("hubble") or {})
+    for icon, title, data in mapping:
+        lines.extend(ci_banner("{0} {1}".format(icon, title.upper())))
+        if not isinstance(data, dict) or not data:
+            lines.extend(ci_kv([("{0} Estado".format(ICON_INFO), "N/D")]))
+            continue
+        pares = []
+        for k, v in data.items():
+            if isinstance(v, (dict, list)):
+                continue
+            pares.append((str(k), _icono_status(v) if str(k).lower() in {"status", "available"} else _fmt_ci(v)))
+        lines.extend(ci_kv(pares[:16]))
+
+    torus = vals.get("torus") or {}
+    lines.extend(ci_banner("{0} TORUS FORMULA".format(ICON_GRAPH)))
+    if isinstance(torus, dict):
+        pares = []
+        for k, v in torus.items():
+            if isinstance(v, (dict, list)):
+                continue
+            pares.append((str(k), _fmt_ci(v) if not isinstance(v, bool) else ("{0} {1}".format(ICON_OK if v else ICON_FAIL, v))))
+        lines.extend(ci_kv(pares[:18]))
+
+    lines.extend(ci_banner("{0} L7 INTEGRATION".format(ICON_LAYER)))
+    if isinstance(l7, dict):
+        lines.extend(ci_kv([
+            ("{0} Value".format(ICON_MET), _fmt_ci(l7.get("value"))),
+            ("{0} Status".format(ICON_RES), l7.get("status")),
+            ("{0} Source".format(ICON_SRC), l7.get("source")),
+            ("{0} Formula".format(ICON_FORM), l7.get("formula")),
+            ("{0} Law".format(ICON_CONTRACT), l7.get("law")),
+        ]))
+
+    lines.extend(ci_banner("{0} ENERGY DISTRIBUTION".format(ICON_BOLT)))
+    energy_pairs = []
+    for k in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
+        if k in energies:
+            energy_pairs.append(("{0} {1}".format(ICON_LAYER, k), _fmt_ci(energies[k])))
+    energy_pairs.append(("{0} Total".format(ICON_MET), _fmt_ci(metrics.get("total_energy"))))
+    lines.extend(ci_kv(energy_pairs))
+
+    lines.extend(ci_banner("{0} CUBE GEOMETRY".format(ICON_CUBE)))
+    lines.extend(ci_kv([
+        ("Positions", "27 = 3×3×3"),
+        ("Exterior / α", "26"),
+        ("Center / β", "1"),
+        ("α + β", "1"),
+    ]))
+
+    ax = (ci_ev.get("axioms") or {}).get("data") or {}
+    lines.extend(ci_banner("{0} AXIOMATIC / FORMAL STATE".format(ICON_AX)))
+    if isinstance(ax, dict) and ax:
+        cuerpos = ax.get("cuerpos") or []
+        lines.extend(ci_kv([
+            ("{0} Coherente".format(ICON_COH), ax.get("coherente")),
+            ("{0} Declaraciones".format(ICON_NUM), ax.get("declaraciones")),
+            ("{0} Cuerpos".format(ICON_NUM), len(cuerpos) if isinstance(cuerpos, list) else ax.get("cuerpos")),
+            ("{0} Errores".format(ICON_ERR if "ICON_ERR" in dir() else ICON_FAIL), len(ax.get("errores") or []) if isinstance(ax.get("errores"), list) else ax.get("errores")),
+            ("{0} Choques".format(ICON_WARN), len(ax.get("choques") or []) if isinstance(ax.get("choques"), list) else ax.get("choques")),
+        ]))
+        if isinstance(cuerpos, list) and cuerpos:
+            lines.append(ci_sep())
+            lines.append("{0} CUERPOS".format(ICON_FILE))
+            for i, c in enumerate(cuerpos, 1):
+                for t in _envolver("{0:>2}. {1}".format(i, c), ANCHO_TOTAL_CI):
+                    lines.append(t)
+    else:
+        lines.extend(ci_kv([("{0} Artefacto".format(ICON_INFO), "N/D")]))
+
+    gd = (ci_ev.get("generatividad") or {}).get("data") or {}
+    lines.extend(ci_banner("{0} GENERATIVIDAD OPERATIVA".format(ICON_GEN)))
+    if isinstance(gd, dict) and gd:
+        op = {k: v for k, v in gd.items() if k != "canonica" and not isinstance(v, (dict, list))}
+        lines.extend(ci_kv([(str(k), _fmt_ci(v)) for k, v in op.items()]))
+        lines.extend(ci_banner("{0} GENERATIVIDAD CANÓNICA TR1".format(ICON_CONTRACT)))
+        can = gd.get("canonica") or {}
+        if isinstance(can, dict):
+            lines.extend(ci_kv([(str(k), _fmt_ci(v)) for k, v in can.items() if not isinstance(v, (dict, list))]))
+
+    lines.extend(ci_banner("{0} ENGINE".format(ICON_ENGINE)))
+    lines.extend(ci_kv([
+        ("{0} Startup".format(ICON_GEAR), engine.get("startup")),
+        ("{0} Estado".format(ICON_COH), engine.get("estado")),
+        ("{0} Error".format(ICON_FAIL), engine.get("error")),
+    ]))
+
+    lines.extend(ci_banner("{0} DIAGNOSTIC ARTIFACTS".format(ICON_DISK)))
+    for key, label in (("axioms", "axioms_report.json"), ("generatividad", "generatividad_report.json"), ("contratos", "contratos_report.json"), ("evaluaciones", "evaluaciones.json")):
+        rec = ci_ev.get(key) or {}
+        mark = ICON_OK if rec.get("present") else ICON_FAIL
+        lines.extend(ci_kv([(mark + " " + label, rec.get("present"))]))
+
+    lines.extend(ci_banner("{0} PROVENANCE".format(ICON_SRC)))
+    lines.extend(ci_kv([
+        ("{0} C_struct src".format(ICON_SRC), metrics.get("coherence_source")),
+        ("{0} Layers src".format(ICON_LAYER), metrics.get("states_source")),
+        ("{0} L7 src".format(ICON_LAYER), l7.get("source") if isinstance(l7, dict) else None),
+        ("{0} Tests src".format(ICON_TEST), tests.get("source")),
+        ("{0} Status src".format(ICON_AUDIT), status.get("source")),
+    ]))
+
+    coh = status.get("coherente")
+    if coh is True:
+        cierre = "{0} COHERENTE".format(ICON_OK)
+    elif coh is False:
+        cierre = "{0} INCOHERENTE".format(ICON_FAIL)
+    else:
+        cierre = "{0} N/D".format(ICON_INFO)
+    lines.extend(ci_banner("{0} FINAL CLOSURE".format(ICON_OMEGA)))
+    lines.extend(ci_kv([
+        ("{0} Sistema".format(ICON_COH), cierre),
+        ("{0} Engine".format(ICON_ENGINE), engine.get("startup")),
+        ("{0} Tests".format(ICON_TEST), tests.get("source")),
+    ]))
+    lines.append("{0} Omega".format(ICON_OMEGA))
+
+    # enforce width
+    fixed = []
+    for ln in lines:
+        if isinstance(ln, list):
+            for x in ln:
+                if _ancho_vis(x) > ANCHO_TOTAL_CI:
+                    for t in _envolver(x, ANCHO_TOTAL_CI):
+                        fixed.append(t)
+                else:
+                    fixed.append(x)
+        else:
+            if _ancho_vis(str(ln)) > ANCHO_TOTAL_CI:
+                fixed.extend(_envolver(str(ln), ANCHO_TOTAL_CI))
+            else:
+                fixed.append(str(ln))
+    return "\n".join(fixed)
 
 
 def layer_rows(states: dict[str, dict[str, float]] | None = None) -> list[list[str]]:
@@ -2132,6 +2530,7 @@ def build_report():
     paquete = {
         "schema_version": "omega.uis.2.6",
         "version": VERSION,
+        "generated": {"utc": now, "sha": sha},
         "system_status": system_status,
         "engine": engine_state,
         "metrics": {
@@ -2225,12 +2624,12 @@ def save_report(report: str) -> Path:
 def main() -> None:
     print("Running Omega Report v{0}...".format(VERSION))
     report, paquete = build_report()
-    print(report)
     output_path = save_report(report)
-    print("\nReport saved to: {0}".format(output_path))
     DIAGNOSTICS_DIR.mkdir(parents=True, exist_ok=True)
     json_path = DIAGNOSTICS_DIR / "omega_report_data.json"
     json_path.write_text(json.dumps(paquete, indent=2, ensure_ascii=False, default=str), encoding="utf-8")
+    print(render_ci(paquete))
+    print("Report saved to: {0}".format(output_path))
     print("JSON data saved to: {0}".format(json_path))
 
 
