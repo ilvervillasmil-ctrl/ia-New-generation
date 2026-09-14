@@ -74,7 +74,7 @@ REPO_ROOT = DIAGNOSTICS_DIR.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-VERSION = "2.6.3"
+VERSION = "2.6.4"
 
 SECRET_KEYS = ("password", "secret", "token", "api_key", "apikey", "private_key")
 SKIP_DIAG_NAMES = {
@@ -468,14 +468,91 @@ def discover_audit() -> dict:
                 _finding("ERROR", "import", name, entry["error"])
             modules.append(entry)
 
+    skip = {".git", ".hg", ".svn", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".venv", "venv", "node_modules", ".tox"}
+    repo_files = []
+    repo_dirs = set()
+    buckets = {"python": 0, "markdown": 0, "json": 0, "yaml": 0, "xml": 0, "txt": 0, "other": 0, "bytes": 0}
+    edges = []
+    for dirpath, dirnames, filenames in os.walk(REPO_ROOT):
+        dirnames[:] = [d for d in dirnames if d not in skip]
+        base = Path(dirpath)
+        try:
+            repo_dirs.add(str(base.relative_to(REPO_ROOT)))
+        except Exception:
+            continue
+        for name in filenames:
+            path = base / name
+            rel = str(path.relative_to(REPO_ROOT))
+            ext = path.suffix.lower()
+            bucket = "other"
+            if ext == ".py":
+                bucket = "python"
+            elif ext == ".md":
+                bucket = "markdown"
+            elif ext == ".json":
+                bucket = "json"
+            elif ext in {".yml", ".yaml"}:
+                bucket = "yaml"
+            elif ext == ".xml":
+                bucket = "xml"
+            elif ext == ".txt":
+                bucket = "txt"
+            try:
+                size = path.stat().st_size
+            except Exception:
+                size = 0
+            buckets[bucket] = buckets.get(bucket, 0) + 1
+            buckets["bytes"] += size
+            repo_files.append({"path": rel, "type": bucket, "bytes": size})
+            if ext == ".py":
+                try:
+                    tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+                    src = _mod_from_rel(rel)
+                    for node in tree.body:
+                        if isinstance(node, ast.Import):
+                            for a in node.names:
+                                edges.append({"from": src, "to": a.name, "kind": "import"})
+                        elif isinstance(node, ast.ImportFrom) and node.module:
+                            edges.append({"from": src, "to": node.module, "kind": "from"})
+                except Exception:
+                    pass
+
+    # tests AST only — no import (evita reejecutar demos de 30 min)
+    tests_dir = REPO_ROOT / "tests"
+    test_fns = []
+    if tests_dir.exists():
+        for path in sorted(tests_dir.rglob("test_*.py")):
+            rel = str(path.relative_to(REPO_ROOT))
+            try:
+                tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+                for node in tree.body:
+                    if isinstance(node, ast.FunctionDef) and node.name.startswith("test_"):
+                        test_fns.append({"file": rel, "name": node.name, "line": node.lineno})
+            except Exception as e:
+                _finding("ERROR", "parse", rel, e)
+
     return {
         "python_files": py_rows,
         "modules": modules,
         "formulas": formulas,
         "producers": producers,
         "findings": list(FINDINGS),
+        "repository": {
+            "summary": {
+                "files": len(repo_files),
+                "directories": len(repo_dirs),
+                **{k: v for k, v in buckets.items()},
+            },
+            "files": repo_files,
+        },
+        "dependencies": {
+            "edges": edges,
+            "n_edges": len(edges),
+        },
+        "test_functions": test_fns,
         "coverage": {
             "python_files_discovered": len(py_rows),
+            "repo_files": len(repo_files),
             "modules_importable": import_ok,
             "modules_failed_import": import_fail,
             "public_symbols_discovered": symbols_n,
@@ -967,12 +1044,18 @@ def read_executed_tests() -> dict:
                     status = "skipped"
                     node = tc.find("skipped")
                     detail = node.get("message") or node.text
+            so = tc.find("system-out")
+            se = tc.find("system-err")
+            stdout = (so.text or "") if so is not None else ""
+            stderr = (se.text or "") if se is not None else ""
             cases.append({
                 "classname": tc.get("classname"),
                 "name": tc.get("name"),
                 "time": tc.get("time"),
                 "status": status,
                 "detail": detail,
+                "stdout": stdout,
+                "stderr": stderr,
             })
     failed = failures + errors
     passed = total - failed - skipped
@@ -1926,11 +2009,21 @@ def render_ci(paquete):
     energies = metrics.get("energies") or {}
     l7 = metrics.get("l7") or {}
 
+    audit0 = paquete.get("audit") or {}
+    cov0 = audit0.get("coverage") or paquete.get("coverage") or {}
     lines.extend(ci_banner("{0} OMEGA DIAGNOSTIC REPORT · v{1}".format(ICON_OMEGA, VERSION)))
     lines.extend(ci_kv([
         ("{0} Generated".format(ICON_TIME), gen.get("utc") or ""),
         ("{0} Framework".format(ICON_AX), "UCF v3.2"),
         ("{0} Commit".format(ICON_SRC), gen.get("sha") or ""),
+        ("{0} Authority".format(ICON_ENGINE), engine.get("class") or "discovery"),
+        ("{0} Py repo".format(ICON_PKG), cov0.get("repo_files")),
+        ("{0} Import OK".format(ICON_OK), cov0.get("modules_importable")),
+        ("{0} Import FAIL".format(ICON_FAIL), cov0.get("modules_failed_import")),
+        ("{0} Símbolos".format(ICON_NUM), cov0.get("public_symbols_discovered")),
+        ("{0} Layers".format(ICON_LAYER), cov0.get("layers_discovered")),
+        ("{0} Validaciones+".format(ICON_AX), cov0.get("validations_discovered")),
+        ("{0} Stdout tests".format(ICON_TEST), cov0.get("captured_stdout_n")),
     ]))
 
     lines.extend(ci_banner("{0} ESTADO FENOMENOLÓGICO".format(ICON_COH)))
@@ -2248,6 +2341,14 @@ def render_ci(paquete):
                 continue
             pares.append((str(k), _fmt_ci(v)))
         lines.extend(ci_card("{0} {1}".format(ICON_AX, p.get("title")), pares))
+    for b in (audit.get("captured_stdout") or []):
+        text = b.get("stdout") or ""
+        preview = " / ".join([ln.strip() for ln in text.splitlines() if ln.strip()][:6])
+        lines.extend(ci_card("{0} {1}".format(ICON_TEST, (b.get("case") or "")[-28:]), [
+            ("Status", b.get("status")),
+            ("Bytes", len(text)),
+            ("Preview", preview),
+        ]))
     finds = audit.get("findings") or paquete.get("findings") or []
     if finds:
         lines.extend(ci_banner("{0} FINDINGS".format(ICON_ERR)))
@@ -2876,6 +2977,17 @@ def build_report():
     # ------------------------------------------------------------------
     executed = read_executed_tests() if "read_executed_tests" in globals() else {}
     audit = discover_audit()
+    captured = []
+    for c in (executed.get("cases") or []):
+        text = (c.get("stdout") or "").strip()
+        if text:
+            captured.append({
+                "case": "{0}::{1}".format(c.get("classname") or "", c.get("name") or ""),
+                "status": c.get("status"),
+                "stdout": text,
+            })
+    audit["captured_stdout"] = captured
+    audit["coverage"]["captured_stdout_n"] = len(captured)
     diagnostics_snapshot = discover_diagnostics()
     raw_artifacts = diagnostics_snapshot.get("artifacts") or []
     diag_index = diagnostics_snapshot.get("index") or {}
@@ -3058,6 +3170,68 @@ def build_report():
         mod_rows.append([mark, m.get("name"), m.get("path"), len(m.get("symbols") or []), m.get("error")])
     if mod_rows:
         lines.append(md_table(["", "Módulo", "Path", "Símbolos", "Error"], mod_rows))
+    lines.append("")
+
+    repo = audit.get("repository") or {}
+    summary = repo.get("summary") or {}
+    lines.append("## {0} Repository Inventory".format(ICON_REPO))
+    lines.append("")
+    if summary:
+        lines.append(md_table(["Métrica", "Valor"], [[k, v] for k, v in summary.items()]))
+    lines.append("")
+    file_rows = []
+    for f in (repo.get("files") or [])[:400]:
+        file_rows.append([f.get("path"), f.get("type"), f.get("bytes")])
+    if file_rows:
+        lines.append("<details><summary>{0} Archivos ({1})</summary>".format(ICON_FILE, summary.get("files")))
+        lines.append("")
+        lines.append(md_table(["Path", "Tipo", "Bytes"], file_rows))
+        lines.append("")
+        lines.append("</details>")
+        lines.append("")
+
+    deps = audit.get("dependencies") or {}
+    lines.append("## {0} Dependency Graph".format(ICON_DEP))
+    lines.append("")
+    lines.append("- aristas: `{0}`".format(deps.get("n_edges") or len(deps.get("edges") or [])))
+    lines.append("")
+    erows = [[e.get("from"), e.get("to"), e.get("kind")] for e in (deps.get("edges") or [])[:120]]
+    if erows:
+        lines.append("<details><summary>{0} Aristas</summary>".format(ICON_DEP))
+        lines.append("")
+        lines.append(md_table(["Origen", "Destino", "Tipo"], erows))
+        lines.append("")
+        lines.append("</details>")
+        lines.append("")
+
+    lines.append("## {0} Test Functions".format(ICON_TEST))
+    lines.append("")
+    tf_rows = [[t.get("file"), t.get("name"), t.get("line")] for t in (audit.get("test_functions") or [])]
+    if tf_rows:
+        lines.append(md_table(["Archivo", "Función", "Línea"], tf_rows))
+    else:
+        lines.append("{0} tests/ sin funciones test_* parseadas".format(ICON_INFO))
+    lines.append("")
+
+    lines.append("## {0} Captured Test Output".format(ICON_SRC))
+    lines.append("")
+    blobs = audit.get("captured_stdout") or []
+    if blobs:
+        lines.append(md_table(
+            ["Caso", "Status", "Bytes"],
+            [[b.get("case"), b.get("status"), len(b.get("stdout") or "")] for b in blobs],
+        ))
+        for b in blobs:
+            lines.append("")
+            lines.append("<details><summary>{0} {1}</summary>".format(ICON_TEST, b.get("case")))
+            lines.append("")
+            lines.append("```")
+            lines.append(b.get("stdout") or "")
+            lines.append("```")
+            lines.append("")
+            lines.append("</details>")
+    else:
+        lines.append("{0} test_results.xml no trae system-out (pytest junit sin --capture=no / junit_logging)".format(ICON_INFO))
     lines.append("")
 
     lines.append("## {0} Evidence Provenance".format(ICON_SRC))
