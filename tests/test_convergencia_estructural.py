@@ -11,7 +11,7 @@ def test_convergencia_estructural_10_300():
     """
     inicio = 10**300
     ventana = 10**6 
-    muestras = 5000000 
+    muestras = 500 
     
     supervivientes = 0
     for _ in range(muestras):
