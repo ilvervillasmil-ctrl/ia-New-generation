@@ -2,11 +2,11 @@
 
 | Campo | Valor |
 | :--- | :--- |
-| ⏱️ Generated | 2026-09-14 09:48:26 UTC |
+| ⏱️ Generated | 2026-09-14 09:54:26 UTC |
 | Ω Version | 2.6.2 |
 | 📚 Framework | UCF v3.2 (Universal Coherence Framework) |
 | 🔹 Author | Ilver Villasmil |
-| 📡 Commit | 5d379d1 |
+| 📡 Commit | b0ea2b8 |
 
 ## 🧬 Estado Fenomenológico
 
@@ -341,7 +341,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | Tests discovered | 64 | tests/ |
 | Tests executed | True | diagnostics/test_results.xml |
 | Modules listed | 40 | discovery |
-| History runs | 16 | diagnostics/coherence_history.json |
+| History runs | 17 | diagnostics/coherence_history.json |
 | Engine startup | OK | core.engine.Engine |
 
 ## 🧩 Engine State
@@ -350,7 +350,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | :--- | :---: | :--- |
 | available | True | core.engine |
 | startup | OK | Engine(...) |
-| estado | <formulas.coherence.SessionStateOmega object at 0x7fda60dcab90> | Engine.estado |
+| estado | <formulas.coherence.SessionStateOmega object at 0x7f3b6b0b2b50> | Engine.estado |
 | invocador_id | omega | constructor |
 | error |  | ArranqueError |
 
@@ -367,7 +367,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 |  | Artefacto | Bytes | Parse | Tipo |
 | :---: | :--- | ---: | :---: | :--- |
 | ✅ | diagnostics/OMEGA_REPORT.md | 13036 | True | md |
-| ✅ | diagnostics/coherence_history.json | 4307 | True | json |
+| ✅ | diagnostics/coherence_history.json | 4697 | True | json |
 | ✅ | diagnostics/test_results.xml | 165748 | True | xml |
 
 ## 📡 Evidence Provenance
