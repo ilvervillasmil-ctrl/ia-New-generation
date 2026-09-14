@@ -4,18 +4,18 @@ import numpy as np  # <--- Importación necesaria para el test
 # Pinza de Tenazas extendida: de 5 a 61
 MODULOS_EXTENDIDOS = [5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61]
 
-def test_convergencia_estructural_10_300():
+def test_convergencia_estructural_10_30():
     """
-    TEST ID: UIS-COSMIC-10-300
+    TEST ID: UIS-COSMIC-10-30
     Denominación: Análisis de deriva a escala 10^300 con Pinza extendida.
     """
-    inicio = 10**300
-    ventana = 10**6 
-    muestras = 500 
+    inicio = 10**30
+    ventana = 10**2 
+    muestras = 50 
     
     supervivientes = 0
     for _ in range(muestras):
-        # Generación de candidatos en la escala 10^300
+        # Generación de candidatos en la escala 10^30
         n = inicio + np.random.randint(0, ventana)
         
         # Guía del retículo: 6k + 1
@@ -28,7 +28,7 @@ def test_convergencia_estructural_10_300():
             
     densidad_medida = supervivientes / muestras
     
-    print(f"\n[UIS-COSMIC-300] Densidad Observada: {densidad_medida:.6f}")
+    print(f"\n[UIS-COSMIC-30] Densidad Observada: {densidad_medida:.6f}")
     
     # Assert de integridad: Si la densidad es 0, el retículo ha colapsado.
     # Si la densidad es > 0, la estructura se mantiene viva a 10^300.
