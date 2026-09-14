@@ -2,6 +2,12 @@
 OMEGA REPORT v2.6
 Genera un reporte diagnóstico honesto del sistema a partir del propio repositorio.
 
+Changelog v2.6.3:
+  - AGREGA: inventario AST + censo de módulos/símbolos/fórmulas
+  - AGREGA: findings + producers omega_validation()/__omega_report__()
+  - AGREGA: cobertura de auditoría en Markdown y CI (cajas 46)
+  - NO sustituye secciones científicas v2.4 ni cajas v2.6.1
+
 Changelog v2.6.2:
   - CAPTURA: discover_diagnostics() recorre diagnostics/ entero
   - PRESERVA: document completo + file metadata; índice no sustituye raw
@@ -42,7 +48,9 @@ Changelog v2.4:
 
 from __future__ import annotations
 
+import ast
 import hashlib
+import importlib
 import json
 import math
 import os
@@ -66,7 +74,7 @@ REPO_ROOT = DIAGNOSTICS_DIR.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-VERSION = "2.6.2"
+VERSION = "2.6.3"
 
 SECRET_KEYS = ("password", "secret", "token", "api_key", "apikey", "private_key")
 SKIP_DIAG_NAMES = {
@@ -318,6 +326,164 @@ def generated_metadata(now: str, sha: str) -> dict:
         "workflow": os.environ.get("GITHUB_WORKFLOW"),
         "job": os.environ.get("GITHUB_JOB"),
         "event": os.environ.get("GITHUB_EVENT_NAME"),
+    }
+
+
+FINDINGS: list[dict] = []
+AUDIT_ROOTS = ("core", "formulas", "layers", "modules")
+
+
+def _finding(severity: str, category: str, component: str, message: str) -> None:
+    FINDINGS.append({
+        "severity": severity,
+        "category": category,
+        "component": component,
+        "message": str(message),
+    })
+
+
+def _mod_from_rel(rel: str) -> str | None:
+    if not rel.endswith(".py"):
+        return None
+    parts = Path(rel).with_suffix("").parts
+    if parts and parts[-1] == "__init__":
+        parts = parts[:-1]
+    if not parts:
+        return None
+    return ".".join(parts)
+
+
+def discover_audit() -> dict:
+    FINDINGS.clear()
+    py_rows = []
+    modules = []
+    formulas = []
+    producers = []
+    symbols_n = 0
+    import_ok = 0
+    import_fail = 0
+    layers_n = 0
+
+    for root_name in AUDIT_ROOTS:
+        root = REPO_ROOT / root_name
+        if not root.exists():
+            _finding("INFO", "audit", root_name + "/", "directorio ausente")
+            continue
+        for path in sorted(root.rglob("*.py")):
+            if path.name == "__init__.py" and path.stat().st_size == 0:
+                continue
+            rel = str(path.relative_to(REPO_ROOT))
+            rec = {
+                "path": rel,
+                "lines": 0,
+                "classes": [],
+                "functions": [],
+                "parse_ok": False,
+            }
+            try:
+                text = path.read_text(encoding="utf-8", errors="replace")
+                rec["lines"] = text.count("\n") + 1
+                tree = ast.parse(text)
+                rec["parse_ok"] = True
+                for node in tree.body:
+                    if isinstance(node, ast.ClassDef):
+                        rec["classes"].append(node.name)
+                    elif isinstance(node, ast.FunctionDef):
+                        rec["functions"].append({
+                            "name": node.name,
+                            "args": [a.arg for a in node.args.args],
+                            "line": node.lineno,
+                            "public": not node.name.startswith("_"),
+                        })
+            except Exception as e:
+                rec["parse_error"] = str(e)
+                _finding("ERROR", "parse", rel, e)
+            py_rows.append(rec)
+            if root_name == "layers":
+                layers_n += 1
+
+            name = _mod_from_rel(rel)
+            if not name:
+                continue
+            entry = {
+                "name": name,
+                "path": rel,
+                "importable": False,
+                "symbols": [],
+                "error": None,
+            }
+            try:
+                imported = importlib.import_module(name)
+                entry["importable"] = True
+                import_ok += 1
+                public = []
+                for attr in dir(imported):
+                    if attr.startswith("_") and attr not in {"__omega_report__"}:
+                        continue
+                    try:
+                        val = getattr(imported, attr)
+                    except Exception:
+                        continue
+                    if callable(val) and not isinstance(val, type):
+                        kind = "function"
+                        shown = attr
+                    elif isinstance(val, type):
+                        kind = "class"
+                        shown = attr
+                    else:
+                        kind = "variable"
+                        shown = "[REDACTED]" if _is_secret_key(attr) else val
+                        if not _safe_jsonable(shown):
+                            shown = repr(shown)[:120]
+                    public.append({"name": attr, "kind": kind, "value": shown})
+                entry["symbols"] = public
+                symbols_n += len(public)
+                if name.startswith("formulas."):
+                    for fn in rec.get("functions") or []:
+                        if fn.get("public"):
+                            formulas.append({
+                                "module": name,
+                                "name": fn.get("name"),
+                                "args": fn.get("args") or [],
+                                "line": fn.get("line"),
+                            })
+                for hook in ("omega_validation", "__omega_report__"):
+                    fn = getattr(imported, hook, None)
+                    if callable(fn):
+                        try:
+                            payload = fn()
+                            producers.append({
+                                "id": name.replace(".", "_") + "_" + hook,
+                                "title": name,
+                                "hook": hook,
+                                "source": name,
+                                "status": "MEASURED",
+                                "metrics": payload if isinstance(payload, dict) else {"value": payload},
+                            })
+                        except Exception as e:
+                            _finding("ERROR", "producer", name + "." + hook, e)
+            except Exception as e:
+                entry["error"] = "{0}: {1}".format(type(e).__name__, e)
+                import_fail += 1
+                _finding("ERROR", "import", name, entry["error"])
+            modules.append(entry)
+
+    return {
+        "python_files": py_rows,
+        "modules": modules,
+        "formulas": formulas,
+        "producers": producers,
+        "findings": list(FINDINGS),
+        "coverage": {
+            "python_files_discovered": len(py_rows),
+            "modules_importable": import_ok,
+            "modules_failed_import": import_fail,
+            "public_symbols_discovered": symbols_n,
+            "layers_discovered": layers_n,
+            "formulas_discovered": len(formulas),
+            "validations_discovered": len(producers),
+            "findings_n": len(FINDINGS),
+        },
     }
 
 
@@ -2055,6 +2221,43 @@ def render_ci(paquete):
         ("{0} Status src".format(ICON_AUDIT), status.get("source")),
     ]))
 
+    audit = paquete.get("audit") or {}
+    cov = audit.get("coverage") or paquete.get("coverage") or {}
+    lines.extend(ci_banner("{0} AUDIT COVERAGE".format(ICON_AUDIT)))
+    lines.extend(ci_kv([
+        ("{0} Py files".format(ICON_PKG), cov.get("python_files_discovered")),
+        ("{0} Import OK".format(ICON_OK), cov.get("modules_importable")),
+        ("{0} Import FAIL".format(ICON_FAIL), cov.get("modules_failed_import")),
+        ("{0} Símbolos".format(ICON_NUM), cov.get("public_symbols_discovered")),
+        ("{0} Layers".format(ICON_LAYER), cov.get("layers_discovered")),
+        ("{0} Fórmulas".format(ICON_FORM), cov.get("formulas_discovered")),
+        ("{0} Producers".format(ICON_AX), cov.get("validations_discovered")),
+        ("{0} Findings".format(ICON_ERR), cov.get("findings_n")),
+    ]))
+    for f in (audit.get("formulas") or []):
+        lines.extend(ci_card("{0} {1}".format(ICON_FORM, f.get("name")), [
+            ("Módulo", f.get("module")),
+            ("Args", ", ".join(f.get("args") or [])),
+            ("Línea", f.get("line")),
+        ]))
+    for p in (audit.get("producers") or []):
+        mets = p.get("metrics") if isinstance(p.get("metrics"), dict) else {}
+        pares = [("Hook", p.get("hook")), ("Fuente", p.get("source"))]
+        for k, v in list(mets.items())[:24]:
+            if isinstance(v, dict):
+                continue
+            pares.append((str(k), _fmt_ci(v)))
+        lines.extend(ci_card("{0} {1}".format(ICON_AX, p.get("title")), pares))
+    finds = audit.get("findings") or paquete.get("findings") or []
+    if finds:
+        lines.extend(ci_banner("{0} FINDINGS".format(ICON_ERR)))
+        for f in finds:
+            lines.extend(ci_card("{0} {1}".format(ICON_ERR, f.get("severity")), [
+                ("Cat", f.get("category")),
+                ("Comp", f.get("component")),
+                ("Msg", f.get("message")),
+            ]))
+
     coh = status.get("coherente")
     if coh is True:
         cierre = "{0} COHERENTE".format(ICON_OK)
@@ -2672,6 +2875,7 @@ def build_report():
     # Paquete máquina (JSON) — misma verdad que el Markdown
     # ------------------------------------------------------------------
     executed = read_executed_tests() if "read_executed_tests" in globals() else {}
+    audit = discover_audit()
     diagnostics_snapshot = discover_diagnostics()
     raw_artifacts = diagnostics_snapshot.get("artifacts") or []
     diag_index = diagnostics_snapshot.get("index") or {}
@@ -2802,6 +3006,60 @@ def build_report():
         lines.append("{0} diagnostics/ vacío o ilegible".format(ICON_INFO))
     lines.append("")
 
+    cov = audit.get("coverage") or {}
+    lines.append("## {0} Audit Coverage".format(ICON_AUDIT))
+    lines.append("")
+    lines.append(md_table(
+        ["Métrica", "Valor"],
+        [[k, v] for k, v in cov.items()],
+    ))
+    lines.append("")
+    lines.append("## {0} Formula Inventory".format(ICON_FORM))
+    lines.append("")
+    form_rows = [[f.get("module"), f.get("name"), ", ".join(f.get("args") or []), f.get("line")] for f in (audit.get("formulas") or [])]
+    if form_rows:
+        lines.append(md_table(["Módulo", "Función", "Args", "Línea"], form_rows))
+    else:
+        lines.append("{0} sin funciones públicas en formulas.*".format(ICON_INFO))
+    lines.append("")
+    lines.append("## {0} Discovered Validations".format(ICON_AX))
+    lines.append("")
+    prod_rows = []
+    for p in (audit.get("producers") or []):
+        prod_rows.append([p.get("status"), p.get("id"), p.get("title"), p.get("hook"), p.get("source")])
+    if prod_rows:
+        lines.append(md_table(["Status", "Id", "Título", "Hook", "Fuente"], prod_rows))
+        for p in audit.get("producers") or []:
+            mets = p.get("metrics") if isinstance(p.get("metrics"), dict) else {}
+            if mets:
+                lines.append("")
+                lines.append("### {0} {1}".format(ICON_FORM, p.get("title")))
+                lines.append("")
+                lines.append(md_table(["Campo", "Valor"], [[k, mets.get(k)] for k in mets.keys()]))
+    else:
+        lines.append("{0} ningún omega_validation()/__omega_report__() descubierto".format(ICON_INFO))
+    lines.append("")
+    lines.append("## {0} Findings".format(ICON_ERR))
+    lines.append("")
+    finds = audit.get("findings") or []
+    if finds:
+        lines.append(md_table(
+            ["Sev", "Cat", "Componente", "Mensaje"],
+            [[f.get("severity"), f.get("category"), f.get("component"), f.get("message")] for f in finds],
+        ))
+    else:
+        lines.append("{0} sin hallazgos de descubrimiento".format(ICON_OK))
+    lines.append("")
+    lines.append("## {0} Module Census".format(ICON_PKG))
+    lines.append("")
+    mod_rows = []
+    for m in audit.get("modules") or []:
+        mark = ICON_OK if m.get("importable") else ICON_FAIL
+        mod_rows.append([mark, m.get("name"), m.get("path"), len(m.get("symbols") or []), m.get("error")])
+    if mod_rows:
+        lines.append(md_table(["", "Módulo", "Path", "Símbolos", "Error"], mod_rows))
+    lines.append("")
+
     lines.append("## {0} Evidence Provenance".format(ICON_SRC))
     lines.append("")
     lines.append(md_table(
@@ -2851,6 +3109,8 @@ def build_report():
         {"id": "torus", "title": "Torus Formula", "metrics": torus_info, "source": "formulas/modules"},
         {"id": "l7", "title": "L7 Integration", "metrics": l7_info, "source": l7_info.get("source") if isinstance(l7_info, dict) else None},
     ]
+    for p in (audit.get("producers") or []):
+        validations_list.append(p)
     validations_index = {
         "cosmo": cosmo_info,
         "hubble": (cosmo_info.get("hubble") if isinstance(cosmo_info, dict) else None) or {},
@@ -2873,6 +3133,9 @@ def build_report():
         },
         "system_status": system_status,
         "engine": engine_state,
+        "audit": audit,
+        "coverage": audit.get("coverage"),
+        "findings": audit.get("findings"),
         "diagnostics": {
             "artifacts": raw_artifacts,
             "index": {k: {"path": (v or {}).get("path"), "present": (v or {}).get("present")} for k, v in diag_index.items()},
