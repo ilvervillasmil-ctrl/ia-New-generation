@@ -1,7 +1,20 @@
 #!/usr/bin/env python3
 """
-OMEGA REPORT v2.4
+OMEGA REPORT v2.6
 Genera un reporte diagnóstico honesto del sistema a partir del propio repositorio.
+
+Changelog v2.6:
+  - AGREGA: tablas Markdown alineadas + md_cell
+  - AGREGA: tests solo XML; Omega ya no escribe coherence_history
+  - AGREGA: JSON desde paquete (cero regex)
+  - AGREGA: inventario/Engine/CI evidence/fórmulas con provenance
+  - CONSERVA: todas las secciones científicas v2.4
+  - CONSERVA: cajas Unicode como complemento visual
+
+Changelog v2.5:
+  - AGREGA: cajas Unicode estilo Omega SPARTACO (md_table → ┌─┐)
+  - AGREGA: iconografía canónica en cabecera y secciones
+  - MANTIENE: medición, validaciones y recorrido v2.4 intactos
 
 Changelog v2.4:
   - AGREGA: medición real de capas si existen en layers/*
@@ -37,6 +50,58 @@ REPO_ROOT = DIAGNOSTICS_DIR.parent
 
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
+
+VERSION = "2.6"
+
+ICON_OMEGA = "Ω"
+ICON_OK = "✅"
+ICON_FAIL = "❌"
+ICON_WARN = "⚠️"
+ICON_INFO = "ℹ️"
+ICON_SKIP = "⏭️"
+ICON_COH = "🧬"
+ICON_ENGINE = "🧩"
+ICON_PKG = "📦"
+ICON_REPO = "🗂️"
+ICON_DIR = "📁"
+ICON_FILE = "📄"
+ICON_PY = "🐍"
+ICON_CONTRACT = "📜"
+ICON_FN = "⚙️"
+ICON_NUM = "🔢"
+ICON_MET = "📊"
+ICON_FORM = "📐"
+ICON_LAYER = "📶"
+ICON_GEN = "🧠"
+ICON_AX = "📚"
+ICON_TEST = "🧪"
+ICON_HIST = "❤️"
+ICON_DEP = "🔗"
+ICON_GRAPH = "🕸️"
+ICON_SRC = "📡"
+ICON_EV = "📎"
+ICON_DISK = "💾"
+ICON_LOCK = "🔐"
+ICON_AUDIT = "🔎"
+ICON_TYPE = "🏷️"
+ICON_TIME = "⏱️"
+ICON_ID = "🆔"
+ICON_DER = "🔄"
+ICON_RES = "🎯"
+ICON_BAN = "🚫"
+ICON_ITEM = "🔹"
+ICON_CUBE = "🧱"
+
+
+def _icono_status(valor):
+    s = str(valor).strip().upper()
+    if s in {"PASS", "OK", "YES", "TRUE", "INTEGRATED"}:
+        return "{0} {1}".format(ICON_OK, valor)
+    if s in {"FAIL", "NO", "FALSE", "COLLAPSED"}:
+        return "{0} {1}".format(ICON_FAIL, valor)
+    if s in {"WARN", "WARNING", "REVIEW"}:
+        return "{0} {1}".format(ICON_WARN, valor)
+    return str(valor)
 
 
 # =============================================================================
@@ -373,44 +438,132 @@ def parse_pytest_cache() -> dict[str, int]:
     return result
 
 
-def estimate_test_results() -> dict[str, int | float]:
-    xml_path = DIAGNOSTICS_DIR / "test_results.xml"
-    if xml_path.exists():
-        try:
-            tree = ET.parse(xml_path)
-            root = tree.getroot()
-            suite = root.find("testsuite") if root.tag == "testsuites" else root
-            if suite is not None:
-                total = int(suite.get("tests", 0))
-                failed = int(suite.get("failures", 0)) + int(suite.get("errors", 0))
-                skipped = int(suite.get("skipped", 0))
-                passed = total - failed - skipped
-                pass_rate = (passed / total * 100) if total > 0 else 0.0
-                file_count, _ = count_test_files_and_functions()
-                return {
-                    "file_count": file_count,
-                    "total": total,
-                    "passed": passed,
-                    "failed": failed,
-                    "skipped": skipped,
-                    "pass_rate": pass_rate,
-                }
-        except Exception:
-            pass
+def discover_test_files() -> list[str]:
+    tests_dir = REPO_ROOT / "tests"
+    if not tests_dir.exists():
+        return []
+    return sorted(str(p.relative_to(REPO_ROOT)) for p in tests_dir.rglob("test_*.py") if p.is_file())
 
+
+def read_executed_tests() -> dict:
+    xml_path = DIAGNOSTICS_DIR / "test_results.xml"
+    discovered = discover_test_files()
     file_count, func_count = count_test_files_and_functions()
-    cache_info = parse_pytest_cache()
-    failed = int(cache_info.get("failed", 0))
-    skipped = 1 if (REPO_ROOT / "tests" / "test_beal_cycle_ol3.py").exists() else 0
-    total = max(func_count, 1)
-    passed = max(total - failed - skipped, 0)
-    return {
+    base = {
+        "source": "diagnostics/test_results.xml" if xml_path.exists() else "unavailable",
+        "executed": False,
         "file_count": file_count,
+        "discovered_n": len(discovered),
+        "discovered_files": discovered,
+        "functions_static": func_count,
+        "total": None,
+        "passed": None,
+        "failed": None,
+        "failures": None,
+        "errors": None,
+        "skipped": None,
+        "pass_rate": None,
+        "duration": None,
+        "suites": [],
+        "cases": [],
+        "class": "UNAVAILABLE",
+    }
+    if not xml_path.exists():
+        return base
+    try:
+        root = ET.parse(xml_path).getroot()
+    except Exception as e:
+        base["error"] = str(e)
+        return base
+    suites = [root] if root.tag == "testsuite" else list(root.iter("testsuite"))
+    total = failures = errors = skipped = 0
+    duration = 0.0
+    suite_rows = []
+    cases = []
+    for s in suites:
+        t = int(s.get("tests", 0) or 0)
+        f = int(s.get("failures", 0) or 0)
+        e = int(s.get("errors", 0) or 0)
+        k = int(s.get("skipped", 0) or 0)
+        try:
+            dur = float(s.get("time") or 0)
+        except Exception:
+            dur = 0.0
+        total += t
+        failures += f
+        errors += e
+        skipped += k
+        duration += dur
+        suite_rows.append({
+            "name": s.get("name"), "tests": t, "failures": f, "errors": e,
+            "skipped": k, "passed": t - f - e - k, "time": dur,
+        })
+        for tc in s.iter("testcase"):
+            status = "passed"
+            detail = None
+            node = tc.find("failure")
+            if node is not None:
+                status = "failure"
+                detail = ((node.get("message") or "") + " " + (node.text or "")).strip()
+            else:
+                node = tc.find("error")
+                if node is not None:
+                    status = "error"
+                    detail = ((node.get("message") or "") + " " + (node.text or "")).strip()
+                elif tc.find("skipped") is not None:
+                    status = "skipped"
+                    node = tc.find("skipped")
+                    detail = node.get("message") or node.text
+            cases.append({
+                "classname": tc.get("classname"),
+                "name": tc.get("name"),
+                "time": tc.get("time"),
+                "status": status,
+                "detail": detail,
+            })
+    failed = failures + errors
+    passed = total - failed - skipped
+    base.update({
+        "executed": True,
         "total": total,
         "passed": passed,
         "failed": failed,
+        "failures": failures,
+        "errors": errors,
         "skipped": skipped,
         "pass_rate": (passed / total * 100) if total else 0.0,
+        "duration": duration,
+        "suites": suite_rows,
+        "cases": cases,
+        "class": "MEASURED",
+        "file_count": file_count,
+    })
+    return base
+
+
+def estimate_test_results() -> dict[str, int | float]:
+    """Compatibilidad v2.4: usa XML real. Ya no estima ejecución."""
+    executed = read_executed_tests()
+    if executed.get("executed"):
+        return {
+            "file_count": executed.get("file_count") or 0,
+            "total": executed.get("total") or 0,
+            "passed": executed.get("passed") or 0,
+            "failed": executed.get("failed") or 0,
+            "skipped": executed.get("skipped") or 0,
+            "pass_rate": executed.get("pass_rate") or 0.0,
+            "source": executed.get("source"),
+            "class": "MEASURED",
+        }
+    return {
+        "file_count": executed.get("file_count") or 0,
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "pass_rate": 0.0,
+        "source": "unavailable",
+        "class": "UNAVAILABLE",
     }
 
 
@@ -591,22 +744,31 @@ def phenomenological_state(c_structural: float) -> tuple[str, str]:
 # =============================================================================
 
 def check_module_status() -> list[tuple[str, str]]:
-    modules = [
-        ("formulas.constants", "constants.py"),
-        ("formulas.coherence", "coherence.py"),
-        ("formulas.energy", "energy.py"),
-        ("formulas.cosmology", "cosmology.py   ← NEW v3.2"),
-        ("formulas.tension", "tension.py     ← NEW v3.2"),
-        ("formulas.dynamics", "dynamics.py    ← NEW v3.2"),
-        ("formulas.metaconsciousness", "metaconsciousness.py"),
-        ("formulas.torus_formula", "torus_formula.py ← Ley del Toroide"),
-        ("layers.l7_integration", "l7_integration.py ← L7 Integración Total"),
-    ]
+    """Descubre módulos reales bajo formulas/, layers/, modules/, core/ si existen."""
+    roots = []
+    for name in ("formulas", "layers", "modules", "core"):
+        d = REPO_ROOT / name
+        if d.exists() and d.is_dir():
+            roots.append(d)
     results = []
-    for module_path, label in modules:
-        mod = safe_import(module_path)
-        status = "✅ activo" if mod is not None else "❌ no encontrado"
-        results.append((label, status))
+    seen = set()
+    for root in roots:
+        for path in sorted(root.rglob("*.py")):
+            if path.name == "__init__.py":
+                continue
+            rel = str(path.relative_to(REPO_ROOT))
+            if rel in seen:
+                continue
+            seen.add(rel)
+            parts = path.with_suffix("").parts
+            # relative to repo
+            rel_parts = path.relative_to(REPO_ROOT).with_suffix("").parts
+            mod_name = ".".join(rel_parts)
+            imported = safe_import(mod_name)
+            status = "✅ activo" if imported is not None else "❌ no importable"
+            results.append((mod_name + "  (" + rel + ")", status))
+    if not results:
+        results.append(("(sin formulas/ layers/ modules/ core/)", "⚠️ ausente"))
     return results
 
 
@@ -947,6 +1109,7 @@ def economic_cycles_validation() -> dict:
     }
 
 
+
 # =============================================================================
 # MARKDOWN HELPERS — cajas Unicode (estilo Omega SPARTACO)
 # =============================================================================
@@ -1002,14 +1165,14 @@ def _pad(texto: str, ancho: int, alineacion: str = "left") -> str:
     return s
 
 
-def _envolver(texto: str, ancho: int) -> List[str]:
+def _envolver(texto: str, ancho: int):
     s = str(texto).replace("\r", " ").replace("\n", " ").strip()
     if not s:
         return [""]
     if _ancho_vis(s) <= ancho:
         return [s]
     palabras = s.split(" ")
-    lineas: List[str] = []
+    lineas = []
     actual = ""
     for p in palabras:
         cand = (actual + " " + p).strip() if actual else p
@@ -1036,7 +1199,7 @@ def _envolver(texto: str, ancho: int) -> List[str]:
     return lineas or [""]
 
 
-def _alinea_celda(valor: Any) -> str:
+def _alinea_celda(valor):
     s = str(valor).strip()
     if s in {"✅", "❌", "⚠️", "ℹ️", "⏭️", "★"}:
         return "center"
@@ -1049,7 +1212,7 @@ def _alinea_celda(valor: Any) -> str:
         return "left"
 
 
-def _anchos(headers: List[str], filas: List[List[str]]) -> List[int]:
+def _anchos(headers, filas):
     n = len(headers)
     anchos = []
     for j, enc in enumerate(headers):
@@ -1067,7 +1230,8 @@ def _anchos(headers: List[str], filas: List[List[str]]) -> List[int]:
         else:
             m = max(ANCHO_MIN if n == 1 else 6, min(m, ANCHO_MAX))
         anchos.append(m)
-    if n == 2 and [h.lower() for h in headers] in (["campo", "valor"], ["metric", "value"], ["check", "status"], ["módulo", "estado"], ["layer", "energy"]):
+    keys = [h.lower() for h in headers]
+    if n == 2 and keys in (["campo", "valor"], ["metric", "value"], ["check", "status"], ["módulo", "estado"], ["modulo", "estado"], ["layer", "energy"]):
         w0 = max(8, min(anchos[0], CAMPO_MAX))
         w1 = ANCHO_TOTAL - 3 - w0
         if w1 < 12:
@@ -1082,9 +1246,9 @@ def _anchos(headers: List[str], filas: List[List[str]]) -> List[int]:
     return anchos
 
 
-def _tabla_apilada(headers: List[str], filas: List[List[str]]) -> List[str]:
+def _tabla_apilada(headers, filas):
     inner = max(8, ANCHO_TOTAL - 2)
-    out: List[str] = []
+    out = []
     for fila in filas:
         for j, enc in enumerate(headers):
             val = fila[j] if j < len(fila) else ""
@@ -1101,7 +1265,7 @@ def _tabla_apilada(headers: List[str], filas: List[List[str]]) -> List[str]:
     return out
 
 
-def _tabla_caja(headers: List[str], filas: List[List[str]]) -> List[str]:
+def _tabla_caja(headers, filas):
     headers = [str(h) for h in headers]
     pintadas = []
     for fila in filas:
@@ -1115,10 +1279,10 @@ def _tabla_caja(headers: List[str], filas: List[List[str]]) -> List[str]:
     if len(headers) > 3 or min(anchos) < 8:
         return _tabla_apilada(headers, pintadas)
 
-    def linea(izq: str, mid: str, der: str) -> str:
+    def linea(izq, mid, der):
         return izq + mid.join("─" * w for w in anchos) + der
 
-    def fila_envuelta(celdas: List[str], es_encabezado: bool) -> List[str]:
+    def fila_envuelta(celdas, es_encabezado):
         env = [_envolver(celdas[j], anchos[j]) for j in range(len(headers))]
         alto = max(len(x) for x in env)
         out = []
@@ -1144,9 +1308,52 @@ def _tabla_caja(headers: List[str], filas: List[List[str]]) -> List[str]:
     return out
 
 
-def md_table(headers: list[str], rows: list[list[str]]) -> str:
-    caja = _tabla_caja(list(headers), [list(r) for r in rows])
-    return "```\n" + "\n".join(caja) + "\n```"
+def md_cell(value) -> str:
+    text = "" if value is None else str(value)
+    text = text.replace("\r", " ").replace("\n", " ").replace("|", "\\|").replace("`", "'")
+    return text
+
+
+def _align_mark(header: str, sample_rows, col: int) -> str:
+    name = str(header).lower()
+    if name in {"#", "estado", "status", "clase", "ok", "icono"}:
+        return ":---:"
+    vals = [str(r[col]) if col < len(r) else "" for r in sample_rows]
+    if any(v.strip() in {"✅", "❌", "⚠️", "ℹ️", "⏭️"} or v.strip().upper() in {"PASS", "FAIL", "WARN", "TRUE", "FALSE", "YES", "NO"} for v in vals):
+        return ":---:"
+    numeric = 0
+    for v in vals:
+        s = v.strip().replace("%", "").replace(",", "")
+        try:
+            float(s)
+            numeric += 1
+        except Exception:
+            pass
+    if vals and numeric >= max(1, len(vals) // 2):
+        return "---:"
+    return ":---"
+
+
+def md_table(headers: list[str], rows: list[list[str]], align=None) -> str:
+    headers = [md_cell(h) for h in headers]
+    body_rows = []
+    for row in rows:
+        cells = list(row) + [""] * (len(headers) - len(row))
+        body_rows.append([md_cell(c) for c in cells[: len(headers)]])
+    marks = []
+    for i, h in enumerate(headers):
+        if align and i < len(align):
+            a = align[i]
+            marks.append(":---:" if a == "center" else ("---:" if a == "right" else ":---"))
+        else:
+            marks.append(_align_mark(h, body_rows, i))
+    out = ["| " + " | ".join(headers) + " |", "| " + " | ".join(marks) + " |"]
+    for row in body_rows:
+        out.append("| " + " | ".join(row) + " |")
+    caja = _tabla_caja(headers, body_rows)
+    return "\n".join(out) + "\n\n```\n" + "\n".join(caja) + "\n```"
+
+
 
 
 def layer_rows(states: dict[str, dict[str, float]] | None = None) -> list[list[str]]:
@@ -1269,7 +1476,7 @@ def black_hole_validation() -> dict:
         "status": "PASS" if error < 10.0 else "REVIEW"
     }
 
-def build_report() -> str:
+def build_report():
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
     test_results = estimate_test_results()
 
@@ -1290,7 +1497,6 @@ def build_report() -> str:
         l7_value=safe_float(l7_info.get("value", 0.0), 0.0),
     )
 
-    save_history_entry(test_results, c_structural)
     history = load_history()
 
     c_global_norm = c_structural / ALPHA if ALPHA > 0 else 0.0
@@ -1345,17 +1551,22 @@ def build_report() -> str:
 
     lines: list[str] = []
 
-    lines.append("# OMEGA DIAGNOSTIC REPORT")
-    lines.append(f"**Generated:** {now}")
-    lines.append("**Framework:** UCF v3.2 (Universal Coherence Framework)")
-    lines.append("**Author:** Ilver Villasmil")
-    lines.append(f"**Commit:** `{sha}`")
+    lines.append("# {0} OMEGA DIAGNOSTIC REPORT v{1}".format(ICON_OMEGA, VERSION))
     lines.append("")
-    lines.append("---")
+    lines.append(md_table(
+        ["Campo", "Valor"],
+        [
+            ["{0} Generated".format(ICON_TIME), now],
+            ["{0} Version".format(ICON_OMEGA), VERSION],
+            ["{0} Framework".format(ICON_AX), "UCF v3.2 (Universal Coherence Framework)"],
+            ["{0} Author".format(ICON_ITEM), "Ilver Villasmil"],
+            ["{0} Commit".format(ICON_SRC), sha],
+        ],
+    ))
     lines.append("")
 
     # Estado Fenomenológico
-    lines.append("## Estado Fenomenológico")
+    lines.append("## {0} Estado Fenomenológico".format(ICON_COH))
     lines.append("")
     loop_warning = "  ⚠️ **CODE 9999 — LOOP DETECTADO**" if loop_detected else ""
     lines.append(md_table(
@@ -1384,7 +1595,7 @@ def build_report() -> str:
         lines.append("")
 
     # Código Diagnóstico
-    lines.append("## Código Diagnóstico")
+    lines.append("## {0} Código Diagnóstico".format(ICON_ID))
     lines.append("")
     lines.append(md_table(
         ["Campo", "Valor"],
@@ -1397,7 +1608,7 @@ def build_report() -> str:
         ],
     ))
     lines.append("")
-    lines.append("### Tabla de Estados Completa (documento original enero 2026)")
+    lines.append("### {0} Tabla de Estados Completa (documento original enero 2026)".format(ICON_CONTRACT))
     lines.append("")
     state_rows = []
     for low, high, st_code, st_name, _ in DIAGNOSTIC_STATES:
@@ -1410,7 +1621,7 @@ def build_report() -> str:
     lines.append("")
 
     # System Status
-    lines.append("## System Status")
+    lines.append("## {0} System Status".format(ICON_MET))
     lines.append("")
     lines.append(md_table(
         ["Metric", "Value"],
@@ -1433,7 +1644,7 @@ def build_report() -> str:
     lines.append("")
 
     # Test Results
-    lines.append("## Test Results")
+    lines.append("## {0} Test Results".format(ICON_TEST))
     lines.append("")
     lines.append(md_table(
         ["Metric", "Value"],
@@ -1448,7 +1659,7 @@ def build_report() -> str:
     lines.append("")
 
     # Trayectoria
-    lines.append("## Trayectoria de Coherencia")
+    lines.append("## {0} Trayectoria de Coherencia".format(ICON_HIST))
     lines.append("")
     lines.append(f"Últimos {min(len(history), 10)} runs:")
     lines.append("")
@@ -1458,16 +1669,16 @@ def build_report() -> str:
     lines.append("")
 
     # Constants Integrity
-    lines.append("## Constants Integrity")
+    lines.append("## {0} Constants Integrity".format(ICON_FORM))
     lines.append("")
     lines.append(md_table(
         ["Check", "Status"],
-        const_checks + [["**Total**", f"**{passed_checks}/{len(const_checks)}**"]],
+        [[c, _icono_status(s)] for c, s in const_checks] + [["**Total**", f"**{passed_checks}/{len(const_checks)}**"]],
     ))
     lines.append("")
 
     # Framework Constants
-    lines.append("## Framework Constants")
+    lines.append("## {0} Framework Constants".format(ICON_NUM))
     lines.append("")
     lines.append(md_table(
         ["Constant", "Value", "Formula"],
@@ -1492,7 +1703,7 @@ def build_report() -> str:
     lines.append("")
 
     # Layer Status
-    lines.append("## Layer Status")
+    lines.append("## {0} Layer Status".format(ICON_LAYER))
     lines.append("")
     lines.append(md_table(
         ["Layer", "Name", "Friction", "Spiral Angle", "Healthy Range"],
@@ -1505,7 +1716,7 @@ def build_report() -> str:
     lines.append("")
 
     # Module Status
-    lines.append("## Module Status")
+    lines.append("## {0} Module Status".format(ICON_PKG))
     lines.append("")
     lines.append(md_table(
         ["Módulo", "Estado"],
@@ -1514,11 +1725,11 @@ def build_report() -> str:
     lines.append("")
 
     # Domain Validations
-    lines.append("## Domain Validations")
+    lines.append("## {0} Domain Validations".format(ICON_AX))
     lines.append("")
 
     # Cosmological Constant
-    lines.append("### Cosmological Constant")
+    lines.append("### {0} Cosmological Constant".format(ICON_FORM))
     lines.append("")
     lines.append(md_table(
         ["Metric", "Value"],
@@ -1541,7 +1752,7 @@ def build_report() -> str:
     lines.append("")
 
     # Hubble Tension
-    lines.append("### Hubble Tension")
+    lines.append("### {0} Hubble Tension".format(ICON_MET))
     lines.append("")
     lines.append(md_table(
         ["Metric", "Value"],
@@ -1560,7 +1771,7 @@ def build_report() -> str:
     lines.append("")
 
     # Economic Cycles
-    lines.append("### Economic Cycles")
+    lines.append("### {0} Economic Cycles".format(ICON_DER))
     lines.append("")
     lines.append(md_table(
         ["Metric", "Value"],
@@ -1578,7 +1789,7 @@ def build_report() -> str:
 
 
     # Quantum Gravity & Particle Physics
-    lines.append("### Quantum Gravity & Particle Physics")
+    lines.append("### {0} Quantum Gravity & Particle Physics".format(ICON_FORM))
     lines.append("")
     if qg_info.get("available"):
         lines.append(md_table(
@@ -1596,7 +1807,7 @@ def build_report() -> str:
     lines.append("")
 
     # Neuroscience & Brain Coherence
-    lines.append("### Neuroscience & Brain Coherence")
+    lines.append("### {0} Neuroscience & Brain Coherence".format(ICON_GEN))
     lines.append("")
     if neuro_info.get("available"):
         lines.append(md_table(
@@ -1611,7 +1822,7 @@ def build_report() -> str:
     lines.append("")
 
     # Genetic Code & Biology
-    lines.append("### Genetic Code & Biology")
+    lines.append("### {0} Genetic Code & Biology".format(ICON_COH))
     lines.append("")
     if genetic_info.get("available"):
         lines.append(md_table(
@@ -1628,7 +1839,7 @@ def build_report() -> str:
     lines.append("")
 
     # Black Hole Thermodynamics
-    lines.append("### Black Hole Thermodynamics")
+    lines.append("### {0} Black Hole Thermodynamics".format(ICON_AUDIT))
     lines.append("")
     if bh_info.get("available"):
         lines.append(md_table(
@@ -1642,7 +1853,7 @@ def build_report() -> str:
         ))
     lines.append("")
     # Torus Formula
-    lines.append("### Torus Formula")
+    lines.append("### {0} Torus Formula".format(ICON_GRAPH))
     lines.append("")
     if torus_info.get("available"):
         e_m_value = torus_info.get("E_M_computed", "N/A")
@@ -1675,7 +1886,7 @@ def build_report() -> str:
     lines.append("")
 
     # L7 Integration
-    lines.append("### L7 Integration")
+    lines.append("### {0} L7 Integration".format(ICON_LAYER))
     lines.append("")
     if l7_info.get("available"):
         lines.append(md_table(
@@ -1695,7 +1906,7 @@ def build_report() -> str:
     lines.append("")
 
     # Energy Distribution
-    lines.append("## Energy Distribution")
+    lines.append("## {0} Energy Distribution".format(ICON_MET))
     lines.append("")
     lines.append(md_table(
         ["Layer", "Energy"],
@@ -1713,7 +1924,7 @@ def build_report() -> str:
     lines.append("")
 
     # Cube Geometry
-    lines.append("## Cube Geometry")
+    lines.append("## {0} Cube Geometry".format(ICON_CUBE))
     lines.append("")
     lines.append("3x3x3 = 27 positions  ")
     lines.append(f"Exterior: 26 (ALPHA = {ALPHA:.6f})  ← C_max estructural")
@@ -1722,12 +1933,242 @@ def build_report() -> str:
     lines.append("")
     lines.append("---")
     lines.append("")
-    lines.append("*The system is coherent. All layers integrated. Omega.*")
-    lines.append("")
-    lines.append("**Omega**")
     lines.append("")
 
-    return "\n".join(lines)
+
+    # ------------------------------------------------------------------
+    # Paquete máquina (JSON) — misma verdad que el Markdown
+    # ------------------------------------------------------------------
+    executed = read_executed_tests() if "read_executed_tests" in globals() else {}
+    axioms_path = DIAGNOSTICS_DIR / "axioms_report.json"
+    gen_path = DIAGNOSTICS_DIR / "generatividad_report.json"
+    con_path = DIAGNOSTICS_DIR / "contratos_report.json"
+    eva_path = DIAGNOSTICS_DIR / "evaluaciones.json"
+
+    def _read_json(path):
+        rec = {"path": str(path.relative_to(REPO_ROOT)) if path.exists() else str(path), "present": path.exists(), "data": None}
+        if path.exists():
+            try:
+                rec["data"] = json.loads(path.read_text(encoding="utf-8"))
+                rec["read_ok"] = True
+            except Exception as e:
+                rec["error"] = str(e)
+                rec["read_ok"] = False
+        return rec
+
+    ci_evidence = {
+        "axioms": _read_json(axioms_path),
+        "generatividad": _read_json(gen_path),
+        "contratos": _read_json(con_path),
+        "evaluaciones": _read_json(eva_path),
+        "tests": executed if executed else test_results,
+        "coherence_history": history,
+    }
+
+    engine_state = {"available": False, "startup": "UNAVAILABLE", "error": None}
+    try:
+        from core.engine import Engine, ArranqueError
+        try:
+            eng = Engine(REPO_ROOT / "modules", invocador_id="omega", strict=True)
+            engine_state = {
+                "available": True,
+                "startup": "OK",
+                "class": "Engine",
+                "estado": getattr(eng, "estado", None),
+                "invocador_id": getattr(eng, "invocador_id", None),
+            }
+            if hasattr(eng, "censar"):
+                try:
+                    engine_state["census"] = eng.censar()
+                except Exception as e:
+                    engine_state["census_error"] = str(e)
+        except ArranqueError as e:
+            engine_state = {"available": False, "startup": "ERROR", "error": str(e), "class": "Engine"}
+    except Exception as e:
+        engine_state = {"available": False, "startup": "ERROR", "error": "{0}: {1}".format(type(e).__name__, e)}
+
+    system_status = {"coherente": None, "estado": "N/D", "source": None, "source_type": "UNAVAILABLE"}
+    cdata = (ci_evidence["contratos"] or {}).get("data")
+    if isinstance(cdata, dict) and "incoherente" in cdata:
+        system_status = {
+            "coherente": (not bool(cdata.get("incoherente"))),
+            "estado": "COHERENTE" if not cdata.get("incoherente") else "INCOHERENTE",
+            "source": "diagnostics/contratos_report.json:incoherente",
+            "source_type": "DERIVED_ADAPTER",
+        }
+    elif isinstance((ci_evidence["axioms"] or {}).get("data"), dict) and "coherente" in ci_evidence["axioms"]["data"]:
+        ax = ci_evidence["axioms"]["data"]
+        system_status = {
+            "coherente": bool(ax.get("coherente")),
+            "estado": "COHERENTE" if ax.get("coherente") else "INCOHERENTE",
+            "source": "diagnostics/axioms_report.json:coherente",
+            "source_type": "CI_ARTIFACT",
+        }
+
+    # secciones extra pedidas — no sustituyen las originales
+    lines.append("## {0} Audit Coverage".format(ICON_MET))
+    lines.append("")
+    lines.append(md_table(
+        ["Métrica", "Valor", "Fuente"],
+        [
+            ["Tests discovered", executed.get("discovered_n") if executed else test_results.get("file_count"), "tests/"],
+            ["Tests executed", executed.get("executed") if executed else False, executed.get("source") if executed else "unavailable"],
+            ["Modules listed", len(module_status), "discovery"],
+            ["History runs", len(history), "diagnostics/coherence_history.json"],
+            ["Engine startup", engine_state.get("startup"), "core.engine.Engine"],
+        ],
+    ))
+    lines.append("")
+
+    lines.append("## {0} Engine State".format(ICON_ENGINE))
+    lines.append("")
+    lines.append(md_table(
+        ["Campo", "Valor", "Fuente"],
+        [
+            ["available", engine_state.get("available"), "core.engine"],
+            ["startup", engine_state.get("startup"), "Engine(...)"],
+            ["estado", engine_state.get("estado"), "Engine.estado"],
+            ["invocador_id", engine_state.get("invocador_id"), "constructor"],
+            ["error", engine_state.get("error"), "ArranqueError"],
+        ],
+    ))
+    lines.append("")
+
+    ax = ci_evidence["axioms"]
+    lines.append("## {0} Axiomatic / Formal State".format(ICON_AX))
+    lines.append("")
+    if ax.get("data") and isinstance(ax["data"], dict):
+        ad = ax["data"]
+        cuerpos = ad.get("cuerpos") or []
+        lines.append(md_table(
+            ["Campo", "Valor", "Fuente", "Clase"],
+            [
+                ["coherente", ad.get("coherente"), ax.get("path"), "CI_ARTIFACT"],
+                ["declaraciones", ad.get("declaraciones"), ax.get("path"), "CI_ARTIFACT"],
+                ["cuerpos", len(cuerpos) if isinstance(cuerpos, list) else ad.get("cuerpos"), ax.get("path"), "CI_ARTIFACT"],
+                ["errores", len(ad.get("errores") or []) if isinstance(ad.get("errores"), list) else ad.get("errores"), ax.get("path"), "CI_ARTIFACT"],
+                ["choques", len(ad.get("choques") or []) if isinstance(ad.get("choques"), list) else ad.get("choques"), ax.get("path"), "CI_ARTIFACT"],
+            ],
+        ))
+        if isinstance(cuerpos, list) and cuerpos:
+            lines.append("")
+            lines.append(md_table(["#", "Cuerpo"], [[i, c] for i, c in enumerate(cuerpos, 1)]))
+    else:
+        lines.append("{0} axioms_report.json no disponible".format(ICON_INFO))
+    lines.append("")
+
+    gd = ci_evidence["generatividad"]
+    lines.append("## {0} Generativity".format(ICON_GEN))
+    lines.append("")
+    if isinstance(gd.get("data"), dict):
+        data = gd["data"]
+        operativa = {k: v for k, v in data.items() if k != "canonica"}
+        lines.append("### OPERATIVA")
+        lines.append("")
+        lines.append(md_table(["Campo", "Valor", "Fuente"], [[k, v, gd.get("path")] for k, v in operativa.items()]))
+        lines.append("")
+        lines.append("### CANÓNICA TR1")
+        lines.append("")
+        can = data.get("canonica") or {}
+        if isinstance(can, dict):
+            lines.append(md_table(["Campo", "Valor", "Fuente"], [[k, v, gd.get("path") + ":canonica"] for k, v in can.items()]))
+    else:
+        lines.append("{0} generatividad_report.json no disponible".format(ICON_INFO))
+    lines.append("")
+
+    lines.append("## {0} Diagnostic Artifacts".format(ICON_DISK))
+    lines.append("")
+    lines.append(md_table(
+        ["", "Artefacto", "Presente"],
+        [
+            [ICON_OK if ci_evidence["axioms"].get("present") else ICON_FAIL, "diagnostics/axioms_report.json", ci_evidence["axioms"].get("present")],
+            [ICON_OK if ci_evidence["generatividad"].get("present") else ICON_FAIL, "diagnostics/generatividad_report.json", ci_evidence["generatividad"].get("present")],
+            [ICON_OK if ci_evidence["contratos"].get("present") else ICON_FAIL, "diagnostics/contratos_report.json", ci_evidence["contratos"].get("present")],
+            [ICON_OK if ci_evidence["evaluaciones"].get("present") else ICON_FAIL, "diagnostics/evaluaciones.json", ci_evidence["evaluaciones"].get("present")],
+            [ICON_OK if (DIAGNOSTICS_DIR / "test_results.xml").exists() else ICON_FAIL, "diagnostics/test_results.xml", (DIAGNOSTICS_DIR / "test_results.xml").exists()],
+            [ICON_OK if (DIAGNOSTICS_DIR / "coherence_history.json").exists() else ICON_FAIL, "diagnostics/coherence_history.json", (DIAGNOSTICS_DIR / "coherence_history.json").exists()],
+        ],
+    ))
+    lines.append("")
+
+    lines.append("## {0} Evidence Provenance".format(ICON_SRC))
+    lines.append("")
+    lines.append(md_table(
+        ["Dato", "Fuente", "Clase", "Fallback"],
+        [
+            ["ALPHA", "formulas.constants|DEFAULT", "DECLARED/FALLBACK", formulas_constants is None],
+            ["C_structural", coherence_source, "MEASURED" if coherence_source != "structural-fallback" else "FALLBACK", coherence_source == "structural-fallback"],
+            ["L7", l7_info.get("source"), "MEASURED" if l7_info.get("source") != "structural-fallback" else "FALLBACK", l7_info.get("source") == "structural-fallback"],
+            ["Tests", test_results.get("source", executed.get("source") if executed else "unavailable"), test_results.get("class", executed.get("class") if executed else "UNAVAILABLE"), not bool(executed.get("executed") if executed else False)],
+            ["History", "diagnostics/coherence_history.json", "CI_ARTIFACT", False],
+        ],
+    ))
+    lines.append("")
+
+    coh = system_status.get("coherente")
+    if coh is True:
+        closure = "{0} COHERENTE".format(ICON_OK)
+    elif coh is False:
+        closure = "{0} INCOHERENTE".format(ICON_FAIL)
+    else:
+        closure = "{0} N/D".format(ICON_INFO)
+    lines.append("## {0} Final Closure".format(ICON_OMEGA))
+    lines.append("")
+    lines.append(md_table(
+        ["Campo", "Valor"],
+        [
+            ["System Status", closure],
+            ["Source", system_status.get("source")],
+            ["Engine", engine_state.get("startup")],
+            ["Tests source", test_results.get("source", "unavailable")],
+            ["C_structural", "{0:.4f}".format(c_structural)],
+            ["L7", l7_info.get("value")],
+        ],
+    ))
+    lines.append("")
+    lines.append("{0} **Omega**".format(ICON_OMEGA))
+    lines.append("")
+
+    paquete = {
+        "schema_version": "omega.uis.2.6",
+        "version": VERSION,
+        "system_status": system_status,
+        "engine": engine_state,
+        "metrics": {
+            "C_struct": c_structural,
+            "C_global_norm": c_global_norm,
+            "C_CI": c_ci,
+            "L7": l7_info.get("value"),
+            "phi_eff": phi_eff,
+            "zeta": zeta,
+            "omega_d": omega_d,
+            "period": period,
+            "entropy": entropy,
+            "harmony": harmony,
+            "total_energy": total_energy,
+            "energies": energies,
+            "states": states,
+            "states_source": states_source,
+            "coherence_source": coherence_source,
+            "l7": l7_info,
+        },
+        "diagnostic": {"code": code, "name": diag_name, "desc": diag_desc, "pheno": pheno_name, "symbol": pheno_symbol, "trend": trend},
+        "tests": executed if executed else test_results,
+        "ci_evidence": ci_evidence,
+        "modules": module_status,
+        "validations": {
+            "torus": torus_info,
+            "qg": qg_info,
+            "neuro": neuro_info,
+            "genetic": genetic_info,
+            "bh": bh_info,
+            "cosmo": cosmo_info,
+            "econ": econ_info,
+        },
+        "history": history,
+        "const_checks": const_checks,
+    }
+    return "\n".join(lines), paquete
 
 
 # =============================================================================
@@ -1782,61 +2223,15 @@ def save_report(report: str) -> Path:
 
 
 def main() -> None:
-    print("Running Omega Report...")
-    report = build_report()
+    print("Running Omega Report v{0}...".format(VERSION))
+    report, paquete = build_report()
     print(report)
     output_path = save_report(report)
-    print(f"\nReport saved to: {output_path}")
-    
-    # We need to extract the values from the report string or pass them from build_report
-    # For simplicity, we'll parse our own markdown just like the diary publisher does,
-    # but we'll do it right here to create the JSON file.
-    
-    def extract(label: str) -> float:
-        pattern = re.compile(r"\|\s*" + re.escape(label) + r"\s*\|\s*\*?\*?([\d\.]+)\*?\*?\s*\|")
-        match = pattern.search(report)
-        return float(match.group(1)) if match else 0.0
-        
-    c_struct = extract("C_struct (Estructural)")
-    c_global = extract("C_global (Normalizada)")
-    c_ci = extract("C_CI (Pass Rate)")
-    l7 = extract("L7 (Integración)")
-    phi_eff = extract("φ_eff (Fricción)")
-    
-    code_match = re.search(r"\|\s*Código\s*\|\s*\*?\*?(\d{4})\*?\*?\s*\|", report)
-    code = code_match.group(1) if code_match else "0000"
-    
-    name_match = re.search(r"\|\s*Denominación\s*\|\s*\*?\*?([^|*\n]+?)\*?\*?\s*\|", report)
-    diag_name = name_match.group(1).strip() if name_match else "Unknown"
-    
-    # Estado row is in the Fenomenológico section: | Estado | **CONFLICTO ⟨◯⟩**  ⚠️ ... |
-    pheno_match = re.search(r"\|\s*Estado\s*\|\s*\*?\*?([^|\n]+?)\s*\|", report)
-    if pheno_match:
-        pheno_raw = pheno_match.group(1).strip()
-        # Strip bold markers and CODE 9999 warning
-        pheno_raw = pheno_raw.split('⚠')[0].strip()
-        pheno_name = pheno_raw.strip('*').strip()
-    else:
-        pheno_name = "Unknown"
-    
-    total = int(extract("Total Tests"))
-    passed = int(extract("Passed"))
-    failed = int(extract("Failed"))
-    skipped = int(extract("Skipped"))
-    # Pass Rate is in format "99.93%  (C_CI = 0.9993)" — extract the number before %
-    pass_rate_match = re.search(r"\|\s*Pass Rate\s*\|\s*([\d\.]+)%", report)
-    pass_rate = float(pass_rate_match.group(1)) if pass_rate_match else 0.0
-    
-    test_results = {
-        "total": total,
-        "passed": passed,
-        "failed": failed,
-        "skipped": skipped,
-        "pass_rate": pass_rate
-    }
-    
-    json_path = save_json_data(c_struct, c_global, c_ci, l7, phi_eff, code, diag_name, pheno_name, test_results)
-    print(f"JSON data saved to: {json_path}")
+    print("\nReport saved to: {0}".format(output_path))
+    DIAGNOSTICS_DIR.mkdir(parents=True, exist_ok=True)
+    json_path = DIAGNOSTICS_DIR / "omega_report_data.json"
+    json_path.write_text(json.dumps(paquete, indent=2, ensure_ascii=False, default=str), encoding="utf-8")
+    print("JSON data saved to: {0}".format(json_path))
 
 
 if __name__ == "__main__":
