@@ -1870,38 +1870,52 @@ def render_ci(paquete):
         ]))
 
     lines.extend(ci_banner("{0} DOMAIN VALIDATIONS".format(ICON_AX)))
+    def _payload(obj):
+        if not isinstance(obj, dict):
+            return {}
+        if "metrics" in obj and isinstance(obj.get("metrics"), dict):
+            obj = obj.get("metrics") or {}
+        return obj
+
+    def _filas(data):
+        pares = []
+        if not isinstance(data, dict):
+            return pares
+        for k, v in data.items():
+            if k in {"id", "title"}:
+                continue
+            if isinstance(v, dict):
+                for sk, sv in v.items():
+                    if isinstance(sv, dict):
+                        for tk, tv in sv.items():
+                            if not isinstance(tv, (dict, list)):
+                                pares.append(("{0}.{1}.{2}".format(k, sk, tk), _fmt_ci(tv)))
+                    elif isinstance(sv, list):
+                        pares.append(("{0}.{1}".format(k, sk), "n={0}".format(len(sv))))
+                    else:
+                        pares.append(("{0}.{1}".format(k, sk), _icono_status(sv) if str(sk).lower() in {"status", "available"} else _fmt_ci(sv)))
+            elif isinstance(v, list):
+                pares.append((str(k), "n={0}".format(len(v))))
+            else:
+                pares.append((str(k), _icono_status(v) if str(k).lower() in {"status", "available"} else _fmt_ci(v)))
+        return pares
+
+    cosmo = _payload(vals.get("cosmo") or {})
     mapping = [
-        (ICON_EARTH, "Cosmological Constant", vals.get("cosmo") or {}),
-        (ICON_ORBIT, "Hubble Tension", {}),
-        (ICON_WAVE, "Economic Cycles", vals.get("econ") or {}),
-        (ICON_ATOM, "Quantum Gravity", vals.get("qg") or {}),
-        (ICON_GEN, "Neuroscience", vals.get("neuro") or {}),
-        (ICON_SEED, "Genetic Code", vals.get("genetic") or {}),
-        (ICON_MOON, "Black Hole", vals.get("bh") or {}),
+        (ICON_EARTH, "Cosmological Constant", cosmo.get("lambda") if isinstance(cosmo.get("lambda"), dict) else cosmo),
+        (ICON_ORBIT, "Hubble Tension", cosmo.get("hubble") if isinstance(cosmo.get("hubble"), dict) else _payload(vals.get("hubble") or {})),
+        (ICON_WAVE, "Economic Cycles", _payload(vals.get("econ") or {})),
+        (ICON_ATOM, "Quantum Gravity", _payload(vals.get("qg") or {})),
+        (ICON_GEN, "Neuroscience", _payload(vals.get("neuro") or {})),
+        (ICON_SEED, "Genetic Code", _payload(vals.get("genetic") or {})),
+        (ICON_MOON, "Black Hole", _payload(vals.get("bh") or {})),
     ]
-    cosmo = vals.get("cosmo") or {}
-    if isinstance(cosmo, dict) and "lambda" in cosmo:
-        mapping[0] = (ICON_EARTH, "Cosmological Constant", cosmo.get("lambda") or {})
-        mapping[1] = (ICON_ORBIT, "Hubble Tension", cosmo.get("hubble") or {})
     for icon, title, data in mapping:
         lines.extend(ci_banner("{0} {1}".format(icon, title.upper())))
         if not isinstance(data, dict) or not data:
             lines.extend(ci_kv([("{0} Estado".format(ICON_INFO), "N/D")]))
             continue
-        pares = []
-        for k, v in data.items():
-            if isinstance(v, dict):
-                pares.append((str(k), "{0} keys".format(len(v))))
-                for sk, sv in v.items():
-                    if isinstance(sv, (dict, list)):
-                        pares.append(("  " + str(sk), "{0}".format(type(sv).__name__)))
-                    else:
-                        pares.append(("  " + str(sk), _fmt_ci(sv)))
-            elif isinstance(v, list):
-                pares.append((str(k), "n={0}".format(len(v))))
-            else:
-                pares.append((str(k), _icono_status(v) if str(k).lower() in {"status", "available"} else _fmt_ci(v)))
-        lines.extend(ci_kv(pares))
+        lines.extend(ci_kv(_filas(data)))
 
     torus = vals.get("torus") or {}
     lines.extend(ci_banner("{0} TORUS FORMULA".format(ICON_GRAPH)))
@@ -2816,7 +2830,17 @@ def build_report():
         {"id": "torus", "title": "Torus Formula", "metrics": torus_info, "source": "formulas/modules"},
         {"id": "l7", "title": "L7 Integration", "metrics": l7_info, "source": l7_info.get("source") if isinstance(l7_info, dict) else None},
     ]
-    validations_index = {v["id"]: v for v in validations_list}
+    validations_index = {
+        "cosmo": cosmo_info,
+        "hubble": (cosmo_info.get("hubble") if isinstance(cosmo_info, dict) else None) or {},
+        "econ": econ_info,
+        "qg": qg_info,
+        "neuro": neuro_info,
+        "genetic": genetic_info,
+        "bh": bh_info,
+        "torus": torus_info,
+        "l7": l7_info,
+    }
 
     paquete = {
         "schema_version": "omega.uis.2.6.2",
