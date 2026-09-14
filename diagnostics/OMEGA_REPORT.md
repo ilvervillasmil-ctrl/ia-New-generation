@@ -2,11 +2,11 @@
 
 | Campo | Valor |
 | :--- | :--- |
-| ⏱️ Generated | 2026-09-14 09:35:19 UTC |
+| ⏱️ Generated | 2026-09-14 09:41:57 UTC |
 | Ω Version | 2.6.2 |
 | 📚 Framework | UCF v3.2 (Universal Coherence Framework) |
 | 🔹 Author | Ilver Villasmil |
-| 📡 Commit | 102d635 |
+| 📡 Commit | fb66a00 |
 
 ## 🧬 Estado Fenomenológico
 
@@ -341,18 +341,18 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | Tests discovered | 64 | tests/ |
 | Tests executed | True | diagnostics/test_results.xml |
 | Modules listed | 40 | discovery |
-| History runs | 14 | diagnostics/coherence_history.json |
-| Engine startup | ERROR | core.engine.Engine |
+| History runs | 15 | diagnostics/coherence_history.json |
+| Engine startup | OK | core.engine.Engine |
 
 ## 🧩 Engine State
 
 | Campo | Valor | Fuente |
 | :--- | :---: | :--- |
-| available | False | core.engine |
-| startup | ERROR | Engine(...) |
-| estado |  | Engine.estado |
-| invocador_id |  | constructor |
-| error | ImportError: cannot import name 'Engine' from 'core.engine' (/home/runner/work/ia-New-generation/ia-New-generation/core/engine.py) | ArranqueError |
+| available | True | core.engine |
+| startup | OK | Engine(...) |
+| estado | <formulas.coherence.SessionStateOmega object at 0x7fe88536e610> | Engine.estado |
+| invocador_id | omega | constructor |
+| error |  | ArranqueError |
 
 ## 📚 Axiomatic / Formal State
 
@@ -366,8 +366,8 @@ ALPHA + BETA = 1.0  ← conservación estructural
 
 |  | Artefacto | Bytes | Parse | Tipo |
 | :---: | :--- | ---: | :---: | :--- |
-| ✅ | diagnostics/OMEGA_REPORT.md | 13200 | True | md |
-| ✅ | diagnostics/coherence_history.json | 3527 | True | json |
+| ✅ | diagnostics/OMEGA_REPORT.md | 13108 | True | md |
+| ✅ | diagnostics/coherence_history.json | 3917 | True | json |
 | ✅ | diagnostics/test_results.xml | 165748 | True | xml |
 
 ## 📡 Evidence Provenance
@@ -386,7 +386,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | :--- | :--- |
 | System Status | ℹ️ N/D |
 | Source |  |
-| Engine | ERROR |
+| Engine | OK |
 | Tests source | diagnostics/test_results.xml |
 | C_structural | 0.7396 |
 | L7 | 0.7965890162999999 |
