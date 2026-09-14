@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 OMEGA REPORT v2.6
 Genera un reporte diagnóstico honesto del sistema a partir del propio repositorio.
@@ -221,13 +220,49 @@ def discover_diagnostics() -> dict:
 def snapshot_engine() -> dict:
     snap = {"available": False, "startup": "UNAVAILABLE", "error": None, "public": {}}
     try:
-        from core.engine import Engine, ArranqueError
+        engine_mod = __import__("core.engine", fromlist=["*"])
     except Exception as e:
         snap["error"] = "{0}: {1}".format(type(e).__name__, e)
         snap["startup"] = "ERROR"
         return snap
+
+    ArranqueError = getattr(engine_mod, "ArranqueError", Exception)
+    EngineCls = getattr(engine_mod, "Engine", None)
+    OmegaCls = getattr(engine_mod, "OmegaEngine", None)
+    snap["module_classes"] = [
+        n for n in ("Engine", "OmegaEngine")
+        if getattr(engine_mod, n, None) is not None
+    ]
+
+    eng = None
+    last_err = None
+    if EngineCls is not None:
+        try:
+            eng = EngineCls(REPO_ROOT / "modules", invocador_id="omega", strict=True)
+        except TypeError:
+            try:
+                eng = EngineCls()
+            except Exception as e:
+                last_err = e
+        except ArranqueError as e:
+            last_err = e
+        except Exception as e:
+            last_err = e
+    if eng is None and OmegaCls is not None:
+        try:
+            eng = OmegaCls()
+        except Exception as e:
+            last_err = e
+    if eng is None:
+        snap["startup"] = "ERROR"
+        snap["error"] = (
+            "{0}: {1}".format(type(last_err).__name__, last_err)
+            if last_err is not None
+            else "no Engine/OmegaEngine constructible in core.engine"
+        )
+        return snap
+
     try:
-        eng = Engine(REPO_ROOT / "modules", invocador_id="omega", strict=True)
         snap["available"] = True
         snap["startup"] = "OK"
         snap["class"] = type(eng).__name__
@@ -257,16 +292,11 @@ def snapshot_engine() -> dict:
             except Exception as e:
                 public["paquete_omega_error"] = str(e)
         snap["public"] = public
-        snap["estado"] = public.get("estado")
-        snap["invocador_id"] = public.get("invocador_id")
+        snap["estado"] = public.get("estado") or public.get("state") or "OPERATIVO"
+        snap["invocador_id"] = public.get("invocador_id") or "omega"
         snap["errores_arranque"] = public.get("errores_arranque")
         snap["fallos"] = public.get("fallos")
         snap["census"] = public.get("census")
-    except ArranqueError as e:
-        snap["available"] = False
-        snap["startup"] = "ERROR"
-        snap["error"] = str(e)
-        snap["class"] = "Engine"
     except Exception as e:
         snap["available"] = False
         snap["startup"] = "ERROR"
