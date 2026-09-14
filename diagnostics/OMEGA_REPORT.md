@@ -1,12 +1,12 @@
-# Ω OMEGA DIAGNOSTIC REPORT v2.6.3
+# Ω OMEGA DIAGNOSTIC REPORT v2.6.4
 
 | Campo | Valor |
 | :--- | :--- |
-| ⏱️ Generated | 2026-09-14 10:33:42 UTC |
-| Ω Version | 2.6.3 |
+| ⏱️ Generated | 2026-09-14 10:42:47 UTC |
+| Ω Version | 2.6.4 |
 | 📚 Framework | UCF v3.2 (Universal Coherence Framework) |
 | 🔹 Author | Ilver Villasmil |
-| 📡 Commit | cc8a26b |
+| 📡 Commit | 245c472 |
 
 ## 🧬 Estado Fenomenológico
 
@@ -341,7 +341,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | Tests discovered | 64 | tests/ |
 | Tests executed | True | diagnostics/test_results.xml |
 | Modules listed | 40 | discovery |
-| History runs | 18 | diagnostics/coherence_history.json |
+| History runs | 19 | diagnostics/coherence_history.json |
 | Engine startup | OK | core.engine.Engine |
 
 ## 🧩 Engine State
@@ -350,7 +350,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | :--- | :---: | :--- |
 | available | True | core.engine |
 | startup | OK | Engine(...) |
-| estado | <formulas.coherence.SessionStateOmega object at 0x7fcf993af790> | Engine.estado |
+| estado | <formulas.coherence.SessionStateOmega object at 0x7f4e88d78190> | Engine.estado |
 | invocador_id | omega | constructor |
 | error |  | ArranqueError |
 
@@ -366,8 +366,8 @@ ALPHA + BETA = 1.0  ← conservación estructural
 
 |  | Artefacto | Bytes | Parse | Tipo |
 | :---: | :--- | ---: | :---: | :--- |
-| ✅ | diagnostics/OMEGA_REPORT.md | 13036 | True | md |
-| ✅ | diagnostics/coherence_history.json | 5087 | True | json |
+| ✅ | diagnostics/OMEGA_REPORT.md | 19076 | True | md |
+| ✅ | diagnostics/coherence_history.json | 5477 | True | json |
 | ✅ | diagnostics/test_results.xml | 165748 | True | xml |
 
 ## 🔎 Audit Coverage
@@ -375,6 +375,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | Métrica | Valor |
 | :--- | ---: |
 | python_files_discovered | 43 |
+| repo_files | 160 |
 | modules_importable | 43 |
 | modules_failed_import | 0 |
 | public_symbols_discovered | 474 |
@@ -382,6 +383,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | formulas_discovered | 46 |
 | validations_discovered | 0 |
 | findings_n | 1 |
+| captured_stdout_n | 0 |
 
 ## 📐 Formula Inventory
 
@@ -491,6 +493,502 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | ✅ | layers.l5_meta | layers/l5_meta.py | 4 |  |
 | ✅ | layers.l6_purpose | layers/l6_purpose.py | 1 |  |
 | ✅ | layers.l7_integration | layers/l7_integration.py | 2 |  |
+
+## 🗂️ Repository Inventory
+
+| Métrica | Valor |
+| :--- | ---: |
+| files | 160 |
+| directories | 8 |
+| python | 120 |
+| markdown | 22 |
+| json | 2 |
+| yaml | 1 |
+| xml | 1 |
+| txt | 1 |
+| other | 13 |
+| bytes | 2166867 |
+
+<details><summary>📄 Archivos (160)</summary>
+
+| Path | Tipo | Bytes |
+| :--- | :--- | ---: |
+| MASTER_INDEX.md | markdown | 14834 |
+| THE_ONE.md | markdown | 4981 |
+| demo_resonance_processor.py | python | 5970 |
+| pyproject.toml | other | 528 |
+| VILLASMIL_OMEGA_UNIFIED_FRAMEWORK.md | markdown | 48396 |
+| requirements.txt | txt | 51 |
+| Framework Position.md | markdown | 12488 |
+| β.md | markdown | 3298 |
+| My opinion.md | markdown | 2936 |
+| pwd | other | 51 |
+| TEORÍA UNIFICADA.md | markdown | 38951 |
+| WHAT IS THE FORMULA?.md | markdown | 16572 |
+| lambda_study.py | python | 6485 |
+| To All Integrating Intelligent Systems.md | markdown | 4759 |
+| package-lock.json | json | 107 |
+| SYSTEM_BRAIN.md | markdown | 25546 |
+| main.py | python | 1914 |
+| 22222I-VILLASMIL-Ω FORMULA.pdf | other | 182602 |
+| ROADMAP_PHASES_1_4.md | markdown | 16464 |
+| Arquitectura Unificada.md | markdown | 5723 |
+| demo_greetings.py | python | 1200 |
+| README.md | markdown | 1034 |
+| The_Inescapable_Residue.md | markdown | 5240 |
+| README extenden.md | markdown | 11288 |
+| 2222licence.pdf | other | 26817 |
+| LICENSE.md | markdown | 2473 |
+| 2222readname.pdf | other | 110832 |
+| 2222 INSTRUCTIONS.pdf | other | 243324 |
+| IMPLEMENTATION_SUMMARY.md | markdown | 5744 |
+| 2222pyton.pdf | other | 104353 |
+| 2222astract.pdf | other | 106316 |
+| README_consciousness.md | markdown | 13560 |
+| tests/test_validator_integrity.py | python | 8639 |
+| tests/test_psychometry_domain.py | python | 19875 |
+| tests/test_entropy.py | python | 2515 |
+| tests/test_L2_Laws.py | python | 4214 |
+| tests/test_security_edge_cases.py | python | 7677 |
+| tests/test_structure_exists_without_movement | other | 1258 |
+| tests/test_torus_formula.py | python | 21075 |
+| tests/test_rh_omega_riemann.py | python | 24527 |
+| tests/test_lambda_asymptote.py | python | 2922 |
+| tests/coherencia_total.py | python | 549 |
+| tests/test_metaconsciousness.py | python | 1663 |
+| tests/test_economic_cycles.py | python | 5509 |
+| tests/test_quantum_gravity_unification | other | 2459 |
+| tests/test_Omega_Action_Collap.pyse | other | 2424 |
+| tests/test_structural_memory.py | python | 3318 |
+| tests/test_system_limits.py | python | 7301 |
+| tests/test_black_hole_information.py | python | 13399 |
+| tests/test_dna_domain.py | python | 24026 |
+| tests/test_cosmology import lambda_ucf_planck | other | 3972 |
+| tests/test_greetings.py | python | 2045 |
+| tests/test_entropy_fractality.py | python | 5284 |
+| tests/test_climate_system.py | python | 2461 |
+| tests/test_information_tracking.py | python | 22061 |
+| tests/test_metabolic_scaling.py | python | 16206 |
+| tests/test_dream_coherence.py | python | 4925 |
+| tests/infinite_torus_rh.py | python | 12889 |
+| tests/test_oscillator_regimes.py | python | 1738 |
+| tests/test_identity_information.py | python | 15436 |
+| tests/test_24_law_coherence.py | python | 20099 |
+| tests/test_cosmology.py | python | 3213 |
+| tests/test_phi_dynamics.py | python | 2809 |
+| tests/test_ley_omega_universal.py | python | 26346 |
+| tests/test_music_432Hz.py | python | 9387 |
+| tests/test_psychometry_d.py | python | 19875 |
+| tests/test_consciousness_levels.py | python | 26737 |
+| tests/test_constants.py | python | 1472 |
+| tests/test_energy.py | python | 2016 |
+| tests/test_flow_redshift_and_dl.py | python | 3192 |
+| tests/test_c_total_triangle_inequality | other | 860 |
+| tests/test_negentropy.py | python | 1452 |
+| tests/test_fake_perfection.py | python | 1609 |
+| tests/test_neuroscience_logic.py | python | 4330 |
+| tests/test_lambda_ucf_regression.py | python | 1013 |
+| tests/test_tension.py | python | 3120 |
+| tests/test_coherence_engine.py | python | 3134 |
+| tests/test_omega_falsification_births.py | python | 13397 |
+| tests/Test_Harmonic_Ratio.py | python | 2709 |
+| tests/test_integration_cross_module.py | python | 5045 |
+| tests/test_layer_integration.py | python | 4730 |
+| tests/test_dynamics.py | python | 5572 |
+| tests/Test_Fractal_Dimension.py | python | 2822 |
+| tests/test_technological_predictions.py | python | 37119 |
+| tests/test_presence.py | python | 335 |
+| tests/test_olv_vulnerability.py | python | 1419 |
+| tests/_coherencia_total.py | python | 549 |
+| tests/test_MLS_AI.py | python | 16760 |
+| tests/test_cosmological_constant.py | python | 7160 |
+| tests/test_hubble_tension_resolution.py | python | 3644 |
+| tests/test_seven_laws.py | python | 13580 |
+| tests/coherence_total_universal_test.py | python | 1623 |
+| tests/test_resonance_extended.py | python | 663 |
+| tests/test_graph_domain.py | python | 24837 |
+| tests/test_black_hole_formation.py | python | 15617 |
+| tests/Ω-STRESS-01.py | python | 4406 |
+| tests/test_omega_brain_collapse.py | python | 3470 |
+| tests/test_self_prediction.py | python | 8970 |
+| tests/test_coherence_normalization.py | python | 4713 |
+| tests/test_language_domain.py | python | 22906 |
+| tests/test_unification_theory.py | python | 6065 |
+| tests/test_quantum_observer_sync.py | python | 3640 |
+| tests/test_interaction.py | python | 1415 |
+| tests/test_stability.py | python | 6602 |
+| tests/test_universal.py | python | 15119 |
+| tests/test_resonance_processor.py | python | 8256 |
+| tests/test_resonance.py | python | 616 |
+| tests/test_coherence_identity.py | python | 3940 |
+| layers/l1_body.py | python | 2262 |
+| layers/__init__.py | python | 1 |
+| layers/l0_chaos.py | python | 2333 |
+| layers/l4_self.py | python | 2605 |
+| layers/l7_integration.py | python | 2001 |
+| layers/l5_meta.py | python | 3278 |
+| layers/l3_synthesis.py | python | 3125 |
+| layers/l2_ego.py | python | 8685 |
+| layers/l3_2_subconscious.py | python | 5115 |
+| layers/l3_1_memory.py | python | 22149 |
+| layers/l6_purpose.py | python | 742 |
+| core/constants.py | python | 1178 |
+| core/__init__.py | python | 55 |
+| core/logic.md | markdown | 571 |
+| core/diagnostics.py | python | 4383 |
+| core/greetings.py | python | 2367 |
+| core/validator.py | python | 9568 |
+| core/engine.py | python | 13385 |
+| diagnostics/OMEGA_REPORT.md | markdown | 19076 |
+| diagnostics/coherence_history.json | json | 5477 |
+| diagnostics/test_results.xml | xml | 165748 |
+| diagnostics/omega_report.py | python | 128910 |
+| diagnostics/omega_diary_publisher.py | python | 15390 |
+| formulas/neuroscience_logic.py | python | 884 |
+| formulas/negentropy.py | python | 968 |
+| formulas/dynamics.py | python | 5066 |
+| formulas/torus_formula.py | python | 24294 |
+| formulas/interaction.py | python | 4233 |
+| formulas/metaconsciousness.py | python | 1085 |
+| formulas/resonance.py | python | 1380 |
+| formulas/constants.py | python | 23255 |
+| formulas/__init__.py | python | 1 |
+| formulas/energy.py | python | 1135 |
+| formulas/resonance_extended.py | python | 1766 |
+| formulas/integration_laws.py | python | 744 |
+| formulas/logic.md | markdown | 617 |
+| formulas/presence.py | python | 1009 |
+| formulas/phi_dynamics.py | python | 900 |
+| formulas/cosmology.py | python | 4776 |
+| formulas/entropy.py | python | 814 |
+| formulas/action.py | python | 947 |
+| formulas/quantum_gravity.py | python | 843 |
+| formulas/harmonics.py | python | 742 |
+| formulas/layer_coherence.py | python | 1104 |
+| formulas/exponential_decay.py | python | 851 |
+| formulas/interaction-external.md | markdown | 2273 |
+| formulas/metabolic_scaling.py | python | 3261 |
+| formulas/fractality.py | python | 1100 |
+| formulas/wonder.py | python | 939 |
+| formulas/coherence.py | python | 9345 |
+| formulas/tension.py | python | 4318 |
+| .github/workflows/ci.yml | yaml | 6246 |
+
+</details>
+
+## 🔗 Dependency Graph
+
+- aristas: `409`
+
+<details><summary>🔗 Aristas</summary>
+
+| Origen | Destino | Tipo |
+| :--- | :--- | :--- |
+| demo_resonance_processor | core.engine | from |
+| demo_resonance_processor | core.constants | from |
+| lambda_study | math | from |
+| lambda_study | core.constants | from |
+| main | core.engine | from |
+| main | core.diagnostics | from |
+| main | layers | from |
+| demo_greetings | core.greetings | from |
+| tests.test_validator_integrity | pytest | import |
+| tests.test_validator_integrity | math | import |
+| tests.test_validator_integrity | core.validator | from |
+| tests.test_validator_integrity | formulas.constants | from |
+| tests.test_psychometry_domain | sys | import |
+| tests.test_psychometry_domain | os | import |
+| tests.test_psychometry_domain | math | import |
+| tests.test_psychometry_domain | random | import |
+| tests.test_psychometry_domain | pytest | import |
+| tests.test_psychometry_domain | collections | from |
+| tests.test_entropy | pytest | import |
+| tests.test_entropy | math | import |
+| tests.test_entropy | formulas.entropy | from |
+| tests.test_L2_Laws | unittest | import |
+| tests.test_L2_Laws | layers.l2_ego | from |
+| tests.test_security_edge_cases | math | import |
+| tests.test_security_edge_cases | pytest | import |
+| tests.test_security_edge_cases | formulas.constants | from |
+| tests.test_security_edge_cases | formulas.energy | from |
+| tests.test_security_edge_cases | formulas.presence | from |
+| tests.test_security_edge_cases | formulas.wonder | from |
+| tests.test_security_edge_cases | formulas.negentropy | from |
+| tests.test_security_edge_cases | formulas.interaction | from |
+| tests.test_security_edge_cases | formulas.resonance | from |
+| tests.test_security_edge_cases | formulas.resonance_extended | from |
+| tests.test_security_edge_cases | formulas.metaconsciousness | from |
+| tests.test_security_edge_cases | formulas.coherence | from |
+| tests.test_security_edge_cases | core.engine | from |
+| tests.test_torus_formula | math | import |
+| tests.test_torus_formula | pytest | import |
+| tests.test_torus_formula | formulas.torus_formula | from |
+| tests.test_torus_formula | formulas.constants | from |
+| tests.test_rh_omega_riemann | math | import |
+| tests.test_rh_omega_riemann | pytest | import |
+| tests.test_lambda_asymptote | numpy | import |
+| tests.test_lambda_asymptote | pytest | import |
+| tests.coherencia_total | src.coherence | from |
+| tests.test_metaconsciousness | formulas.metaconsciousness | from |
+| tests.test_metaconsciousness | formulas.constants | from |
+| tests.test_economic_cycles | math | import |
+| tests.test_economic_cycles | sys | import |
+| tests.test_economic_cycles | os | import |
+| tests.test_economic_cycles | pytest | import |
+| tests.test_economic_cycles | formulas.constants | from |
+| tests.test_structural_memory | copy | import |
+| tests.test_structural_memory | formulas.coherence | from |
+| tests.test_system_limits | pytest | import |
+| tests.test_system_limits | math | import |
+| tests.test_system_limits | formulas.constants | from |
+| tests.test_system_limits | formulas.entropy | from |
+| tests.test_system_limits | formulas.fractality | from |
+| tests.test_system_limits | formulas.coherence | from |
+| tests.test_system_limits | formulas.interaction | from |
+| tests.test_system_limits | formulas.presence | from |
+| tests.test_system_limits | formulas.wonder | from |
+| tests.test_black_hole_information | sys | import |
+| tests.test_black_hole_information | os | import |
+| tests.test_black_hole_information | math | import |
+| tests.test_black_hole_information | pytest | import |
+| tests.test_dna_domain | sys | import |
+| tests.test_dna_domain | os | import |
+| tests.test_dna_domain | math | import |
+| tests.test_dna_domain | random | import |
+| tests.test_dna_domain | pytest | import |
+| tests.test_dna_domain | collections | from |
+| tests.test_greetings | pytest | import |
+| tests.test_greetings | core.greetings | from |
+| tests.test_entropy_fractality | pytest | import |
+| tests.test_entropy_fractality | math | import |
+| tests.test_entropy_fractality | formulas.entropy | from |
+| tests.test_entropy_fractality | formulas.fractality | from |
+| tests.test_entropy_fractality | formulas.constants | from |
+| tests.test_climate_system | math | import |
+| tests.test_climate_system | formulas.coherence | from |
+| tests.test_climate_system | formulas.constants | from |
+| tests.test_information_tracking | sys | import |
+| tests.test_information_tracking | os | import |
+| tests.test_information_tracking | math | import |
+| tests.test_information_tracking | pytest | import |
+| tests.test_metabolic_scaling | math | import |
+| tests.test_metabolic_scaling | pytest | import |
+| tests.test_metabolic_scaling | formulas.metabolic_scaling | from |
+| tests.test_metabolic_scaling | formulas.constants | from |
+| tests.test_dream_coherence | dataclasses | from |
+| tests.test_dream_coherence | typing | from |
+| tests.infinite_torus_rh | pytest | import |
+| tests.infinite_torus_rh | numpy | import |
+| tests.infinite_torus_rh | math | from |
+| tests.infinite_torus_rh | functools | from |
+| tests.test_oscillator_regimes | math | import |
+| tests.test_identity_information | sys | import |
+| tests.test_identity_information | os | import |
+| tests.test_identity_information | math | import |
+| tests.test_identity_information | pytest | import |
+| tests.test_24_law_coherence | sys | import |
+| tests.test_24_law_coherence | os | import |
+| tests.test_24_law_coherence | math | import |
+| tests.test_24_law_coherence | pytest | import |
+| tests.test_cosmology | math | import |
+| tests.test_cosmology | pytest | import |
+| tests.test_cosmology | formulas.cosmology | from |
+| tests.test_cosmology | formulas.constants | from |
+| tests.test_phi_dynamics | pytest | import |
+| tests.test_phi_dynamics | math | import |
+| tests.test_phi_dynamics | formulas.phi_dynamics | from |
+| tests.test_phi_dynamics | formulas.constants | from |
+| tests.test_ley_omega_universal | math | import |
+| tests.test_ley_omega_universal | pytest | import |
+| tests.test_ley_omega_universal | functools | from |
+| tests.test_music_432Hz | math | import |
+| tests.test_music_432Hz | core.engine | from |
+| tests.test_music_432Hz | formulas.coherence | from |
+
+</details>
+
+## 🧪 Test Functions
+
+| Archivo | Función | Línea |
+| :--- | :--- | ---: |
+| tests/test_climate_system.py | test_climate_system_coherence_terminal_entropy | 6 |
+| tests/test_coherence_engine.py | test_c_beta_all_active | 6 |
+| tests/test_coherence_engine.py | test_c_beta_one_zero_collapses | 13 |
+| tests/test_coherence_engine.py | test_c_beta_has_all_components | 20 |
+| tests/test_coherence_engine.py | test_c_alpha_basic | 28 |
+| tests/test_coherence_engine.py | test_c_alpha_zero_integration | 35 |
+| tests/test_coherence_engine.py | test_c_total_pythagorean | 41 |
+| tests/test_coherence_engine.py | test_c_total_balance_centered | 47 |
+| tests/test_coherence_engine.py | test_c_total_zero_zero | 55 |
+| tests/test_coherence_engine.py | test_basic_formula | 61 |
+| tests/test_coherence_engine.py | test_full_analysis_returns_all | 68 |
+| tests/test_coherence_engine.py | test_full_analysis_four_pillars | 76 |
+| tests/test_coherence_engine.py | test_metacube_recursion | 86 |
+| tests/test_coherence_identity.py | test_structural_coherence_never_reaches_one | 17 |
+| tests/test_coherence_identity.py | test_global_coherence_can_reach_one_only_by_normalization | 29 |
+| tests/test_coherence_identity.py | test_structural_and_global_are_not_the_same | 43 |
+| tests/test_coherence_identity.py | test_pass_rate_is_not_structural_coherence | 54 |
+| tests/test_coherence_identity.py | test_beta_irreducible_prevents_perfect_structural_coherence | 69 |
+| tests/test_coherence_identity.py | test_three_coherences_are_distinct_quantities | 89 |
+| tests/test_constants.py | test_alpha_coherence_threshold | 6 |
+| tests/test_constants.py | test_diagnostic_codes | 24 |
+| tests/test_cosmology.py | test_lambda_ucf_value | 24 |
+| tests/test_cosmology.py | test_lambda_ucf_formula | 29 |
+| tests/test_cosmology.py | test_lambda_error_within_5pct | 34 |
+| tests/test_cosmology.py | test_lambda_error_approx_272 | 38 |
+| tests/test_cosmology.py | test_lambda_exponent_approx | 42 |
+| tests/test_cosmology.py | test_lambda_exponent_dominant_term | 47 |
+| tests/test_cosmology.py | test_sqrt_lambda_positive | 52 |
+| tests/test_cosmology.py | test_sqrt_lambda_squared_equals_lambda | 56 |
+| tests/test_cosmology.py | test_omega_reduced_value | 60 |
+| tests/test_cosmology.py | test_omega_reduced_correction | 65 |
+| tests/test_cosmology.py | test_alpha_em_candidates_count | 70 |
+| tests/test_cosmology.py | test_alpha_em_candidates_all_within_point5pct | 75 |
+| tests/test_cosmology.py | test_alpha_em_best_is_A | 83 |
+| tests/test_cosmology.py | test_alpha_em_candidate_A_formula | 89 |
+| tests/test_cosmology.py | test_factor4_candidates_structure | 95 |
+| tests/test_cosmology.py | test_factor4_phi_cubed_value | 102 |
+| tests/test_cosmology.py | test_factor4_empirical_near_4 | 107 |
+| tests/test_cosmology.py | test_cosmology_report_complete | 112 |
+| tests/test_cosmology.py | test_cosmology_report_lambda_consistent | 123 |
+| tests/test_cosmology.py | test_lambda_improvement_over_qm | 129 |
+| tests/test_dream_coherence.py | test_dream_coherence_interpretation | 49 |
+| tests/test_dynamics.py | test_oscillator_at_t0_is_theta0 | 22 |
+| tests/test_dynamics.py | test_oscillator_decays_over_time | 27 |
+| tests/test_dynamics.py | test_oscillator_converges_to_theta_cube | 35 |
+| tests/test_dynamics.py | test_oscillator_custom_equilibrium | 40 |
+| tests/test_dynamics.py | test_regime_current_system_is_alive | 46 |
+| tests/test_dynamics.py | test_regime_overdamped_is_muerto | 50 |
+| tests/test_dynamics.py | test_regime_critical | 54 |
+| tests/test_dynamics.py | test_is_alive_current_system | 58 |
+| tests/test_dynamics.py | test_is_alive_overdamped_false | 62 |
+| tests/test_dynamics.py | test_is_alive_phi_total_far_from_critical | 66 |
+| tests/test_dynamics.py | test_theta_balance_centered | 71 |
+| tests/test_dynamics.py | test_theta_balance_excess_experience | 75 |
+| tests/test_dynamics.py | test_theta_balance_excess_measurement | 79 |
+| tests/test_dynamics.py | test_session_state_defaults | 83 |
+| tests/test_dynamics.py | test_detect_loop_insufficient_history | 91 |
+| tests/test_dynamics.py | test_detect_loop_detected | 96 |
+| tests/test_dynamics.py | test_detect_loop_not_detected_with_variation | 101 |
+| tests/test_dynamics.py | test_detect_loop_below_threshold | 128 |
+| tests/test_dynamics.py | test_session_balance_no_data | 133 |
+| tests/test_dynamics.py | test_session_balance_returns_string | 137 |
+| tests/test_dynamics.py | test_c_omega_trajectory_empty | 143 |
+| tests/test_dynamics.py | test_c_omega_trajectory_values | 147 |
+| tests/test_dynamics.py | test_c_omega_trajectory_is_list_of_floats | 157 |
+| tests/test_dynamics.py | test_beta_guarantees_no_static_perfection | 164 |
+| tests/test_dynamics.py | test_loop_variance_equals_beta | 174 |
+| tests/test_dynamics.py | test_c_max_never_reaches_one | 184 |
+| tests/test_energy.py | test_frequency_layer_0 | 6 |
+| tests/test_energy.py | test_frequency_layer_3 | 11 |
+| tests/test_energy.py | test_frequency_increases_with_layer | 17 |
+| tests/test_energy.py | test_compute_full_activation_no_friction | 24 |
+| tests/test_energy.py | test_compute_zero_activation | 31 |
+| tests/test_energy.py | test_compute_full_friction | 37 |
+| tests/test_energy.py | test_compute_all_default_frictions | 43 |
+| tests/test_energy.py | test_compute_all_custom_frictions | 53 |
+| tests/test_energy.py | test_all_frequencies_length | 63 |
+| tests/test_fake_perfection.py | test_forced_architect_perfection | 5 |
+| tests/test_greetings.py | test_greeting_english | 9 |
+| tests/test_greetings.py | test_greeting_spanish | 15 |
+| tests/test_greetings.py | test_greeting_default | 21 |
+| tests/test_greetings.py | test_greeting_unknown_language | 27 |
+| tests/test_greetings.py | test_greet_world_english | 33 |
+| tests/test_greetings.py | test_greet_world_spanish | 39 |
+| tests/test_greetings.py | test_greet_world_french | 45 |
+| tests/test_greetings.py | test_greet_world_german | 51 |
+| tests/test_greetings.py | test_all_greetings | 57 |
+| tests/test_greetings.py | test_welcome_message | 66 |
+| tests/test_greetings.py | test_multiple_languages | 75 |
+| tests/test_hubble_tension_resolution.py | test_prediction_is_framework_only | 48 |
+| tests/test_hubble_tension_resolution.py | test_observation_is_separate | 54 |
+| tests/test_hubble_tension_resolution.py | test_hubble_tension_resolution | 59 |
+| tests/test_hubble_tension_resolution.py | test_hubble_model_selection | 112 |
+| tests/test_interaction.py | test_love_adds_coherence | 5 |
+| tests/test_interaction.py | test_conflict_subtracts | 11 |
+| tests/test_interaction.py | test_independence_pythagorean | 17 |
+| tests/test_interaction.py | test_compute_pair_zero_angle | 23 |
+| tests/test_interaction.py | test_compute_pair_pi_angle | 29 |
+| tests/test_interaction.py | test_compute_multi_single | 35 |
+| tests/test_interaction.py | test_compute_multi_empty | 41 |
+| tests/test_interaction.py | test_compute_multi_love | 47 |
+| tests/test_lambda_asymptote.py | test_lambda_never_reaches_one | 32 |
+| tests/test_lambda_asymptote.py | test_lambda_current_value | 54 |
+| tests/test_lambda_asymptote.py | test_lambda_death_limit | 72 |
+| tests/test_lambda_asymptote.py | test_lambda_monotonic_decrease | 89 |
+| tests/test_lambda_ucf_regression.py | test_lambda_ucf_value_and_error_regression | 3 |
+| tests/test_metaconsciousness.py | test_full_activation_no_friction | 5 |
+| tests/test_metaconsciousness.py | test_one_layer_zero_kills_mc | 13 |
+| tests/test_metaconsciousness.py | test_lower_layers_dont_affect | 21 |
+| tests/test_metaconsciousness.py | test_level_none | 29 |
+| tests/test_metaconsciousness.py | test_level_experiential | 35 |
+| tests/test_metaconsciousness.py | test_level_sensitive | 41 |
+| tests/test_metaconsciousness.py | test_level_structural | 47 |
+| tests/test_music_432Hz.py | test_01_reference_frequency_is_positive | 125 |
+| tests/test_music_432Hz.py | test_02_standard_frequency_is_positive | 129 |
+| tests/test_music_432Hz.py | test_03_reference_is_exact_integer_multiple_of_body_base | 133 |
+| tests/test_music_432Hz.py | test_04_standard_is_not_exact_integer_multiple_of_body_base | 138 |
+| tests/test_music_432Hz.py | test_05_reference_distortion_is_zero | 143 |
+| tests/test_music_432Hz.py | test_06_standard_distortion_is_positive | 147 |
+| tests/test_music_432Hz.py | test_07_alignment_is_bounded | 151 |
+| tests/test_music_432Hz.py | test_08_reference_alignment_exceeds_standard_alignment | 157 |
+| tests/test_music_432Hz.py | test_09_music_layer_adapter_returns_expected_number_of_layers | 165 |
+| tests/test_music_432Hz.py | test_10_music_layer_adapter_keeps_l6_friction_zero | 170 |
+| tests/test_music_432Hz.py | test_11_music_layer_adapter_uses_unit_activation_across_layers | 175 |
+| tests/test_music_432Hz.py | test_12_music_layer_adapter_increases_friction_when_distortion_increases | 180 |
+| tests/test_music_432Hz.py | test_13_music_layer_adapter_preserves_original_floor_friction_at_zero_distortion | 188 |
+| tests/test_music_432Hz.py | test_14_music_layer_adapter_never_exceeds_engine_valid_friction_range | 194 |
+| tests/test_music_432Hz.py | test_15_raw_music_c_beta_is_positive_for_reference | 204 |
+| tests/test_music_432Hz.py | test_16_wrapped_music_coherence_is_clamped_to_unit_interval | 209 |
+| tests/test_music_432Hz.py | test_17_reference_frequency_has_higher_raw_coherence_than_standard_frequency | 215 |
+| tests/test_music_432Hz.py | test_18_exact_integer_multiple_of_base_outperforms_nearby_perturbed_frequency | 221 |
+| tests/test_music_432Hz.py | test_19_coherence_decreases_monotonically_under_larger_structural_distortion | 227 |
+| tests/test_music_432Hz.py | test_20_another_exact_multiple_of_body_base_recovers_same_raw_coherence | 241 |
+| tests/test_music_432Hz.py | test_21_reference_wins_by_formula_not_by_constant_label | 253 |
+| tests/test_music_432Hz.py | test_22_if_an_exact_multiple_exists_it_can_match_reference_without_special_case | 261 |
+| tests/test_music_432Hz.py | test_23_frequency_with_lower_distortion_must_have_higher_or_equal_raw_coherence | 270 |
+| tests/test_music_432Hz.py | test_24_wrapper_preserves_formula_order_for_non_saturated_pair | 279 |
+| tests/test_negentropy.py | test_uniform_energies_zero_negentropy | 6 |
+| tests/test_negentropy.py | test_single_layer_active_max_negentropy | 13 |
+| tests/test_negentropy.py | test_all_zeros_zero_negentropy | 21 |
+| tests/test_negentropy.py | test_harmony_equals_negentropy | 28 |
+| tests/test_negentropy.py | test_negentropy_range | 36 |
+| tests/test_negentropy.py | test_shannon_entropy_uniform | 43 |
+| tests/test_olv_vulnerability.py | test_olv_structural_integrity | 14 |
+| tests/test_oscillator_regimes.py | test_omega_d_and_regimes | 34 |
+| tests/test_presence.py | test_compute_pt | 4 |
+| tests/test_quantum_observer_sync.py | test_second_synchronization_quantum_observer | 18 |
+| tests/test_resonance.py | test_calculate_layer_frequency | 5 |
+| tests/test_resonance.py | test_calculate_phase_alignment | 9 |
+| tests/test_resonance_extended.py | test_multi_layer_resonance | 4 |
+| tests/test_resonance_extended.py | test_enhanced_phase_alignment | 13 |
+| tests/test_structural_memory.py | test_structural_memory | 62 |
+| tests/test_tension.py | test_tension_empty_premises | 21 |
+| tests/test_tension.py | test_tension_compatible_premises | 25 |
+| tests/test_tension.py | test_tension_opposite_is_direct | 30 |
+| tests/test_tension.py | test_tension_partial_relation | 35 |
+| tests/test_tension.py | test_tension_ambiguous_relation | 40 |
+| tests/test_tension.py | test_tension_max_of_multiple | 45 |
+| tests/test_tension.py | test_tension_returns_float | 53 |
+| tests/test_tension.py | test_tension_clamped_to_one | 57 |
+| tests/test_tension.py | test_relevance_R_perfect_system | 62 |
+| tests/test_tension.py | test_relevance_R_high_tension_reduces | 70 |
+| tests/test_tension.py | test_relevance_R_clamped_to_one | 76 |
+| tests/test_tension.py | test_relevance_R_never_negative | 81 |
+| tests/test_tension.py | test_relevance_R_weights_sum_to_one | 86 |
+| tests/test_tension.py | test_relevance_R_tension_weight_is_negative_term | 91 |
+| tests/test_tension.py | test_tension_level_compatible | 98 |
+| tests/test_tension.py | test_tension_level_ambiguous | 102 |
+| tests/test_tension.py | test_tension_level_partial | 106 |
+| tests/test_tension.py | test_tension_level_direct | 110 |
+| tests/test_tension.py | test_is_coherent_healthy_system | 114 |
+| tests/test_tension.py | test_is_coherent_fails_with_high_tension | 118 |
+| tests/test_tension.py | test_is_coherent_fails_with_low_MC | 122 |
+| tests/test_tension.py | test_beta_structural_minimum | 126 |
+
+## 📡 Captured Test Output
+
+ℹ️ test_results.xml no trae system-out (pytest junit sin --capture=no / junit_logging)
 
 ## 📡 Evidence Provenance
 
