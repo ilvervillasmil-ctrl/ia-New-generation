@@ -9,6 +9,9 @@ SOURCE OF TRUTH:
 El Diario NO calcula, NO importa fórmulas, NO abre pytest XML,
 NO parsea OMEGA_REPORT.md con regex.
 Solo renderiza el paquete que ya escribió omega_report.py.
+
+Visual: cajas Unicode 46 cols (mismo canal que Omega CI).
+No tablas Markdown | --- | en el cuerpo publicado.
 """
 
 from __future__ import annotations
@@ -29,6 +32,194 @@ REPO_NAME = "Universal-Integration-System"
 
 CURRENT_FILE = Path(__file__).resolve()
 DIAGNOSTICS_DIR = CURRENT_FILE.parent
+
+ANCHO = 46
+CAMPO = 16
+
+ICON_OMEGA = "Ω"
+ICON_OK = "✅"
+ICON_FAIL = "❌"
+ICON_ERR = "🚨"
+ICON_WARN = "⚠️"
+ICON_INFO = "ℹ️"
+ICON_COH = "🧬"
+ICON_ENGINE = "🧩"
+ICON_MET = "📊"
+ICON_LAYER = "📶"
+ICON_TEST = "🧪"
+ICON_HIST = "❤️"
+ICON_SRC = "📡"
+ICON_DISK = "💾"
+ICON_TIME = "⏱️"
+ICON_ID = "🆔"
+ICON_AX = "📚"
+ICON_TYPE = "🏷️"
+ICON_DIARY = "📔"
+ICON_LINK = "🔗"
+ICON_ITEM = "🔹"
+ICON_EV = "📎"
+
+
+def _ancho_vis(texto: str) -> int:
+    n = 0
+    for ch in str(texto):
+        o = ord(ch)
+        if (
+            0x0300 <= o <= 0x036F
+            or 0xFE00 <= o <= 0xFE0F
+            or o in (0x200D, 0x20E3, 0xFEFF)
+        ):
+            continue
+        if (
+            0x1F000 <= o <= 0x1FAFF
+            or 0x2600 <= o <= 0x27BF
+            or 0x2300 <= o <= 0x23FF
+            or 0x2B00 <= o <= 0x2BFF
+            or 0x2190 <= o <= 0x21FF
+            or o in (0x2139, 0x2122, 0x3030, 0x3297, 0x3299)
+            or 0x2E80 <= o <= 0x9FFF
+            or 0xF900 <= o <= 0xFAFF
+        ):
+            n += 2
+        else:
+            n += 1
+    return n
+
+
+def _pad(texto: str, ancho: int, ali: str = "left") -> str:
+    s = str(texto)
+    hueco = max(0, ancho - _ancho_vis(s))
+    if ali == "center":
+        izq = hueco // 2
+        s = (" " * izq) + s + (" " * (hueco - izq))
+    elif ali == "right":
+        s = (" " * hueco) + s
+    else:
+        s = s + (" " * hueco)
+    while _ancho_vis(s) < ancho:
+        s += " "
+    while _ancho_vis(s) > ancho and s.endswith(" "):
+        s = s[:-1]
+    return s
+
+
+def _envolver(texto: str, ancho: int) -> list[str]:
+    s = str(texto).replace("\r", " ").replace("\n", " ").strip()
+    if not s:
+        return [""]
+    if _ancho_vis(s) <= ancho:
+        return [s]
+    palabras = s.split(" ")
+    if palabras and _ancho_vis(palabras[0]) <= 2 and len(palabras) >= 2:
+        palabras = [palabras[0] + " " + palabras[1]] + palabras[2:]
+    lineas: list[str] = []
+    actual = ""
+    for p in palabras:
+        cand = (actual + " " + p).strip() if actual else p
+        if _ancho_vis(cand) <= ancho:
+            actual = cand
+            continue
+        if actual:
+            lineas.append(actual)
+        if _ancho_vis(p) <= ancho:
+            actual = p
+            continue
+        trozo = ""
+        for ch in p:
+            prueba = trozo + ch
+            if _ancho_vis(prueba) <= ancho:
+                trozo = prueba
+            else:
+                if trozo:
+                    lineas.append(trozo)
+                trozo = ch
+        actual = trozo
+    if actual:
+        lineas.append(actual)
+    return lineas or [""]
+
+
+def _alinea(valor) -> str:
+    s = str(valor).strip()
+    if s in {ICON_OK, ICON_FAIL, ICON_WARN, ICON_INFO}:
+        return "center"
+    up = s.upper()
+    if up in {"PASS", "FAIL", "TRUE", "FALSE", "YES", "NO", "OK", "N/D", "COHERENTE", "INCOHERENTE", "STABLE", "IMPROVEMENT", "REGRESSION", "BASELINE"}:
+        return "center"
+    try:
+        float(s.replace("%", "").replace(",", ""))
+        return "center"
+    except Exception:
+        return "left"
+
+
+def banner(titulo: str) -> list[str]:
+    bar = "═" * ANCHO
+    t = str(titulo)
+    if _ancho_vis(t) > ANCHO:
+        t = _envolver(t, ANCHO)[0]
+    return [bar, _pad(t, ANCHO, "left"), bar]
+
+
+def caja(pares) -> list[str]:
+    w0 = CAMPO
+    w1 = ANCHO - 3 - w0
+    if w1 < 12:
+        w0 = max(8, ANCHO - 3 - 12)
+        w1 = ANCHO - 3 - w0
+    mid = "├" + ("─" * w0) + "┼" + ("─" * w1) + "┤"
+    out = ["┌" + ("─" * w0) + "┬" + ("─" * w1) + "┐"]
+    items = list(pares)
+    for i, (campo, valor) in enumerate(items):
+        labs = _envolver("" if campo is None else str(campo), w0)
+        vals = _envolver("N/D" if valor is None else str(valor), w1)
+        alto = max(len(labs), len(vals))
+        ali = _alinea(valor)
+        for r in range(alto):
+            lab = labs[r] if r < len(labs) else ""
+            val = vals[r] if r < len(vals) else ""
+            out.append("│" + _pad(lab, w0, "left") + "│" + _pad(val, w1, ali if r == 0 else "left") + "│")
+        if i < len(items) - 1:
+            out.append(mid)
+    out.append("└" + ("─" * w0) + "┴" + ("─" * w1) + "┘")
+    return out
+
+
+def tarjeta(titulo: str, pares) -> list[str]:
+    w0 = CAMPO
+    w1 = ANCHO - 3 - w0
+    inner = w0 + 1 + w1
+    mid = "├" + ("─" * w0) + "┼" + ("─" * w1) + "┤"
+    out = ["┌" + ("─" * inner) + "┐"]
+    for t in _envolver(titulo, inner):
+        out.append("│" + _pad(t, inner, "left") + "│")
+    out.append(mid)
+    items = list(pares)
+    for i, (campo, valor) in enumerate(items):
+        labs = _envolver("" if campo is None else str(campo), w0)
+        vals = _envolver("N/D" if valor is None else str(valor), w1)
+        alto = max(len(labs), len(vals))
+        ali = _alinea(valor)
+        for r in range(alto):
+            lab = labs[r] if r < len(labs) else ""
+            val = vals[r] if r < len(vals) else ""
+            out.append("│" + _pad(lab, w0, "left") + "│" + _pad(val, w1, ali if r == 0 else "left") + "│")
+        if i < len(items) - 1:
+            out.append(mid)
+    out.append("└" + ("─" * w0) + "┴" + ("─" * w1) + "┘")
+    return out
+
+
+def _fmt(v) -> str:
+    if v is None:
+        return "N/D"
+    if isinstance(v, bool):
+        return "True" if v else "False"
+    if isinstance(v, float):
+        if abs(v) >= 1e4 or (abs(v) > 0 and abs(v) < 1e-3):
+            return "{0:.4e}".format(v)
+        return "{0:.6f}".format(v)
+    return str(v)
 
 
 def _sha256(path: Path) -> str | None:
@@ -54,61 +245,25 @@ def load_omega_package() -> dict | None:
         return None
 
 
-def _cell(v) -> str:
-    if v is None:
-        return "N/D"
-    if isinstance(v, bool):
-        return "True" if v else "False"
-    if isinstance(v, float):
-        if abs(v) >= 1e4 or (abs(v) > 0 and abs(v) < 1e-3):
-            return "{0:.4e}".format(v)
-        return "{0:.6f}".format(v)
-    text = str(v).replace("\n", " ").replace("|", "\\|")
-    return text
-
-
-def _md_table(headers, rows) -> list[str]:
-    out = [
-        "| " + " | ".join(str(h) for h in headers) + " |",
-        "| " + " | ".join(["---"] * len(headers)) + " |",
-    ]
-    for row in rows:
-        cells = list(row) + [""] * (len(headers) - len(row))
-        out.append("| " + " | ".join(_cell(c) for c in cells[: len(headers)]) + " |")
-    return out
-
-
-def _walk(title: str, obj, depth: int = 0) -> list[str]:
-    lines: list[str] = []
-    if depth > 6:
-        lines.append(_cell(obj))
-        return lines
+def _walk_cajas(titulo: str, obj, depth: int = 0) -> list[str]:
+    out: list[str] = []
+    if depth > 5:
+        out.extend(caja([(titulo, _fmt(obj))]))
+        return out
     if obj is None or isinstance(obj, (str, int, float, bool)):
-        lines.extend(_md_table(["Campo", "Valor"], [[title, obj]]))
-        return lines
+        out.extend(caja([(titulo, _fmt(obj))]))
+        return out
     if isinstance(obj, list):
         if not obj:
-            lines.append("_{0}: vacío_".format(title))
-            return lines
+            out.extend(caja([(titulo, "vacío")]))
+            return out
         if all(not isinstance(x, (dict, list)) for x in obj):
-            lines.extend(_md_table(["#", title], [[i + 1, x] for i, x in enumerate(obj)]))
-            return lines
-        if all(isinstance(x, dict) for x in obj):
-            keys = []
-            for x in obj:
-                for k in x.keys():
-                    if k not in keys:
-                        keys.append(k)
-            keys = keys[:8]
-            rows = []
-            for i, x in enumerate(obj, 1):
-                rows.append([i] + [x.get(k) for k in keys])
-            lines.extend(_md_table(["#"] + [str(k) for k in keys], rows))
-            return lines
+            pares = [("#{0}".format(i), _fmt(x)) for i, x in enumerate(obj, 1)]
+            out.extend(tarjeta("{0} {1}".format(ICON_ITEM, titulo), pares[:40]))
+            return out
         for i, x in enumerate(obj, 1):
-            lines.append("#### {0}[{1}]".format(title, i))
-            lines.extend(_walk("{0}[{1}]".format(title, i), x, depth + 1))
-        return lines
+            out.extend(_walk_cajas("{0}[{1}]".format(titulo, i), x, depth + 1))
+        return out
     if isinstance(obj, dict):
         scalars = []
         nested = []
@@ -116,16 +271,14 @@ def _walk(title: str, obj, depth: int = 0) -> list[str]:
             if isinstance(v, (dict, list)) and v:
                 nested.append((k, v))
             else:
-                scalars.append([k, v])
+                scalars.append((str(k), _fmt(v)))
         if scalars:
-            lines.extend(_md_table(["Campo", "Valor"], scalars))
+            out.extend(tarjeta("{0} {1}".format(ICON_ITEM, titulo), scalars[:24]))
         for k, v in nested:
-            lines.append("")
-            lines.append("#### {0}".format(k))
-            lines.extend(_walk(str(k), v, depth + 1))
-        return lines
-    lines.append(_cell(obj))
-    return lines
+            out.extend(_walk_cajas(str(k), v, depth + 1))
+        return out
+    out.extend(caja([(titulo, _fmt(obj))]))
+    return out
 
 
 def format_diary_entry(pkg: dict, sha: str) -> str:
@@ -138,6 +291,7 @@ def format_diary_entry(pkg: dict, sha: str) -> str:
     status = pkg.get("system_status") if isinstance(pkg.get("system_status"), dict) else {}
     hist = pkg.get("history") if isinstance(pkg.get("history"), list) else []
     last = hist[-1] if hist and isinstance(hist[-1], dict) else {}
+    l7 = metrics.get("l7") if isinstance(metrics.get("l7"), dict) else {}
 
     run_id = os.getenv("GITHUB_RUN_ID", "")
     run_number = os.getenv("GITHUB_RUN_NUMBER", "")
@@ -148,94 +302,84 @@ def format_diary_entry(pkg: dict, sha: str) -> str:
     json_path = DIAGNOSTICS_DIR / "omega_report_data.json"
     xml_path = DIAGNOSTICS_DIR / "test_results.xml"
 
-    lines = [
-        "# 📔 OMEGA DIARY — Universal Integration System",
-        "",
-        "## 🧬 Run {0} · {1}".format(run_number or "local", now),
-        "",
-        "### 🆔 Identification",
-        "",
-    ]
-    lines.extend(_md_table(
-        ["Campo", "Valor"],
-        [
-            ["🆔 Run", run_id or run_number or "local"],
-            ["📡 SHA", sha_use],
-            ["🔗 Ref", ref],
-            ["⏱️ UTC", now],
-            ["Ω Omega", pkg.get("version") or pkg.get("schema_version")],
-            ["📚 Schema", pkg.get("schema_version")],
-        ],
-    ))
-    lines += ["", "### 🧬 System State", ""]
-    lines.extend(_md_table(
-        ["Métrica", "Valor", "Fuente"],
-        [
-            ["🧬 System status", status.get("estado"), status.get("source")],
-            ["📊 C_struct", metrics.get("C_struct"), metrics.get("coherence_source")],
-            ["📊 C_global", metrics.get("C_global_norm"), metrics.get("coherence_source")],
-            ["🧪 C_CI", metrics.get("C_CI"), tests.get("source")],
-            ["📶 L7", metrics.get("L7"), (metrics.get("l7") or {}).get("source") if isinstance(metrics.get("l7"), dict) else None],
-            ["🆔 Código", diag.get("code"), "omega_report"],
-            ["🏷️ Estado", diag.get("name"), "omega_report"],
-            ["🧬 Pheno", diag.get("pheno"), "omega_report"],
-        ],
-    ))
-    lines += ["", "### 🧪 Tests", ""]
-    lines.extend(_md_table(
-        ["Total", "Passed", "Failures", "Errors", "Skipped", "Rate"],
-        [[
-            tests.get("total"),
-            tests.get("passed"),
-            tests.get("failures"),
-            tests.get("errors"),
-            tests.get("skipped"),
-            tests.get("pass_rate"),
-        ]],
-    ))
-    lines += ["", "### ❤️ Coherence", ""]
-    lines.extend(_md_table(
-        ["Estado", "Previo", "Actual", "Delta"],
-        [[
-            last.get("estado"),
-            last.get("previo"),
-            last.get("passed"),
-            (last.get("passed") - last.get("previo")) if isinstance(last.get("passed"), int) and isinstance(last.get("previo"), int) else None,
-        ]],
-    ))
-    lines += ["", "### 🧩 Engine", ""]
-    lines.extend(_md_table(
-        ["Campo", "Valor"],
-        [
-            ["Estado", engine.get("estado") or engine.get("startup")],
-            ["Invocador", engine.get("invocador_id")],
-            ["Error", engine.get("error")],
-        ],
-    ))
-    lines += ["", "### 💾 Integrity", ""]
-    lines.extend(_md_table(
-        ["Artefacto", "SHA-256"],
-        [
-            ["omega_report_data.json", _sha256(json_path)],
-            ["OMEGA_REPORT.md", _sha256(md_path)],
-            ["test_results.xml", _sha256(xml_path)],
-        ],
-    ))
-    lines += [
-        "",
-        "<details>",
-        "<summary>📎 Snapshot completo del run</summary>",
-        "",
-    ]
-    lines.extend(_walk("omega", pkg))
-    lines += [
-        "",
-        "</details>",
-        "",
-        "---",
-        "*Publicado por Omega Diary — renderer puro, sin cálculos propios.*",
-    ]
-    return "\n".join(lines)
+    body: list[str] = []
+    body.extend(banner("{0} OMEGA DIARY · UIS".format(ICON_DIARY)))
+    body.extend(banner("{0} RUN {1} · {2}".format(ICON_COH, run_number or "local", now)))
+
+    body.extend(banner("{0} IDENTIFICATION".format(ICON_ID)))
+    body.extend(caja([
+        ("{0} Run".format(ICON_ID), run_id or run_number or "local"),
+        ("{0} SHA".format(ICON_SRC), sha_use),
+        ("{0} Ref".format(ICON_LINK), ref),
+        ("{0} UTC".format(ICON_TIME), now),
+        ("{0} Omega".format(ICON_OMEGA), pkg.get("version") or pkg.get("schema_version")),
+        ("{0} Schema".format(ICON_AX), pkg.get("schema_version")),
+    ]))
+
+    body.extend(banner("{0} SYSTEM STATE".format(ICON_COH)))
+    body.extend(caja([
+        ("{0} Status".format(ICON_COH), status.get("estado")),
+        ("{0} C_struct".format(ICON_MET), _fmt(metrics.get("C_struct"))),
+        ("{0} C_global".format(ICON_MET), _fmt(metrics.get("C_global_norm"))),
+        ("{0} C_CI".format(ICON_TEST), _fmt(metrics.get("C_CI"))),
+        ("{0} L7".format(ICON_LAYER), _fmt(metrics.get("L7"))),
+        ("{0} Código".format(ICON_ID), diag.get("code")),
+        ("{0} Nombre".format(ICON_TYPE), diag.get("name")),
+        ("{0} Pheno".format(ICON_COH), diag.get("pheno")),
+        ("{0} Fuente".format(ICON_SRC), status.get("source")),
+    ]))
+
+    body.extend(banner("{0} TESTS".format(ICON_TEST)))
+    body.extend(caja([
+        ("{0} Total".format(ICON_MET), tests.get("total")),
+        ("{0} Passed".format(ICON_OK), tests.get("passed")),
+        ("{0} Failures".format(ICON_FAIL), tests.get("failures")),
+        ("{0} Errors".format(ICON_ERR), tests.get("errors")),
+        ("{0} Skipped".format(ICON_INFO), tests.get("skipped")),
+        ("{0} Rate".format(ICON_MET), tests.get("pass_rate")),
+        ("{0} Source".format(ICON_SRC), tests.get("source")),
+    ]))
+
+    delta = None
+    if isinstance(last.get("passed"), int) and isinstance(last.get("previo"), int):
+        delta = last.get("passed") - last.get("previo")
+    body.extend(banner("{0} COHERENCE".format(ICON_HIST)))
+    body.extend(caja([
+        ("{0} Estado".format(ICON_HIST), last.get("estado")),
+        ("{0} Previo".format(ICON_ITEM), last.get("previo")),
+        ("{0} Actual".format(ICON_MET), last.get("passed")),
+        ("{0} Delta".format(ICON_ITEM), delta),
+    ]))
+
+    body.extend(banner("{0} ENGINE".format(ICON_ENGINE)))
+    body.extend(caja([
+        ("{0} Estado".format(ICON_ENGINE), engine.get("estado") or engine.get("startup")),
+        ("{0} Invocador".format(ICON_ID), engine.get("invocador_id")),
+        ("{0} Error".format(ICON_FAIL), engine.get("error")),
+        ("{0} L7 src".format(ICON_LAYER), l7.get("source")),
+    ]))
+
+    sha_json = _sha256(json_path)
+    sha_md = _sha256(md_path)
+    sha_xml = _sha256(xml_path)
+    body.extend(banner("{0} INTEGRITY".format(ICON_DISK)))
+    body.extend(tarjeta("{0} hashes".format(ICON_DISK), [
+        ("JSON", (sha_json or "N/D")[:16]),
+        ("Markdown", (sha_md or "N/D")[:16]),
+        ("XML", (sha_xml or "N/D")[:16]),
+    ]))
+
+    body.extend(banner("{0} SNAPSHOT".format(ICON_EV)))
+    body.extend(_walk_cajas("omega", pkg))
+    body.append("{0} Omega Diary".format(ICON_OMEGA))
+
+    fixed = []
+    for ln in body:
+        if _ancho_vis(ln) > ANCHO:
+            fixed.extend(_envolver(ln, ANCHO))
+        else:
+            fixed.append(ln)
+    return "```\n" + "\n".join(fixed) + "\n```"
 
 
 def publish_to_github(body: str) -> bool:
