@@ -1,12 +1,12 @@
-# Ω OMEGA DIAGNOSTIC REPORT v2.6.2
+# Ω OMEGA DIAGNOSTIC REPORT v2.6.3
 
 | Campo | Valor |
 | :--- | :--- |
-| ⏱️ Generated | 2026-09-14 09:54:26 UTC |
-| Ω Version | 2.6.2 |
+| ⏱️ Generated | 2026-09-14 10:33:42 UTC |
+| Ω Version | 2.6.3 |
 | 📚 Framework | UCF v3.2 (Universal Coherence Framework) |
 | 🔹 Author | Ilver Villasmil |
-| 📡 Commit | b0ea2b8 |
+| 📡 Commit | cc8a26b |
 
 ## 🧬 Estado Fenomenológico
 
@@ -341,7 +341,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | Tests discovered | 64 | tests/ |
 | Tests executed | True | diagnostics/test_results.xml |
 | Modules listed | 40 | discovery |
-| History runs | 17 | diagnostics/coherence_history.json |
+| History runs | 18 | diagnostics/coherence_history.json |
 | Engine startup | OK | core.engine.Engine |
 
 ## 🧩 Engine State
@@ -350,7 +350,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | :--- | :---: | :--- |
 | available | True | core.engine |
 | startup | OK | Engine(...) |
-| estado | <formulas.coherence.SessionStateOmega object at 0x7f3b6b0b2b50> | Engine.estado |
+| estado | <formulas.coherence.SessionStateOmega object at 0x7fcf993af790> | Engine.estado |
 | invocador_id | omega | constructor |
 | error |  | ArranqueError |
 
@@ -367,8 +367,130 @@ ALPHA + BETA = 1.0  ← conservación estructural
 |  | Artefacto | Bytes | Parse | Tipo |
 | :---: | :--- | ---: | :---: | :--- |
 | ✅ | diagnostics/OMEGA_REPORT.md | 13036 | True | md |
-| ✅ | diagnostics/coherence_history.json | 4697 | True | json |
+| ✅ | diagnostics/coherence_history.json | 5087 | True | json |
 | ✅ | diagnostics/test_results.xml | 165748 | True | xml |
+
+## 🔎 Audit Coverage
+
+| Métrica | Valor |
+| :--- | ---: |
+| python_files_discovered | 43 |
+| modules_importable | 43 |
+| modules_failed_import | 0 |
+| public_symbols_discovered | 474 |
+| layers_discovered | 11 |
+| formulas_discovered | 46 |
+| validations_discovered | 0 |
+| findings_n | 1 |
+
+## 📐 Formula Inventory
+
+| Módulo | Función | Args | Línea |
+| :--- | :--- | :--- | ---: |
+| formulas.action | negentropy | S, S_MAX | 7 |
+| formulas.action | omega_action | S, S_MAX, nu, dnu | 15 |
+| formulas.constants | get_layer_frequency | layer_index | 391 |
+| formulas.constants | alpha_em_error | candidate | 406 |
+| formulas.constants | best_alpha_em_candidate |  | 419 |
+| formulas.cosmology | lambda_ucf |  | 23 |
+| formulas.cosmology | lambda_error |  | 42 |
+| formulas.cosmology | lambda_exponent |  | 52 |
+| formulas.cosmology | sqrt_lambda |  | 64 |
+| formulas.cosmology | omega_reduced |  | 75 |
+| formulas.cosmology | alpha_em_candidates |  | 86 |
+| formulas.cosmology | best_alpha_em_candidate |  | 124 |
+| formulas.cosmology | factor4_candidates |  | 136 |
+| formulas.cosmology | cosmology_report |  | 160 |
+| formulas.dynamics | oscillator_solution | t, A, delta, theta0 | 28 |
+| formulas.dynamics | regime | phi_total | 50 |
+| formulas.dynamics | is_alive | phi_total | 68 |
+| formulas.dynamics | theta_balance | theta_actual | 79 |
+| formulas.dynamics | detect_loop | history, window, threshold | 122 |
+| formulas.dynamics | session_balance | history | 150 |
+| formulas.dynamics | c_omega_trajectory | history | 163 |
+| formulas.metabolic_scaling | kappa_bio |  | 45 |
+| formulas.metabolic_scaling | bmr | mass_kg, b0 | 66 |
+| formulas.metabolic_scaling | layer_contribution | layer_name | 86 |
+| formulas.quantum_gravity | planck_energy |  | 10 |
+| formulas.tension | theta_tension | premises | 20 |
+| formulas.tension | relevance_R | MC, CI, phi_noise, delta, theta_c, P, N | 74 |
+| formulas.tension | tension_level | theta_c | 126 |
+| formulas.tension | is_coherent | MC, CI, theta_c | 146 |
+| formulas.torus_formula | torus_dimension | primes | 176 |
+| formulas.torus_formula | primorial_M | primes | 186 |
+| formulas.torus_formula | phi_M | primes | 198 |
+| formulas.torus_formula | state_map | n, primes | 210 |
+| formulas.torus_formula | period | moduli | 224 |
+| formulas.torus_formula | torus_coverage | primes | 235 |
+| formulas.torus_formula | phase_vector | n, primes | 247 |
+| formulas.torus_formula | is_covering_space | primes | 259 |
+| formulas.torus_formula | law1_cycle_independence | primes | 277 |
+| formulas.torus_formula | law2_cycle_resonance | moduli | 312 |
+| formulas.torus_formula | law3_prime_filtering | B, check_up_to | 350 |
+| formulas.torus_formula | law4_field_energy | primes, prime_limit | 382 |
+| formulas.torus_formula | spectral_modes | primes, prime_limit, max_modes | 456 |
+| formulas.torus_formula | beta_torus_residue_analysis |  | 532 |
+| formulas.torus_formula | c_max_from_torus | primes | 599 |
+| formulas.torus_formula | operational_infinity | primes | 641 |
+| formulas.torus_formula | torus_formula_report | primes, prime_limit | 698 |
+
+## 📚 Discovered Validations
+
+ℹ️ ningún omega_validation()/__omega_report__() descubierto
+
+## 🚨 Findings
+
+| Sev | Cat | Componente | Mensaje |
+| :--- | :--- | :--- | :--- |
+| INFO | audit | modules/ | directorio ausente |
+
+## 📦 Module Census
+
+|  | Módulo | Path | Símbolos | Error |
+| :---: | :--- | :--- | ---: | :--- |
+| ✅ | core | core/__init__.py | 7 |  |
+| ✅ | core.constants | core/constants.py | 32 |  |
+| ✅ | core.diagnostics | core/diagnostics.py | 9 |  |
+| ✅ | core.engine | core/engine.py | 20 |  |
+| ✅ | core.greetings | core/greetings.py | 3 |  |
+| ✅ | core.validator | core/validator.py | 13 |  |
+| ✅ | formulas | formulas/__init__.py | 25 |  |
+| ✅ | formulas.action | formulas/action.py | 7 |  |
+| ✅ | formulas.coherence | formulas/coherence.py | 30 |  |
+| ✅ | formulas.constants | formulas/constants.py | 91 |  |
+| ✅ | formulas.cosmology | formulas/cosmology.py | 25 |  |
+| ✅ | formulas.dynamics | formulas/dynamics.py | 27 |  |
+| ✅ | formulas.energy | formulas/energy.py | 5 |  |
+| ✅ | formulas.entropy | formulas/entropy.py | 2 |  |
+| ✅ | formulas.exponential_decay | formulas/exponential_decay.py | 2 |  |
+| ✅ | formulas.fractality | formulas/fractality.py | 3 |  |
+| ✅ | formulas.harmonics | formulas/harmonics.py | 3 |  |
+| ✅ | formulas.integration_laws | formulas/integration_laws.py | 4 |  |
+| ✅ | formulas.interaction | formulas/interaction.py | 8 |  |
+| ✅ | formulas.layer_coherence | formulas/layer_coherence.py | 4 |  |
+| ✅ | formulas.metabolic_scaling | formulas/metabolic_scaling.py | 7 |  |
+| ✅ | formulas.metaconsciousness | formulas/metaconsciousness.py | 2 |  |
+| ✅ | formulas.negentropy | formulas/negentropy.py | 3 |  |
+| ✅ | formulas.neuroscience_logic | formulas/neuroscience_logic.py | 4 |  |
+| ✅ | formulas.phi_dynamics | formulas/phi_dynamics.py | 3 |  |
+| ✅ | formulas.presence | formulas/presence.py | 3 |  |
+| ✅ | formulas.quantum_gravity | formulas/quantum_gravity.py | 5 |  |
+| ✅ | formulas.resonance | formulas/resonance.py | 5 |  |
+| ✅ | formulas.resonance_extended | formulas/resonance_extended.py | 5 |  |
+| ✅ | formulas.tension | formulas/tension.py | 11 |  |
+| ✅ | formulas.torus_formula | formulas/torus_formula.py | 32 |  |
+| ✅ | formulas.wonder | formulas/wonder.py | 3 |  |
+| ✅ | layers | layers/__init__.py | 10 |  |
+| ✅ | layers.l0_chaos | layers/l0_chaos.py | 2 |  |
+| ✅ | layers.l1_body | layers/l1_body.py | 2 |  |
+| ✅ | layers.l2_ego | layers/l2_ego.py | 8 |  |
+| ✅ | layers.l3_1_memory | layers/l3_1_memory.py | 29 |  |
+| ✅ | layers.l3_2_subconscious | layers/l3_2_subconscious.py | 8 |  |
+| ✅ | layers.l3_synthesis | layers/l3_synthesis.py | 2 |  |
+| ✅ | layers.l4_self | layers/l4_self.py | 3 |  |
+| ✅ | layers.l5_meta | layers/l5_meta.py | 4 |  |
+| ✅ | layers.l6_purpose | layers/l6_purpose.py | 1 |  |
+| ✅ | layers.l7_integration | layers/l7_integration.py | 2 |  |
 
 ## 📡 Evidence Provenance
 
