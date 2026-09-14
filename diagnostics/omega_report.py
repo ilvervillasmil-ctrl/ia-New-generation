@@ -49,8 +49,10 @@ Changelog v2.4:
 from __future__ import annotations
 
 import ast
+import contextlib
 import hashlib
 import importlib
+import io
 import json
 import math
 import os
@@ -74,7 +76,7 @@ REPO_ROOT = DIAGNOSTICS_DIR.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-VERSION = "2.6.4"
+VERSION = "2.6.6"
 
 SECRET_KEYS = ("password", "secret", "token", "api_key", "apikey", "private_key")
 SKIP_DIAG_NAMES = {
@@ -411,9 +413,29 @@ def discover_audit() -> dict:
                 "importable": False,
                 "symbols": [],
                 "error": None,
+                "stdout": "",
             }
+            buf = io.StringIO()
             try:
-                imported = importlib.import_module(name)
+                with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
+                    imported = importlib.import_module(name)
+                    for hook in ("omega_validation", "__omega_report__", "demo", "run_demo", "main", "audit", "report"):
+                        fn = getattr(imported, hook, None)
+                        if callable(fn) and hook in {"demo", "run_demo", "audit", "report", "main"}:
+                            try:
+                                sig_ok = True
+                                try:
+                                    import inspect
+                                    params = [p for p in inspect.signature(fn).parameters.values() if p.default is inspect.Parameter.empty and p.kind in (p.POSITIONAL_ONLY, p.POSITIONAL_OR_KEYWORD)]
+                                    if len(params) > 0:
+                                        sig_ok = False
+                                except Exception:
+                                    sig_ok = hook != "main"
+                                if sig_ok:
+                                    fn()
+                            except Exception:
+                                pass
+                entry["stdout"] = buf.getvalue()
                 entry["importable"] = True
                 import_ok += 1
                 public = []
@@ -463,10 +485,17 @@ def discover_audit() -> dict:
                         except Exception as e:
                             _finding("ERROR", "producer", name + "." + hook, e)
             except Exception as e:
+                entry["stdout"] = buf.getvalue()
                 entry["error"] = "{0}: {1}".format(type(e).__name__, e)
                 import_fail += 1
                 _finding("ERROR", "import", name, entry["error"])
+            else:
+                if not entry.get("stdout"):
+                    entry["stdout"] = buf.getvalue()
             modules.append(entry)
+
+    # Los tests no se reimportan por nombre.
+    # Autoridad: diagnostics/test_results.xml (system-out de CADA testcase).
 
     skip = {".git", ".hg", ".svn", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".venv", "venv", "node_modules", ".tox"}
     repo_files = []
@@ -550,6 +579,10 @@ def discover_audit() -> dict:
             "n_edges": len(edges),
         },
         "test_functions": test_fns,
+        "module_stdout": [
+            {"name": m.get("name"), "path": m.get("path"), "stdout": m.get("stdout") or ""}
+            for m in modules if (m.get("stdout") or "").strip()
+        ],
         "coverage": {
             "python_files_discovered": len(py_rows),
             "repo_files": len(repo_files),
@@ -560,6 +593,7 @@ def discover_audit() -> dict:
             "formulas_discovered": len(formulas),
             "validations_discovered": len(producers),
             "findings_n": len(FINDINGS),
+            "module_stdout_n": sum(1 for m in modules if (m.get("stdout") or "").strip()),
         },
     }
 
@@ -1024,9 +1058,11 @@ def read_executed_tests() -> dict:
         errors += e
         skipped += k
         duration += dur
+        s_out = s.find("system-out")
         suite_rows.append({
             "name": s.get("name"), "tests": t, "failures": f, "errors": e,
             "skipped": k, "passed": t - f - e - k, "time": dur,
+            "stdout": (s_out.text or "") if s_out is not None else "",
         })
         for tc in s.iter("testcase"):
             status = "passed"
@@ -1980,6 +2016,29 @@ def ci_sep():
     return "─" * ANCHO_TOTAL_CI
 
 
+def stdout_a_pares(text: str):
+    pares = []
+    for raw in (text or "").splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        if set(line) <= set("-=─━═|*_ "):
+            continue
+        parsed = False
+        for sep in (" = ", ":", "→", "="):
+            if sep in line:
+                k, v = line.split(sep, 1)
+                k = k.strip(" -•*#")
+                v = v.strip()
+                if k and v and len(k) <= 48:
+                    pares.append((k, v))
+                    parsed = True
+                    break
+        if not parsed and len(line) > 2:
+            pares.append(("·", line))
+    return pares
+
+
 def _fmt_ci(v):
     if v is None:
         return "N/D"
@@ -2341,6 +2400,16 @@ def render_ci(paquete):
                 continue
             pares.append((str(k), _fmt_ci(v)))
         lines.extend(ci_card("{0} {1}".format(ICON_AX, p.get("title")), pares))
+    for blob in (audit.get("module_stdout") or []):
+        title = str(blob.get("name") or blob.get("path") or "audit")
+        pares = stdout_a_pares(blob.get("stdout") or "")
+        lines.extend(ci_banner("{0} {1}".format(ICON_FORM, title.upper()[-40:])))
+        if pares:
+            lines.extend(ci_kv([(k, v) for k, v in pares]))
+        else:
+            preview = " / ".join([ln.strip() for ln in (blob.get("stdout") or "").splitlines() if ln.strip()][:8])
+            lines.extend(ci_kv([("salida", preview)]))
+
     for b in (audit.get("captured_stdout") or []):
         text = b.get("stdout") or ""
         preview = " / ".join([ln.strip() for ln in text.splitlines() if ln.strip()][:6])
@@ -2978,6 +3047,14 @@ def build_report():
     executed = read_executed_tests() if "read_executed_tests" in globals() else {}
     audit = discover_audit()
     captured = []
+    for s in (executed.get("suites") or []):
+        text = (s.get("stdout") or "").strip()
+        if text:
+            captured.append({
+                "case": "suite::{0}".format(s.get("name") or "pytest"),
+                "status": "suite",
+                "stdout": text,
+            })
     for c in (executed.get("cases") or []):
         text = (c.get("stdout") or "").strip()
         if text:
@@ -3233,6 +3310,29 @@ def build_report():
     else:
         lines.append("{0} test_results.xml no trae system-out (pytest junit sin --capture=no / junit_logging)".format(ICON_INFO))
     lines.append("")
+
+    lines.append("## {0} Module / Test Audits".format(ICON_LENS))
+    lines.append("")
+    for blob in (audit.get("module_stdout") or []):
+        title = blob.get("name") or blob.get("path")
+        text = blob.get("stdout") or ""
+        pares = stdout_a_pares(text)
+        lines.append("### {0} {1}".format(ICON_FORM, title))
+        lines.append("")
+        if pares:
+            lines.append(md_table(["Campo", "Valor"], [[k, v] for k, v in pares]))
+        lines.append("")
+        lines.append("<details><summary>{0} salida completa</summary>".format(ICON_SRC))
+        lines.append("")
+        lines.append("```")
+        lines.append(text)
+        lines.append("```")
+        lines.append("")
+        lines.append("</details>")
+        lines.append("")
+    if not (audit.get("module_stdout") or []):
+        lines.append("{0} ningún módulo emitió auditoría al importar".format(ICON_INFO))
+        lines.append("")
 
     lines.append("## {0} Evidence Provenance".format(ICON_SRC))
     lines.append("")
