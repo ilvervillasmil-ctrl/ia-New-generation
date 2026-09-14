@@ -3,6 +3,14 @@
 OMEGA REPORT v2.6
 Genera un reporte diagnóstico honesto del sistema a partir del propio repositorio.
 
+Changelog v2.6.2:
+  - CAPTURA: discover_diagnostics() recorre diagnostics/ entero
+  - PRESERVA: document completo + file metadata; índice no sustituye raw
+  - ENGINE: snapshot de atributos públicos serializables + censar completo
+  - QUITA: catálogo manual axioms/gen/contratos/evaluaciones como frontera
+  - QUITA: slices CI pares[:N] y skip de dict/list
+  - MANTIENE: secciones científicas v2.4 y render 2.6.1
+
 Changelog v2.6.1:
   - SEPARA: md_table = Markdown; render_ci = cajas Unicode 46 cols
   - QUITA: duplicación Markdown+caja en la misma función
@@ -35,9 +43,11 @@ Changelog v2.4:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import os
+import platform
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -57,7 +67,229 @@ REPO_ROOT = DIAGNOSTICS_DIR.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-VERSION = "2.6.1"
+VERSION = "2.6.2"
+
+SECRET_KEYS = ("password", "secret", "token", "api_key", "apikey", "private_key")
+SKIP_DIAG_NAMES = {
+    "omega_report.py",
+    "omega_diary_publisher.py",
+    "__init__.py",
+}
+
+
+def _is_secret_key(key: str) -> bool:
+    k = str(key).lower()
+    return any(s in k for s in SECRET_KEYS)
+
+
+def _redact(obj):
+    if isinstance(obj, dict):
+        out = {}
+        for k, v in obj.items():
+            out[k] = "[REDACTED]" if _is_secret_key(k) else _redact(v)
+        return out
+    if isinstance(obj, list):
+        return [_redact(x) for x in obj]
+    return obj
+
+
+def _safe_jsonable(obj):
+    try:
+        json.dumps(obj, default=str)
+        return True
+    except Exception:
+        return False
+
+
+def _sha256_file(path: Path) -> str | None:
+    if not path.is_file():
+        return None
+    h = hashlib.sha256()
+    h.update(path.read_bytes())
+    return h.hexdigest()
+
+
+def _index_key_for(path: Path, document) -> str:
+    name = path.name.lower()
+    stem = path.stem.lower()
+    if isinstance(document, dict):
+        tipo = str(document.get("tipo") or document.get("type") or document.get("schema") or "").lower()
+        if tipo:
+            return tipo
+    if "axiom" in stem:
+        return "axioms"
+    if "generativ" in stem:
+        return "generatividad"
+    if "contrato" in stem:
+        return "contratos"
+    if "evaluacion" in stem:
+        return "evaluaciones"
+    if "coherence_history" in stem:
+        return "coherence_history"
+    if "test_results" in stem:
+        return "tests_xml"
+    if "omega_report_data" in stem:
+        return "omega_package_prev"
+    if "omega_report" in stem and path.suffix.lower() == ".md":
+        return "omega_report_md"
+    if "diario" in stem or "diary" in stem:
+        return "diario"
+    return stem or name
+
+
+def capture_artifact(path: Path) -> dict:
+    rel = str(path.relative_to(REPO_ROOT)) if REPO_ROOT in path.parents or path.parent == REPO_ROOT else str(path)
+    rec = {
+        "path": rel,
+        "name": path.name,
+        "suffix": path.suffix,
+        "bytes": path.stat().st_size if path.exists() else 0,
+        "sha256": _sha256_file(path) if path.exists() else None,
+        "mtime": datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc).isoformat() if path.exists() else None,
+        "present": path.exists(),
+        "read_ok": False,
+        "parse_ok": False,
+        "content_type": path.suffix.lstrip(".").lower() or "unknown",
+        "document": None,
+        "document_metadata": {},
+        "error": None,
+    }
+    if not path.exists() or not path.is_file():
+        return rec
+    try:
+        raw = path.read_bytes()
+        rec["read_ok"] = True
+    except Exception as e:
+        rec["error"] = str(e)
+        return rec
+    suffix = path.suffix.lower()
+    text = None
+    try:
+        text = raw.decode("utf-8")
+    except Exception:
+        rec["document"] = {"_binary": True, "bytes": rec["bytes"]}
+        return rec
+    if suffix == ".json":
+        try:
+            document = json.loads(text)
+            rec["parse_ok"] = True
+            rec["document"] = _redact(document)
+            if isinstance(document, dict):
+                rec["document_metadata"] = {
+                    k: document.get(k)
+                    for k in (
+                        "tipo", "type", "schema", "schema_version", "version",
+                        "origen", "invocador_id", "estado_engine", "timestamp",
+                        "n", "nota", "coherente", "incoherente",
+                    )
+                    if k in document
+                }
+        except Exception as e:
+            rec["error"] = str(e)
+            rec["document"] = {"_raw_text": text}
+    elif suffix == ".xml":
+        rec["document"] = {"_xml_text": text}
+        rec["parse_ok"] = True
+    elif suffix in {".md", ".txt"}:
+        rec["document"] = {"_text": text}
+        rec["parse_ok"] = True
+    else:
+        rec["document"] = {"_text": text}
+        rec["parse_ok"] = True
+    return rec
+
+
+def discover_diagnostics() -> dict:
+    artifacts = []
+    index = {}
+    if DIAGNOSTICS_DIR.exists():
+        for path in sorted(DIAGNOSTICS_DIR.rglob("*")):
+            if not path.is_file():
+                continue
+            if path.name in SKIP_DIAG_NAMES:
+                continue
+            if path.suffix == ".pyc" or "__pycache__" in path.parts:
+                continue
+            rec = capture_artifact(path)
+            artifacts.append(rec)
+            key = _index_key_for(path, rec.get("document"))
+            if key not in index:
+                index[key] = rec
+    return {"artifacts": artifacts, "index": index}
+
+
+def snapshot_engine() -> dict:
+    snap = {"available": False, "startup": "UNAVAILABLE", "error": None, "public": {}}
+    try:
+        from core.engine import Engine, ArranqueError
+    except Exception as e:
+        snap["error"] = "{0}: {1}".format(type(e).__name__, e)
+        snap["startup"] = "ERROR"
+        return snap
+    try:
+        eng = Engine(REPO_ROOT / "modules", invocador_id="omega", strict=True)
+        snap["available"] = True
+        snap["startup"] = "OK"
+        snap["class"] = type(eng).__name__
+        public = {}
+        for name in dir(eng):
+            if name.startswith("_"):
+                continue
+            try:
+                val = getattr(eng, name)
+            except Exception as e:
+                public[name] = {"_error": str(e)}
+                continue
+            if callable(val):
+                continue
+            if _safe_jsonable(val):
+                public[name] = val
+            else:
+                public[name] = repr(val)
+        if hasattr(eng, "censar"):
+            try:
+                public["census"] = eng.censar()
+            except Exception as e:
+                public["census_error"] = str(e)
+        if hasattr(eng, "paquete_omega"):
+            try:
+                public["paquete_omega"] = eng.paquete_omega()
+            except Exception as e:
+                public["paquete_omega_error"] = str(e)
+        snap["public"] = public
+        snap["estado"] = public.get("estado")
+        snap["invocador_id"] = public.get("invocador_id")
+        snap["errores_arranque"] = public.get("errores_arranque")
+        snap["fallos"] = public.get("fallos")
+        snap["census"] = public.get("census")
+    except ArranqueError as e:
+        snap["available"] = False
+        snap["startup"] = "ERROR"
+        snap["error"] = str(e)
+        snap["class"] = "Engine"
+    except Exception as e:
+        snap["available"] = False
+        snap["startup"] = "ERROR"
+        snap["error"] = "{0}: {1}".format(type(e).__name__, e)
+    return snap
+
+
+def generated_metadata(now: str, sha: str) -> dict:
+    return {
+        "utc": now,
+        "sha": sha,
+        "framework": "Universal Integration System",
+        "omega_version": VERSION,
+        "python": sys.version.split()[0],
+        "platform": platform.platform(),
+        "ref": os.environ.get("GITHUB_REF"),
+        "run_id": os.environ.get("GITHUB_RUN_ID"),
+        "run_number": os.environ.get("GITHUB_RUN_NUMBER"),
+        "workflow": os.environ.get("GITHUB_WORKFLOW"),
+        "job": os.environ.get("GITHUB_JOB"),
+        "event": os.environ.get("GITHUB_EVENT_NAME"),
+    }
+
 
 ICON_OMEGA = "Ω"
 ICON_OK = "✅"
@@ -1628,20 +1860,31 @@ def render_ci(paquete):
             continue
         pares = []
         for k, v in data.items():
-            if isinstance(v, (dict, list)):
-                continue
-            pares.append((str(k), _icono_status(v) if str(k).lower() in {"status", "available"} else _fmt_ci(v)))
-        lines.extend(ci_kv(pares[:16]))
+            if isinstance(v, dict):
+                pares.append((str(k), "{0} keys".format(len(v))))
+                for sk, sv in v.items():
+                    if isinstance(sv, (dict, list)):
+                        pares.append(("  " + str(sk), "{0}".format(type(sv).__name__)))
+                    else:
+                        pares.append(("  " + str(sk), _fmt_ci(sv)))
+            elif isinstance(v, list):
+                pares.append((str(k), "n={0}".format(len(v))))
+            else:
+                pares.append((str(k), _icono_status(v) if str(k).lower() in {"status", "available"} else _fmt_ci(v)))
+        lines.extend(ci_kv(pares))
 
     torus = vals.get("torus") or {}
     lines.extend(ci_banner("{0} TORUS FORMULA".format(ICON_GRAPH)))
     if isinstance(torus, dict):
         pares = []
         for k, v in torus.items():
-            if isinstance(v, (dict, list)):
-                continue
-            pares.append((str(k), _fmt_ci(v) if not isinstance(v, bool) else ("{0} {1}".format(ICON_OK if v else ICON_FAIL, v))))
-        lines.extend(ci_kv(pares[:18]))
+            if isinstance(v, dict):
+                pares.append((str(k), "{0} keys".format(len(v))))
+            elif isinstance(v, list):
+                pares.append((str(k), "n={0}".format(len(v))))
+            else:
+                pares.append((str(k), _fmt_ci(v) if not isinstance(v, bool) else ("{0} {1}".format(ICON_OK if v else ICON_FAIL, v))))
+        lines.extend(ci_kv(pares))
 
     lines.extend(ci_banner("{0} L7 INTEGRATION".format(ICON_LAYER)))
     if isinstance(l7, dict):
@@ -1692,12 +1935,24 @@ def render_ci(paquete):
     gd = (ci_ev.get("generatividad") or {}).get("data") or {}
     lines.extend(ci_banner("{0} GENERATIVIDAD OPERATIVA".format(ICON_GEN)))
     if isinstance(gd, dict) and gd:
-        op = {k: v for k, v in gd.items() if k != "canonica" and not isinstance(v, (dict, list))}
-        lines.extend(ci_kv([(str(k), _fmt_ci(v)) for k, v in op.items()]))
+        op = {k: v for k, v in gd.items() if k != "canonica"}
+        pares = []
+        for k, v in op.items():
+            if isinstance(v, (dict, list)):
+                pares.append((str(k), "n={0}".format(len(v))))
+            else:
+                pares.append((str(k), _fmt_ci(v)))
+        lines.extend(ci_kv(pares))
         lines.extend(ci_banner("{0} GENERATIVIDAD CANÓNICA TR1".format(ICON_CONTRACT)))
         can = gd.get("canonica") or {}
         if isinstance(can, dict):
-            lines.extend(ci_kv([(str(k), _fmt_ci(v)) for k, v in can.items() if not isinstance(v, (dict, list))]))
+            pares = []
+            for k, v in can.items():
+                if isinstance(v, (dict, list)):
+                    pares.append((str(k), "n={0}".format(len(v))))
+                else:
+                    pares.append((str(k), _fmt_ci(v)))
+            lines.extend(ci_kv(pares))
 
     lines.extend(ci_banner("{0} ENGINE".format(ICON_ENGINE)))
     lines.extend(ci_kv([
@@ -1707,10 +1962,24 @@ def render_ci(paquete):
     ]))
 
     lines.extend(ci_banner("{0} DIAGNOSTIC ARTIFACTS".format(ICON_DISK)))
-    for key, label in (("axioms", "axioms_report.json"), ("generatividad", "generatividad_report.json"), ("contratos", "contratos_report.json"), ("evaluaciones", "evaluaciones.json")):
-        rec = ci_ev.get(key) or {}
-        mark = ICON_OK if rec.get("present") else ICON_FAIL
-        lines.extend(ci_kv([(mark + " " + label, rec.get("present"))]))
+    arts = ((paquete.get("diagnostics") or {}).get("artifacts")) or []
+    if arts:
+        for rec in arts:
+            mark = ICON_OK if rec.get("present") and rec.get("read_ok") else ICON_FAIL
+            lines.extend(ci_card("{0} {1}".format(mark, rec.get("name") or rec.get("path")), [
+                ("Path", rec.get("path")),
+                ("Bytes", rec.get("bytes")),
+                ("Parse", rec.get("parse_ok")),
+                ("SHA", (rec.get("sha256") or "N/D")[:12]),
+            ]))
+    else:
+        for key, rec in ci_ev.items():
+            if not isinstance(rec, dict):
+                continue
+            if "present" not in rec and "path" not in rec:
+                continue
+            mark = ICON_OK if rec.get("present") else ICON_FAIL
+            lines.extend(ci_kv([(mark + " " + str(rec.get("name") or rec.get("path") or key), rec.get("present"))]))
 
     lines.extend(ci_banner("{0} PROVENANCE".format(ICON_SRC)))
     lines.extend(ci_kv([
@@ -2338,68 +2607,44 @@ def build_report():
     # Paquete máquina (JSON) — misma verdad que el Markdown
     # ------------------------------------------------------------------
     executed = read_executed_tests() if "read_executed_tests" in globals() else {}
-    axioms_path = DIAGNOSTICS_DIR / "axioms_report.json"
-    gen_path = DIAGNOSTICS_DIR / "generatividad_report.json"
-    con_path = DIAGNOSTICS_DIR / "contratos_report.json"
-    eva_path = DIAGNOSTICS_DIR / "evaluaciones.json"
+    diagnostics_snapshot = discover_diagnostics()
+    raw_artifacts = diagnostics_snapshot.get("artifacts") or []
+    diag_index = diagnostics_snapshot.get("index") or {}
 
-    def _read_json(path):
-        rec = {"path": str(path.relative_to(REPO_ROOT)) if path.exists() else str(path), "present": path.exists(), "data": None}
-        if path.exists():
-            try:
-                rec["data"] = json.loads(path.read_text(encoding="utf-8"))
-                rec["read_ok"] = True
-            except Exception as e:
-                rec["error"] = str(e)
-                rec["read_ok"] = False
-        return rec
+    def _idx_doc(key):
+        rec = diag_index.get(key) or {}
+        doc = rec.get("document")
+        if doc is None:
+            doc = rec.get("data")
+        return rec, doc
 
-    ci_evidence = {
-        "axioms": _read_json(axioms_path),
-        "generatividad": _read_json(gen_path),
-        "contratos": _read_json(con_path),
-        "evaluaciones": _read_json(eva_path),
-        "tests": executed if executed else test_results,
-        "coherence_history": history,
-    }
+    # índice de conveniencia — alias data = document (mismo objeto, no resumen)
+    ci_evidence = {}
+    for key, rec in diag_index.items():
+        view = dict(rec)
+        view["data"] = rec.get("document")
+        ci_evidence[key] = view
+    ci_evidence["tests"] = executed if executed else test_results
+    if "coherence_history" not in ci_evidence:
+        ci_evidence["coherence_history"] = history
 
-    engine_state = {"available": False, "startup": "UNAVAILABLE", "error": None}
-    try:
-        from core.engine import Engine, ArranqueError
-        try:
-            eng = Engine(REPO_ROOT / "modules", invocador_id="omega", strict=True)
-            engine_state = {
-                "available": True,
-                "startup": "OK",
-                "class": "Engine",
-                "estado": getattr(eng, "estado", None),
-                "invocador_id": getattr(eng, "invocador_id", None),
-            }
-            if hasattr(eng, "censar"):
-                try:
-                    engine_state["census"] = eng.censar()
-                except Exception as e:
-                    engine_state["census_error"] = str(e)
-        except ArranqueError as e:
-            engine_state = {"available": False, "startup": "ERROR", "error": str(e), "class": "Engine"}
-    except Exception as e:
-        engine_state = {"available": False, "startup": "ERROR", "error": "{0}: {1}".format(type(e).__name__, e)}
+    engine_state = snapshot_engine()
 
     system_status = {"coherente": None, "estado": "N/D", "source": None, "source_type": "UNAVAILABLE"}
-    cdata = (ci_evidence["contratos"] or {}).get("data")
+    _, cdata = _idx_doc("contratos")
+    _, adata = _idx_doc("axioms")
     if isinstance(cdata, dict) and "incoherente" in cdata:
         system_status = {
             "coherente": (not bool(cdata.get("incoherente"))),
             "estado": "COHERENTE" if not cdata.get("incoherente") else "INCOHERENTE",
-            "source": "diagnostics/contratos_report.json:incoherente",
+            "source": "{0}:incoherente".format((diag_index.get("contratos") or {}).get("path") or "contratos"),
             "source_type": "DERIVED_ADAPTER",
         }
-    elif isinstance((ci_evidence["axioms"] or {}).get("data"), dict) and "coherente" in ci_evidence["axioms"]["data"]:
-        ax = ci_evidence["axioms"]["data"]
+    elif isinstance(adata, dict) and "coherente" in adata:
         system_status = {
-            "coherente": bool(ax.get("coherente")),
-            "estado": "COHERENTE" if ax.get("coherente") else "INCOHERENTE",
-            "source": "diagnostics/axioms_report.json:coherente",
+            "coherente": bool(adata.get("coherente")),
+            "estado": "COHERENTE" if adata.get("coherente") else "INCOHERENTE",
+            "source": "{0}:coherente".format((diag_index.get("axioms") or {}).get("path") or "axioms"),
             "source_type": "CI_ARTIFACT",
         }
 
@@ -2476,17 +2721,20 @@ def build_report():
 
     lines.append("## {0} Diagnostic Artifacts".format(ICON_DISK))
     lines.append("")
-    lines.append(md_table(
-        ["", "Artefacto", "Presente"],
-        [
-            [ICON_OK if ci_evidence["axioms"].get("present") else ICON_FAIL, "diagnostics/axioms_report.json", ci_evidence["axioms"].get("present")],
-            [ICON_OK if ci_evidence["generatividad"].get("present") else ICON_FAIL, "diagnostics/generatividad_report.json", ci_evidence["generatividad"].get("present")],
-            [ICON_OK if ci_evidence["contratos"].get("present") else ICON_FAIL, "diagnostics/contratos_report.json", ci_evidence["contratos"].get("present")],
-            [ICON_OK if ci_evidence["evaluaciones"].get("present") else ICON_FAIL, "diagnostics/evaluaciones.json", ci_evidence["evaluaciones"].get("present")],
-            [ICON_OK if (DIAGNOSTICS_DIR / "test_results.xml").exists() else ICON_FAIL, "diagnostics/test_results.xml", (DIAGNOSTICS_DIR / "test_results.xml").exists()],
-            [ICON_OK if (DIAGNOSTICS_DIR / "coherence_history.json").exists() else ICON_FAIL, "diagnostics/coherence_history.json", (DIAGNOSTICS_DIR / "coherence_history.json").exists()],
-        ],
-    ))
+    art_rows = []
+    for rec in raw_artifacts:
+        mark = ICON_OK if rec.get("present") and rec.get("read_ok") else ICON_FAIL
+        art_rows.append([
+            mark,
+            rec.get("path"),
+            rec.get("bytes"),
+            rec.get("parse_ok"),
+            rec.get("content_type"),
+        ])
+    if art_rows:
+        lines.append(md_table(["", "Artefacto", "Bytes", "Parse", "Tipo"], art_rows))
+    else:
+        lines.append("{0} diagnostics/ vacío o ilegible".format(ICON_INFO))
     lines.append("")
 
     lines.append("## {0} Evidence Provenance".format(ICON_SRC))
@@ -2527,12 +2775,33 @@ def build_report():
     lines.append("{0} **Omega**".format(ICON_OMEGA))
     lines.append("")
 
+    validations_list = [
+        {"id": "cosmo", "title": "Cosmological Constant", "metrics": cosmo_info, "source": "formulas/modules"},
+        {"id": "hubble", "title": "Hubble Tension", "metrics": (cosmo_info.get("hubble") if isinstance(cosmo_info, dict) else None) or {}, "source": "formulas/modules"},
+        {"id": "econ", "title": "Economic Cycles", "metrics": econ_info, "source": "formulas/modules"},
+        {"id": "qg", "title": "Quantum Gravity", "metrics": qg_info, "source": "formulas/modules"},
+        {"id": "neuro", "title": "Neuroscience", "metrics": neuro_info, "source": "formulas/modules"},
+        {"id": "genetic", "title": "Genetic Code", "metrics": genetic_info, "source": "formulas/modules"},
+        {"id": "bh", "title": "Black Hole", "metrics": bh_info, "source": "formulas/modules"},
+        {"id": "torus", "title": "Torus Formula", "metrics": torus_info, "source": "formulas/modules"},
+        {"id": "l7", "title": "L7 Integration", "metrics": l7_info, "source": l7_info.get("source") if isinstance(l7_info, dict) else None},
+    ]
+    validations_index = {v["id"]: v for v in validations_list}
+
     paquete = {
-        "schema_version": "omega.uis.2.6",
+        "schema_version": "omega.uis.2.6.2",
         "version": VERSION,
-        "generated": {"utc": now, "sha": sha},
+        "generated": generated_metadata(now, sha),
+        "framework": {
+            "name": "Universal Integration System",
+            "omega_version": VERSION,
+        },
         "system_status": system_status,
         "engine": engine_state,
+        "diagnostics": {
+            "artifacts": raw_artifacts,
+            "index": {k: {"path": (v or {}).get("path"), "present": (v or {}).get("present")} for k, v in diag_index.items()},
+        },
         "metrics": {
             "C_struct": c_structural,
             "C_global_norm": c_global_norm,
@@ -2555,15 +2824,8 @@ def build_report():
         "tests": executed if executed else test_results,
         "ci_evidence": ci_evidence,
         "modules": module_status,
-        "validations": {
-            "torus": torus_info,
-            "qg": qg_info,
-            "neuro": neuro_info,
-            "genetic": genetic_info,
-            "bh": bh_info,
-            "cosmo": cosmo_info,
-            "econ": econ_info,
-        },
+        "validations": validations_index,
+        "validations_list": validations_list,
         "history": history,
         "const_checks": const_checks,
     }
