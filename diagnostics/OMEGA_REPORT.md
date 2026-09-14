@@ -2,11 +2,11 @@
 
 | Campo | Valor |
 | :--- | :--- |
-| ⏱️ Generated | 2026-09-14 20:20:46 UTC |
+| ⏱️ Generated | 2026-09-14 21:57:45 UTC |
 | Ω Version | 2.6.4 |
 | 📚 Framework | UCF v3.2 (Universal Coherence Framework) |
 | 🔹 Author | Ilver Villasmil |
-| 📡 Commit | 13a05e7 |
+| 📡 Commit | 902c1fe |
 
 ## 🧬 Estado Fenomenológico
 
@@ -20,7 +20,7 @@
 | L7 (Integración) | 0.796589 | ← INTEGRATED |
 | Umbral crítico (0.72) | ✅ SOBRE | ← debajo = entropía acelerada |
 | Umbral survival (0.10) | ✅ SOBRE | ← debajo = cohesión mínima comprometida |
-| Tendencia | ↑ CRECIENDO (+197) |  |
+| Tendencia | → ESTABLE |  |
 
 > **Nota semántica v2.1:** C_struct ≠ C_global ≠ C_CI.
 > Solo C_struct es la coherencia estructural real del framework.
@@ -85,7 +85,7 @@
 Últimos 10 runs:
 
 ```
-1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1567
+1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1370 → 1567 → 1567
 ```
 
 ## 📐 Constants Integrity
@@ -339,7 +339,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | Tests discovered | 92 | tests/ |
 | Tests executed | True | diagnostics/test_results.xml |
 | Modules listed | 41 | discovery |
-| History runs | 20 | diagnostics/coherence_history.json |
+| History runs | 21 | diagnostics/coherence_history.json |
 | Engine startup | OK | core.engine.Engine |
 
 ## 🧩 Engine State
@@ -348,7 +348,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | :--- | :---: | :--- |
 | available | True | core.engine |
 | startup | OK | Engine(...) |
-| estado | <formulas.coherence.SessionStateOmega object at 0x7ff813132850> | Engine.estado |
+| estado | <formulas.coherence.SessionStateOmega object at 0x7fcdd9604210> | Engine.estado |
 | invocador_id | omega | constructor |
 | error |  | ArranqueError |
 
@@ -364,9 +364,9 @@ ALPHA + BETA = 1.0  ← conservación estructural
 
 |  | Artefacto | Bytes | Parse | Tipo |
 | :---: | :--- | ---: | :---: | :--- |
-| ✅ | diagnostics/OMEGA_REPORT.md | 45940 | True | md |
-| ✅ | diagnostics/coherence_history.json | 5872 | True | json |
-| ✅ | diagnostics/test_results.xml | 190732 | True | xml |
+| ✅ | diagnostics/OMEGA_REPORT.md | 52504 | True | md |
+| ✅ | diagnostics/coherence_history.json | 6262 | True | json |
+| ✅ | diagnostics/test_results.xml | 190731 | True | xml |
 
 ## 🔎 Audit Coverage
 
@@ -506,7 +506,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | xml | 1 |
 | txt | 1 |
 | other | 7 |
-| bytes | 1821587 |
+| bytes | 1828534 |
 
 <details><summary>📄 Archivos (193)</summary>
 
@@ -599,7 +599,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests/Beal.py | python | 5357 |
 | tests/test_coherence_engine.py | python | 3134 |
 | tests/test_omega_falsification_births.py | python | 13397 |
-| tests/test_convergencia_estructural.py | python | 1237 |
+| tests/test_convergencia_estructural.py | python | 1231 |
 | tests/test_anti_loop.py | python | 3928 |
 | tests/Test_Harmonic_Ratio.py | python | 2709 |
 | tests/test_integration_cross_module.py | python | 5045 |
@@ -670,9 +670,9 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | core/greetings.py | python | 2367 |
 | core/validator.py | python | 9568 |
 | core/engine.py | python | 13385 |
-| diagnostics/OMEGA_REPORT.md | markdown | 45940 |
-| diagnostics/coherence_history.json | json | 5872 |
-| diagnostics/test_results.xml | xml | 190732 |
+| diagnostics/OMEGA_REPORT.md | markdown | 52504 |
+| diagnostics/coherence_history.json | json | 6262 |
+| diagnostics/test_results.xml | xml | 190731 |
 | diagnostics/omega_report.py | python | 128910 |
 | diagnostics/omega_diary_publisher.py | python | 15390 |
 | formulas/neuroscience_logic.py | python | 884 |
@@ -890,7 +890,7 @@ ALPHA + BETA = 1.0  ← conservación estructural
 | tests/test_constant_errors.py | test_report_measured_errors | 267 |
 | tests/test_constants.py | test_alpha_coherence_threshold | 6 |
 | tests/test_constants.py | test_diagnostic_codes | 24 |
-| tests/test_convergencia_estructural.py | test_convergencia_estructural_10_300 | 7 |
+| tests/test_convergencia_estructural.py | test_convergencia_estructural_10_30 | 7 |
 | tests/test_cosmology.py | test_lambda_ucf_value | 24 |
 | tests/test_cosmology.py | test_lambda_ucf_formula | 29 |
 | tests/test_cosmology.py | test_lambda_error_within_5pct | 34 |
