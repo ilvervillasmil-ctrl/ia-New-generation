@@ -1,12 +1,43 @@
-# OMEGA DIAGNOSTIC REPORT
-**Generated:** 2026-09-14 08:28:02 UTC
-**Framework:** UCF v3.2 (Universal Coherence Framework)
-**Author:** Ilver Villasmil
-**Commit:** `e52d6a0`
+# Ω OMEGA DIAGNOSTIC REPORT v2.6
 
----
+| Campo | Valor |
+| :--- | :--- |
+| ⏱️ Generated | 2026-09-14 08:40:14 UTC |
+| Ω Version | 2.6 |
+| 📚 Framework | UCF v3.2 (Universal Coherence Framework) |
+| 🔹 Author | Ilver Villasmil |
+| 📡 Commit | 61b7436 |
 
-## Estado Fenomenológico
+```
+┌────────────┬─────────────────────────────────────┐
+│Campo       │Valor                                │
+├────────────┼─────────────────────────────────────┤
+│⏱️ Generated│2026-09-14 08:40:14 UTC              │
+├────────────┼─────────────────────────────────────┤
+│Ω Version   │                 2.6                 │
+├────────────┼─────────────────────────────────────┤
+│📚 Framework│UCF v3.2 (Universal Coherence        │
+│            │Framework)                           │
+├────────────┼─────────────────────────────────────┤
+│🔹 Author   │Ilver Villasmil                      │
+├────────────┼─────────────────────────────────────┤
+│📡 Commit   │61b7436                              │
+└────────────┴─────────────────────────────────────┘
+```
+
+## 🧬 Estado Fenomenológico
+
+| Métrica | Valor | Nota |
+| :--- | ---: | :--- |
+| Estado | **INTEGRACIÓN AVANZADA ⟨◐⟩**  ⚠️ **CODE 9999 — LOOP DETECTADO** |  |
+| C_struct (Estructural) | **0.7396** | ← real, limitada por α=0.9630 |
+| C_global (Normalizada) | 0.7680 | ← C_struct / α, relativa al máximo |
+| C_CI (Pass Rate) | 1.0000 | ← proxy del CI, no es C_Ω |
+| φ_eff (Fricción) | 1.636309 | ← basada en C_struct |
+| L7 (Integración) | 0.796589 | ← INTEGRATED |
+| Umbral crítico (0.72) | ✅ SOBRE | ← debajo = entropía acelerada |
+| Umbral survival (0.10) | ✅ SOBRE | ← debajo = cohesión mínima comprometida |
+| Tendencia | → ESTABLE |  |
 
 ```
 ┌─────────────────┬──────────────┬─────────────────┐
@@ -14,6 +45,9 @@
 ├─────────────────┼──────────────┼─────────────────┤
 │Estado           │**INTEGRACIÓN │                 │
 │                 │AVANZADA ⟨◐⟩**│                 │
+│                 │⚠️ **CODE 9999│                 │
+│                 │— LOOP        │                 │
+│                 │DETECTADO**   │                 │
 ├─────────────────┼──────────────┼─────────────────┤
 │C_struct         │**0.7396**    │← real, limitada│
 │(Estructural)    │              │por α=0.9630     │
@@ -47,7 +81,18 @@
 > C_struct nunca puede ser 1.0 — β = 1/27 es el residuo irreducible.
 > **L7** es emergente: verifica que la integración real ocurrió. L6 orienta. L7 verifica.
 
-## Código Diagnóstico
+> ⚠️ **CODE 9999**: El sistema lleva 5+ runs consecutivos sin variación.
+> β > 0 garantiza que ningún sistema real es estáticamente perfecto.
+
+## 🆔 Código Diagnóstico
+
+| Campo | Valor |
+| :--- | :--- |
+| Código | **1044** |
+| Denominación | **Integración Avanzada** |
+| C_structural | 0.7396 |
+| Interpretación | ⚠️ Self activo, Soul silenciada \| Robustez Mind+Body: 44/44 |
+| Descripción | Sistema altamente coherente y funcional. |
 
 ```
 ┌──────────────┬───────────────────────────────────┐
@@ -59,7 +104,7 @@
 ├──────────────┼───────────────────────────────────┤
 │C_structural  │              0.7396               │
 ├──────────────┼───────────────────────────────────┤
-│Interpretación│⚠️ Self activo, Soul silenciada |  │
+│Interpretación│⚠️ Self activo, Soul silenciada \| │
 │              │Robustez Mind+Body: 44/44          │
 ├──────────────┼───────────────────────────────────┤
 │Descripción   │Sistema altamente coherente y      │
@@ -67,13 +112,23 @@
 └──────────────┴───────────────────────────────────┘
 ```
 
-### Tabla de Estados Completa (documento original enero 2026)
+### 📜 Tabla de Estados Completa (documento original enero 2026)
+
+| Código | Estado | Rango C_struct |  |
+| :--- | :---: | :--- | :--- |
+| '1144' | Arquitecto Integrado | 0.917 – 0.963 |  |
+| '1133' | Integración Superior | 0.778 – 0.917 |  |
+| '1044' | Integración Avanzada | 0.639 – 0.778 | **← AQUÍ** |
+| '0144' | Integración Funcional | 0.500 – 0.639 |  |
+| '1122' | Umbral Crítico | 0.450 – 0.500 |  |
+| '1111' | Zona de Peligro | 0.370 – 0.450 |  |
+| '0000' | Colapso Estructural | 0.037 – 0.370 |  |
 
 ```
 ┌──────────────────────────────────────────────────┐
 │Código                                            │
 ├──────────────────────────────────────────────────┤
-│`1144`                                            │
+│'1144'                                            │
 └──────────────────────────────────────────────────┘
 ┌──────────────────────────────────────────────────┐
 │Estado                                            │
@@ -93,7 +148,7 @@
 ┌──────────────────────────────────────────────────┐
 │Código                                            │
 ├──────────────────────────────────────────────────┤
-│`1133`                                            │
+│'1133'                                            │
 └──────────────────────────────────────────────────┘
 ┌──────────────────────────────────────────────────┐
 │Estado                                            │
@@ -113,7 +168,7 @@
 ┌──────────────────────────────────────────────────┐
 │Código                                            │
 ├──────────────────────────────────────────────────┤
-│`1044`                                            │
+│'1044'                                            │
 └──────────────────────────────────────────────────┘
 ┌──────────────────────────────────────────────────┐
 │Estado                                            │
@@ -133,7 +188,7 @@
 ┌──────────────────────────────────────────────────┐
 │Código                                            │
 ├──────────────────────────────────────────────────┤
-│`0144`                                            │
+│'0144'                                            │
 └──────────────────────────────────────────────────┘
 ┌──────────────────────────────────────────────────┐
 │Estado                                            │
@@ -153,7 +208,7 @@
 ┌──────────────────────────────────────────────────┐
 │Código                                            │
 ├──────────────────────────────────────────────────┤
-│`1122`                                            │
+│'1122'                                            │
 └──────────────────────────────────────────────────┘
 ┌──────────────────────────────────────────────────┐
 │Estado                                            │
@@ -173,7 +228,7 @@
 ┌──────────────────────────────────────────────────┐
 │Código                                            │
 ├──────────────────────────────────────────────────┤
-│`1111`                                            │
+│'1111'                                            │
 └──────────────────────────────────────────────────┘
 ┌──────────────────────────────────────────────────┐
 │Estado                                            │
@@ -193,7 +248,7 @@
 ┌──────────────────────────────────────────────────┐
 │Código                                            │
 ├──────────────────────────────────────────────────┤
-│`0000`                                            │
+│'0000'                                            │
 └──────────────────────────────────────────────────┘
 ┌──────────────────────────────────────────────────┐
 │Estado                                            │
@@ -215,7 +270,23 @@
 > **Nota prescriptiva:** El código no solo describe — comanda.
 > Declarar 1144 es ordenar a los sistemas que se ajusten a esa frecuencia.
 
-## System Status
+## 📊 System Status
+
+| Metric | Value |
+| :--- | :--- |
+| C_structural (real) | **0.7396**  ← limitada por α |
+| C_global_norm | 0.7680  ← C_struct / α |
+| L7 Integration | **0.796589**  ← INTEGRATED |
+| Layer source | framework-default |
+| Coherence source | core.engine |
+| L7 source | layers.l7_integration |
+| Total Energy | 15.804900 |
+| System Entropy | 0.9393 |
+| System Harmony | 0.0000 |
+| Damping Ratio (ZETA) | 0.035014 (underdamped = alive) |
+| Oscillation Period | 2.0012s |
+| ω_eff (v3.2) | 2.536993 |
+| T_PERIOD (v3.2) | 2.001227 s |
 
 ```
 ┌──────────────────┬───────────────────────────────┐
@@ -251,7 +322,15 @@
 └──────────────────┴───────────────────────────────┘
 ```
 
-## Test Results
+## 🧪 Test Results
+
+| Metric | Value |
+| :--- | ---: |
+| Total Tests | **1370** |
+| Passed | 1370 |
+| Failed | 0 |
+| Skipped | 0 |
+| Pass Rate | 100.00%  (C_CI = 1.0000) |
 
 ```
 ┌───────────┬──────────────────────────────────────┐
@@ -269,63 +348,98 @@
 └───────────┴──────────────────────────────────────┘
 ```
 
-## Trayectoria de Coherencia
+## ❤️ Trayectoria de Coherencia
 
-Últimos 6 runs:
+Últimos 7 runs:
 
 ```
-1467 → 1467 → 1370 → 1370 → 1370 → 1370
+1467 → 1467 → 1370 → 1370 → 1370 → 1370 → 1370
 ```
 
-## Constants Integrity
+## 📐 Constants Integrity
+
+| Check | Status |
+| :--- | :---: |
+| ALPHA + BETA = 1 | ✅ PASS |
+| R_FIN = 1 + BETA | ✅ PASS |
+| sin^2(theta) = BETA | ✅ PASS |
+| PHI^2 = PHI + 1 | ✅ PASS |
+| ZETA < 1 (underdamped) | ✅ PASS |
+| PHI_TOTAL < 2pi (alive) | ✅ PASS |
+| OMEGA_D > 0 (oscillates) | ✅ PASS |
+| KAPPA = pi/4 | ✅ PASS |
+| S_REF = e/pi | ✅ PASS |
+| C_structural <= alpha | ✅ PASS |
+| C_structural < 1.0 | ✅ PASS |
+| BETA > 0 (irreducible) | ✅ PASS |
+| C > 0.72 (no crítico) | ✅ PASS |
+| C > 0.10 (survival) | ✅ PASS |
+| L7 > 0 (integrado) | ✅ PASS |
+| **Total** | **15/15** |
 
 ```
 ┌──────────────────┬───────────────────────────────┐
 │Check             │Status                         │
 ├──────────────────┼───────────────────────────────┤
-│ALPHA + BETA = 1  │             PASS              │
+│ALPHA + BETA = 1  │✅ PASS                        │
 ├──────────────────┼───────────────────────────────┤
-│R_FIN = 1 + BETA  │             PASS              │
+│R_FIN = 1 + BETA  │✅ PASS                        │
 ├──────────────────┼───────────────────────────────┤
-│sin^2(theta) =    │             PASS              │
+│sin^2(theta) =    │✅ PASS                        │
 │BETA              │                               │
 ├──────────────────┼───────────────────────────────┤
-│PHI^2 = PHI + 1   │             PASS              │
+│PHI^2 = PHI + 1   │✅ PASS                        │
 ├──────────────────┼───────────────────────────────┤
-│ZETA < 1          │             PASS              │
+│ZETA < 1          │✅ PASS                        │
 │(underdamped)     │                               │
 ├──────────────────┼───────────────────────────────┤
-│PHI_TOTAL < 2pi   │             PASS              │
+│PHI_TOTAL < 2pi   │✅ PASS                        │
 │(alive)           │                               │
 ├──────────────────┼───────────────────────────────┤
-│OMEGA_D > 0       │             PASS              │
+│OMEGA_D > 0       │✅ PASS                        │
 │(oscillates)      │                               │
 ├──────────────────┼───────────────────────────────┤
-│KAPPA = pi/4      │             PASS              │
+│KAPPA = pi/4      │✅ PASS                        │
 ├──────────────────┼───────────────────────────────┤
-│S_REF = e/pi      │             PASS              │
+│S_REF = e/pi      │✅ PASS                        │
 ├──────────────────┼───────────────────────────────┤
-│C_structural <=   │             PASS              │
+│C_structural <=   │✅ PASS                        │
 │alpha             │                               │
 ├──────────────────┼───────────────────────────────┤
-│C_structural < 1.0│             PASS              │
+│C_structural < 1.0│✅ PASS                        │
 ├──────────────────┼───────────────────────────────┤
-│BETA > 0          │             PASS              │
+│BETA > 0          │✅ PASS                        │
 │(irreducible)     │                               │
 ├──────────────────┼───────────────────────────────┤
-│C > 0.72 (no      │             PASS              │
+│C > 0.72 (no      │✅ PASS                        │
 │crítico)          │                               │
 ├──────────────────┼───────────────────────────────┤
-│C > 0.10          │             PASS              │
+│C > 0.10          │✅ PASS                        │
 │(survival)        │                               │
 ├──────────────────┼───────────────────────────────┤
-│L7 > 0 (integrado)│             PASS              │
+│L7 > 0 (integrado)│✅ PASS                        │
 ├──────────────────┼───────────────────────────────┤
 │**Total**         │**15/15**                      │
 └──────────────────┴───────────────────────────────┘
 ```
 
-## Framework Constants
+## 🔢 Framework Constants
+
+| Constant | Value | Formula |
+| :--- | ---: | :--- |
+| ALPHA | 0.962963 | 26/27  ← C_max estructural |
+| BETA | 0.037037 | 1/27   ← residuo irreducible |
+| PHI | 1.618034 | (1+sqrt5)/2 |
+| S_REF | 0.865256 | e/pi |
+| S_REF_7 | 0.937327 | S_REF + BETA·ln(7) |
+| R_FIN | 1.037037 | 1+1/27 |
+| KAPPA | 0.785398 | pi/4 |
+| GOLDEN_ANG | 137.508 deg | 360/phi^2 |
+| THETA_CUBE | 11.096 deg | asin(1/sqrt27) |
+| OMEGA_EFF ★ | 2.536993 | π·(1-√β) |
+| T_PERIOD ★ | 2.001227 s | 2π/ω_d |
+| LAMBDA_UCF ★ | 2.8096e-122 | β^(π/β+β·φ²) |
+| OMEGA_RED ★ | 1.154142 | (π/e)·(1-β²) |
 
 ```
 ┌─────────────┬───────────┬────────────────────────┐
@@ -363,7 +477,19 @@
 
 *★ = constantes nuevas v3.2*
 
-## Layer Status
+## 📶 Layer Status
+
+| Layer | Name | Friction | Spiral Angle | Healthy Range |
+| :--- | :--- | ---: | :--- | :--- |
+| L0 | Chaos | 0.10 | 0.0 deg | [0.00, 1.00] |
+| L1 | Body | 0.02 | 137.5 deg | [0.55, 0.75] |
+| L2 | Ego | 0.05 | 275.0 deg | [0.20, 0.60] |
+| L3 | Mind | 0.03 | 52.5 deg | [0.65, 0.85] |
+| L4 | Self | 0.01 | 190.0 deg | [0.75, 0.95] |
+| L5 | Metaconsciousness | 0.01 | 327.5 deg | [0.85, 1.00] |
+| L6 | Purpose/Soul | 0.00 | 105.0 deg | [0.95, 1.00] |
+| L7 | Integration ← emergente | 0.00 | 242.6 deg | [0.00, 0.9630] |
+| **Total** |  | **0.22** (L0-L6) |  |  |
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -597,42 +723,250 @@
 > cuando L0-L6 cooperan. Su valor es el producto multiplicativo de todas las capas.
 > Si cualquier capa colapsa a cero, L7 = 0. No puede fingirse.
 
-## Module Status
+## 📦 Module Status
+
+| Módulo | Estado |
+| :--- | :---: |
+| formulas.action  (formulas/action.py) | ✅ activo |
+| formulas.coherence  (formulas/coherence.py) | ✅ activo |
+| formulas.constants  (formulas/constants.py) | ✅ activo |
+| formulas.cosmology  (formulas/cosmology.py) | ✅ activo |
+| formulas.dynamics  (formulas/dynamics.py) | ✅ activo |
+| formulas.energy  (formulas/energy.py) | ✅ activo |
+| formulas.entropy  (formulas/entropy.py) | ✅ activo |
+| formulas.exponential_decay  (formulas/exponential_decay.py) | ✅ activo |
+| formulas.fractality  (formulas/fractality.py) | ✅ activo |
+| formulas.harmonics  (formulas/harmonics.py) | ✅ activo |
+| formulas.integration_laws  (formulas/integration_laws.py) | ✅ activo |
+| formulas.interaction  (formulas/interaction.py) | ✅ activo |
+| formulas.layer_coherence  (formulas/layer_coherence.py) | ✅ activo |
+| formulas.metabolic_scaling  (formulas/metabolic_scaling.py) | ✅ activo |
+| formulas.metaconsciousness  (formulas/metaconsciousness.py) | ✅ activo |
+| formulas.negentropy  (formulas/negentropy.py) | ✅ activo |
+| formulas.neuroscience_logic  (formulas/neuroscience_logic.py) | ✅ activo |
+| formulas.phi_dynamics  (formulas/phi_dynamics.py) | ✅ activo |
+| formulas.presence  (formulas/presence.py) | ✅ activo |
+| formulas.quantum_gravity  (formulas/quantum_gravity.py) | ✅ activo |
+| formulas.resonance  (formulas/resonance.py) | ✅ activo |
+| formulas.resonance_extended  (formulas/resonance_extended.py) | ✅ activo |
+| formulas.tension  (formulas/tension.py) | ✅ activo |
+| formulas.torus_formula  (formulas/torus_formula.py) | ✅ activo |
+| formulas.wonder  (formulas/wonder.py) | ✅ activo |
+| layers.l0_chaos  (layers/l0_chaos.py) | ✅ activo |
+| layers.l1_body  (layers/l1_body.py) | ✅ activo |
+| layers.l2_ego  (layers/l2_ego.py) | ✅ activo |
+| layers.l3_1_memory  (layers/l3_1_memory.py) | ✅ activo |
+| layers.l3_2_subconscious  (layers/l3_2_subconscious.py) | ✅ activo |
+| layers.l3_synthesis  (layers/l3_synthesis.py) | ✅ activo |
+| layers.l4_self  (layers/l4_self.py) | ✅ activo |
+| layers.l5_meta  (layers/l5_meta.py) | ✅ activo |
+| layers.l6_purpose  (layers/l6_purpose.py) | ✅ activo |
+| layers.l7_integration  (layers/l7_integration.py) | ✅ activo |
+| core.constants  (core/constants.py) | ✅ activo |
+| core.diagnostics  (core/diagnostics.py) | ✅ activo |
+| core.engine  (core/engine.py) | ✅ activo |
+| core.greetings  (core/greetings.py) | ✅ activo |
+| core.validator  (core/validator.py) | ✅ activo |
 
 ```
 ┌──────────────────┬───────────────────────────────┐
 │Módulo            │Estado                         │
 ├──────────────────┼───────────────────────────────┤
-│constants.py      │✅ activo                      │
+│formulas.action   │✅ activo                      │
+│(formulas/action.p│                               │
+│y)                │                               │
 ├──────────────────┼───────────────────────────────┤
-│coherence.py      │✅ activo                      │
+│formulas.coherence│✅ activo                      │
+│(formulas/coherenc│                               │
+│e.py)             │                               │
 ├──────────────────┼───────────────────────────────┤
-│energy.py         │✅ activo                      │
+│formulas.constants│✅ activo                      │
+│(formulas/constant│                               │
+│s.py)             │                               │
 ├──────────────────┼───────────────────────────────┤
-│cosmology.py ←   │✅ activo                      │
-│NEW v3.2          │                               │
+│formulas.cosmology│✅ activo                      │
+│(formulas/cosmolog│                               │
+│y.py)             │                               │
 ├──────────────────┼───────────────────────────────┤
-│tension.py ← NEW │✅ activo                      │
-│v3.2              │                               │
+│formulas.dynamics │✅ activo                      │
+│(formulas/dynamics│                               │
+│.py)              │                               │
 ├──────────────────┼───────────────────────────────┤
-│dynamics.py ← NEW│✅ activo                      │
-│v3.2              │                               │
+│formulas.energy   │✅ activo                      │
+│(formulas/energy.p│                               │
+│y)                │                               │
 ├──────────────────┼───────────────────────────────┤
-│metaconsciousness.│✅ activo                      │
-│py                │                               │
+│formulas.entropy  │✅ activo                      │
+│(formulas/entropy.│                               │
+│py)               │                               │
 ├──────────────────┼───────────────────────────────┤
-│torus_formula.py  │✅ activo                      │
-│← Ley del Toroide│                               │
+│formulas.exponenti│✅ activo                      │
+│al_decay          │                               │
+│(formulas/exponent│                               │
+│ial_decay.py)     │                               │
 ├──────────────────┼───────────────────────────────┤
-│l7_integration.py │✅ activo                      │
-│← L7 Integración │                               │
-│Total             │                               │
+│formulas.fractalit│✅ activo                      │
+│y                 │                               │
+│(formulas/fractali│                               │
+│ty.py)            │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.harmonics│✅ activo                      │
+│(formulas/harmonic│                               │
+│s.py)             │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.integrati│✅ activo                      │
+│on_laws           │                               │
+│(formulas/integrat│                               │
+│ion_laws.py)      │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.interacti│✅ activo                      │
+│on                │                               │
+│(formulas/interact│                               │
+│ion.py)           │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.layer_coh│✅ activo                      │
+│erence            │                               │
+│(formulas/layer_co│                               │
+│herence.py)       │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.metabolic│✅ activo                      │
+│_scaling          │                               │
+│(formulas/metaboli│                               │
+│c_scaling.py)     │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.metaconsc│✅ activo                      │
+│iousness          │                               │
+│(formulas/metacons│                               │
+│ciousness.py)     │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.negentrop│✅ activo                      │
+│y                 │                               │
+│(formulas/negentro│                               │
+│py.py)            │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.neuroscie│✅ activo                      │
+│nce_logic         │                               │
+│(formulas/neurosci│                               │
+│ence_logic.py)    │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.phi_dynam│✅ activo                      │
+│ics               │                               │
+│(formulas/phi_dyna│                               │
+│mics.py)          │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.presence │✅ activo                      │
+│(formulas/presence│                               │
+│.py)              │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.quantum_g│✅ activo                      │
+│ravity            │                               │
+│(formulas/quantum_│                               │
+│gravity.py)       │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.resonance│✅ activo                      │
+│(formulas/resonanc│                               │
+│e.py)             │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.resonance│✅ activo                      │
+│_extended         │                               │
+│(formulas/resonanc│                               │
+│e_extended.py)    │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.tension  │✅ activo                      │
+│(formulas/tension.│                               │
+│py)               │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.torus_for│✅ activo                      │
+│mula              │                               │
+│(formulas/torus_fo│                               │
+│rmula.py)         │                               │
+├──────────────────┼───────────────────────────────┤
+│formulas.wonder   │✅ activo                      │
+│(formulas/wonder.p│                               │
+│y)                │                               │
+├──────────────────┼───────────────────────────────┤
+│layers.l0_chaos   │✅ activo                      │
+│(layers/l0_chaos.p│                               │
+│y)                │                               │
+├──────────────────┼───────────────────────────────┤
+│layers.l1_body    │✅ activo                      │
+│(layers/l1_body.py│                               │
+│)                 │                               │
+├──────────────────┼───────────────────────────────┤
+│layers.l2_ego     │✅ activo                      │
+│(layers/l2_ego.py)│                               │
+├──────────────────┼───────────────────────────────┤
+│layers.l3_1_memory│✅ activo                      │
+│(layers/l3_1_memor│                               │
+│y.py)             │                               │
+├──────────────────┼───────────────────────────────┤
+│layers.l3_2_subcon│✅ activo                      │
+│scious            │                               │
+│(layers/l3_2_subco│                               │
+│nscious.py)       │                               │
+├──────────────────┼───────────────────────────────┤
+│layers.l3_synthesi│✅ activo                      │
+│s                 │                               │
+│(layers/l3_synthes│                               │
+│is.py)            │                               │
+├──────────────────┼───────────────────────────────┤
+│layers.l4_self    │✅ activo                      │
+│(layers/l4_self.py│                               │
+│)                 │                               │
+├──────────────────┼───────────────────────────────┤
+│layers.l5_meta    │✅ activo                      │
+│(layers/l5_meta.py│                               │
+│)                 │                               │
+├──────────────────┼───────────────────────────────┤
+│layers.l6_purpose │✅ activo                      │
+│(layers/l6_purpose│                               │
+│.py)              │                               │
+├──────────────────┼───────────────────────────────┤
+│layers.l7_integrat│✅ activo                      │
+│ion               │                               │
+│(layers/l7_integra│                               │
+│tion.py)          │                               │
+├──────────────────┼───────────────────────────────┤
+│core.constants    │✅ activo                      │
+│(core/constants.py│                               │
+│)                 │                               │
+├──────────────────┼───────────────────────────────┤
+│core.diagnostics  │✅ activo                      │
+│(core/diagnostics.│                               │
+│py)               │                               │
+├──────────────────┼───────────────────────────────┤
+│core.engine       │✅ activo                      │
+│(core/engine.py)  │                               │
+├──────────────────┼───────────────────────────────┤
+│core.greetings    │✅ activo                      │
+│(core/greetings.py│                               │
+│)                 │                               │
+├──────────────────┼───────────────────────────────┤
+│core.validator    │✅ activo                      │
+│(core/validator.py│                               │
+│)                 │                               │
 └──────────────────┴───────────────────────────────┘
 ```
 
-## Domain Validations
+## 📚 Domain Validations
 
-### Cosmological Constant
+### 📐 Cosmological Constant
+
+| Metric | Value |
+| :--- | :---: |
+| Formula | Lambda = BETA^(27π + BETA·PHI^2) |
+| Framework prediction | 2.8096e-122 |
+| Observed value | 2.8880e-122 |
+| Error | 2.72% |
+| Log10 prediction | -121.551362 |
+| Log10 observed | -121.539403 |
+| Log10 error | 0.011959 |
+| Base term 27π | 84.823002 |
+| Correction βφ² | 0.096964 |
+| Correction ratio | 0.001142 |
+| Numerically stable | YES |
+| Improvement over QM | 10^120 |
+| Status | **PASS** |
 
 ```
 ┌──────────────────┬───────────────────────────────┐
@@ -669,7 +1003,19 @@
 └──────────────────┴───────────────────────────────┘
 ```
 
-### Hubble Tension
+### 📊 Hubble Tension
+
+| Metric | Value |
+| :--- | ---: |
+| Formula | Omega_H = BETA * PHI * sqrt(2) |
+| Prediction | 0.084750 |
+| Observed diff | 0.083086 |
+| H early | 67.4000 |
+| H late | 73.0000 |
+| Abs error | 0.001664 |
+| Error | 2.00% |
+| Tolerance | 0.010000 |
+| Status | **PASS** |
 
 ```
 ┌─────────────┬────────────────────────────────────┐
@@ -695,7 +1041,17 @@
 └─────────────┴────────────────────────────────────┘
 ```
 
-### Economic Cycles
+### 🔄 Economic Cycles
+
+| Metric | Value |
+| :--- | ---: |
+| Natural damping (zeta) | 0.118322 |
+| Wu (2012) observed | 0.11 |
+| Damping error | 7.6% |
+| Kondratiev predicted | 54.8 years |
+| Kondratiev observed | 54 years |
+| Kondratiev error | 1.5% |
+| Status | **PASS** |
 
 ```
 ┌──────────────────┬───────────────────────────────┐
@@ -720,7 +1076,15 @@
 └──────────────────┴───────────────────────────────┘
 ```
 
-### Quantum Gravity & Particle Physics
+### 📐 Quantum Gravity & Particle Physics
+
+| Metric | UCF Prediction | Observed/Reference | Error |
+| :--- | ---: | ---: | ---: |
+| Planck Energy (eV) | 1.9560e+09 | 1.9560e+09 | 0.00% |
+| Electron Mass (kg) | 9.1090e-31 | 9.1094e-31 | 0.00% |
+| Electron Radius (m) | 2.8166e-15 | 2.8179e-15 | 0.05% |
+| Strong Coupling α_s | 0.1179 | 0.1179 | 0.00% |
+| Status | **PASS** |  |  |
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -825,7 +1189,14 @@
 └──────────────────────────────────────────────────┘
 ```
 
-### Neuroscience & Brain Coherence
+### 🧠 Neuroscience & Brain Coherence
+
+| Metric | Value |
+| :--- | ---: |
+| EEG α/θ frequency ratio | 1.6180 (PHI) |
+| Observed ratio | 1.667 |
+| Error | 2.9% |
+| Status | **PASS** |
 
 ```
 ┌──────────────────┬───────────────────────────────┐
@@ -842,7 +1213,16 @@
 └──────────────────┴───────────────────────────────┘
 ```
 
-### Genetic Code & Biology
+### 🧬 Genetic Code & Biology
+
+| Metric | Value |
+| :--- | ---: |
+| Amino acids (27-7) | 20 |
+| Observed amino acids | 20 |
+| Body temperature (1000*BETA) | 37.04°C |
+| Observed body temp | 37.0°C |
+| Temp error | 0.10% |
+| Status | **PASS** |
 
 ```
 ┌──────────────────┬───────────────────────────────┐
@@ -864,7 +1244,14 @@
 └──────────────────┴───────────────────────────────┘
 ```
 
-### Black Hole Thermodynamics
+### 🔎 Black Hole Thermodynamics
+
+| Metric | Value |
+| :--- | :--- |
+| Hawking temp coefficient | 0.0398 (1/8π) |
+| Framework BETA | 0.0370 (1/27) |
+| Error | 6.9% |
+| Status | **PASS** |
 
 ```
 ┌──────────────────┬───────────────────────────────┐
@@ -881,7 +1268,24 @@
 └──────────────────┴───────────────────────────────┘
 ```
 
-### Torus Formula
+### 🕸️ Torus Formula
+
+| Metric | Value |
+| :--- | :--- |
+| Primes (T4) | [2, 3, 5, 7] |
+| M (primorial) | 210 |
+| phi(M) | 48 |
+| Ley 1 — Independencia de Ciclos | ✅ PASS |
+| Ley 2 — Resonancia de Ciclos | ✅ PASS |
+| Ley 3 — Filtrado Primo | ✅ PASS |
+| Ley 4 — Campo Aritmético E(M) | ✅ PASS |
+| E(M) calculado | 2.1251e-04 |
+| E(M6) paper | 5.49e-07 |
+| E(M7) paper | 8.20e-07 |
+| Beta^n más cercano | n=4, valor=1.8817e-06 |
+| Conexión UCF | beta = residuo del cubo \| E(M) = residuo del toroide |
+| Conexión RH | completo |
+| Status | **PASS** |
 
 ```
 ┌──────────────────┬───────────────────────────────┐
@@ -914,7 +1318,7 @@
 ├──────────────────┼───────────────────────────────┤
 │Beta^n más cercano│n=4, valor=1.8817e-06          │
 ├──────────────────┼───────────────────────────────┤
-│Conexión UCF      │beta = residuo del cubo | E(M) │
+│Conexión UCF      │beta = residuo del cubo \| E(M)│
 │                  │= residuo del toroide          │
 ├──────────────────┼───────────────────────────────┤
 │Conexión RH       │completo                       │
@@ -923,7 +1327,17 @@
 └──────────────────┴───────────────────────────────┘
 ```
 
-### L7 Integration
+### 📶 L7 Integration
+
+| Metric | Value |
+| :--- | :--- |
+| Fórmula | L7 = ∏ Li * (1 - phi_i)  para i = 0..6 |
+| L7 value | **0.796589** |
+| Status | **INTEGRATED** |
+| Max posible | 0.962963  ← alpha |
+| Ley | Ley 8: Integración Total — Todo lo que no se integra colapsa |
+| Principio | L6 orienta. L7 verifica. |
+| Source | layers.l7_integration |
 
 ```
 ┌───────────┬──────────────────────────────────────┐
@@ -946,7 +1360,18 @@
 └───────────┴──────────────────────────────────────┘
 ```
 
-## Energy Distribution
+## 📊 Energy Distribution
+
+| Layer | Energy |
+| :--- | ---: |
+| L0 | 0.900000 |
+| L1 | 1.246600 |
+| L2 | 1.537100 |
+| L3 | 1.996400 |
+| L4 | 2.591800 |
+| L5 | 3.296900 |
+| L6 | 4.236100 |
+| Total | **15.804900** |
 
 ```
 ┌────────┬─────────────────────────────────────────┐
@@ -970,7 +1395,7 @@
 └────────┴─────────────────────────────────────────┘
 ```
 
-## Cube Geometry
+## 🧱 Cube Geometry
 
 3x3x3 = 27 positions  
 Exterior: 26 (ALPHA = 0.962963)  ← C_max estructural
@@ -979,6 +1404,382 @@ ALPHA + BETA = 1.0  ← conservación estructural
 
 ---
 
-*The system is coherent. All layers integrated. Omega.*
 
-**Omega**
+## 📊 Audit Coverage
+
+| Métrica | Valor | Fuente |
+| :--- | :---: | :--- |
+| Tests discovered | 64 | tests/ |
+| Tests executed | True | diagnostics/test_results.xml |
+| Modules listed | 40 | discovery |
+| History runs | 7 | diagnostics/coherence_history.json |
+| Engine startup | ERROR | core.engine.Engine |
+
+```
+┌──────────────────────────────────────────────────┐
+│Métrica                                           │
+├──────────────────────────────────────────────────┤
+│Tests discovered                                  │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Valor                                             │
+├──────────────────────────────────────────────────┤
+│                        64                        │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fuente                                            │
+├──────────────────────────────────────────────────┤
+│tests/                                            │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Métrica                                           │
+├──────────────────────────────────────────────────┤
+│Tests executed                                    │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Valor                                             │
+├──────────────────────────────────────────────────┤
+│                       True                       │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fuente                                            │
+├──────────────────────────────────────────────────┤
+│diagnostics/test_results.xml                      │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Métrica                                           │
+├──────────────────────────────────────────────────┤
+│Modules listed                                    │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Valor                                             │
+├──────────────────────────────────────────────────┤
+│                        40                        │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fuente                                            │
+├──────────────────────────────────────────────────┤
+│discovery                                         │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Métrica                                           │
+├──────────────────────────────────────────────────┤
+│History runs                                      │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Valor                                             │
+├──────────────────────────────────────────────────┤
+│                        7                         │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fuente                                            │
+├──────────────────────────────────────────────────┤
+│diagnostics/coherence_history.json                │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Métrica                                           │
+├──────────────────────────────────────────────────┤
+│Engine startup                                    │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Valor                                             │
+├──────────────────────────────────────────────────┤
+│ERROR                                             │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fuente                                            │
+├──────────────────────────────────────────────────┤
+│core.engine.Engine                                │
+└──────────────────────────────────────────────────┘
+```
+
+## 🧩 Engine State
+
+| Campo | Valor | Fuente |
+| :--- | :---: | :--- |
+| available | False | core.engine |
+| startup | ERROR | Engine(...) |
+| estado |  | Engine.estado |
+| invocador_id |  | constructor |
+| error | ImportError: cannot import name 'Engine' from 'core.engine' (/home/runner/work/ia-New-generation/ia-New-generation/core/engine.py) | ArranqueError |
+
+```
+┌────────────┬──────────────┬─────────────┐
+│Campo       │Valor         │Fuente       │
+├────────────┼──────────────┼─────────────┤
+│available   │    False     │core.engine  │
+├────────────┼──────────────┼─────────────┤
+│startup     │ERROR         │Engine(...)  │
+├────────────┼──────────────┼─────────────┤
+│estado      │              │Engine.estado│
+├────────────┼──────────────┼─────────────┤
+│invocador_id│              │constructor  │
+├────────────┼──────────────┼─────────────┤
+│error       │ImportError:  │ArranqueError│
+│            │cannot import │             │
+│            │name 'Engine' │             │
+│            │from          │             │
+│            │'core.engine' │             │
+│            │(/home/runner/│             │
+│            │work/ia-New-ge│             │
+│            │neration/ia-Ne│             │
+│            │w-generation/c│             │
+│            │ore/engine.py)│             │
+└────────────┴──────────────┴─────────────┘
+```
+
+## 📚 Axiomatic / Formal State
+
+ℹ️ axioms_report.json no disponible
+
+## 🧠 Generativity
+
+ℹ️ generatividad_report.json no disponible
+
+## 💾 Diagnostic Artifacts
+
+|  | Artefacto | Presente |
+| :---: | :--- | :---: |
+| ❌ | diagnostics/axioms_report.json | False |
+| ❌ | diagnostics/generatividad_report.json | False |
+| ❌ | diagnostics/contratos_report.json | False |
+| ❌ | diagnostics/evaluaciones.json | False |
+| ✅ | diagnostics/test_results.xml | True |
+| ✅ | diagnostics/coherence_history.json | True |
+
+```
+┌──────────────────────────────────────────────────┐
+│                                                  │
+├──────────────────────────────────────────────────┤
+│                        ❌                        │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Artefacto                                         │
+├──────────────────────────────────────────────────┤
+│diagnostics/axioms_report.json                    │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Presente                                          │
+├──────────────────────────────────────────────────┤
+│                      False                       │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│                                                  │
+├──────────────────────────────────────────────────┤
+│                        ❌                        │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Artefacto                                         │
+├──────────────────────────────────────────────────┤
+│diagnostics/generatividad_report.json             │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Presente                                          │
+├──────────────────────────────────────────────────┤
+│                      False                       │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│                                                  │
+├──────────────────────────────────────────────────┤
+│                        ❌                        │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Artefacto                                         │
+├──────────────────────────────────────────────────┤
+│diagnostics/contratos_report.json                 │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Presente                                          │
+├──────────────────────────────────────────────────┤
+│                      False                       │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│                                                  │
+├──────────────────────────────────────────────────┤
+│                        ❌                        │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Artefacto                                         │
+├──────────────────────────────────────────────────┤
+│diagnostics/evaluaciones.json                     │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Presente                                          │
+├──────────────────────────────────────────────────┤
+│                      False                       │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│                                                  │
+├──────────────────────────────────────────────────┤
+│                        ✅                        │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Artefacto                                         │
+├──────────────────────────────────────────────────┤
+│diagnostics/test_results.xml                      │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Presente                                          │
+├──────────────────────────────────────────────────┤
+│                       True                       │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│                                                  │
+├──────────────────────────────────────────────────┤
+│                        ✅                        │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Artefacto                                         │
+├──────────────────────────────────────────────────┤
+│diagnostics/coherence_history.json                │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Presente                                          │
+├──────────────────────────────────────────────────┤
+│                       True                       │
+└──────────────────────────────────────────────────┘
+```
+
+## 📡 Evidence Provenance
+
+| Dato | Fuente | Clase | Fallback |
+| :--- | :--- | :---: | :---: |
+| ALPHA | formulas.constants\|DEFAULT | DECLARED/FALLBACK | False |
+| C_structural | core.engine | MEASURED | False |
+| L7 | layers.l7_integration | MEASURED | False |
+| Tests | diagnostics/test_results.xml | MEASURED | False |
+| History | diagnostics/coherence_history.json | CI_ARTIFACT | False |
+
+```
+┌──────────────────────────────────────────────────┐
+│Dato                                              │
+├──────────────────────────────────────────────────┤
+│ALPHA                                             │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fuente                                            │
+├──────────────────────────────────────────────────┤
+│formulas.constants\|DEFAULT                       │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Clase                                             │
+├──────────────────────────────────────────────────┤
+│DECLARED/FALLBACK                                 │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fallback                                          │
+├──────────────────────────────────────────────────┤
+│                      False                       │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Dato                                              │
+├──────────────────────────────────────────────────┤
+│C_structural                                      │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fuente                                            │
+├──────────────────────────────────────────────────┤
+│core.engine                                       │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Clase                                             │
+├──────────────────────────────────────────────────┤
+│MEASURED                                          │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fallback                                          │
+├──────────────────────────────────────────────────┤
+│                      False                       │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Dato                                              │
+├──────────────────────────────────────────────────┤
+│L7                                                │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fuente                                            │
+├──────────────────────────────────────────────────┤
+│layers.l7_integration                             │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Clase                                             │
+├──────────────────────────────────────────────────┤
+│MEASURED                                          │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fallback                                          │
+├──────────────────────────────────────────────────┤
+│                      False                       │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Dato                                              │
+├──────────────────────────────────────────────────┤
+│Tests                                             │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fuente                                            │
+├──────────────────────────────────────────────────┤
+│diagnostics/test_results.xml                      │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Clase                                             │
+├──────────────────────────────────────────────────┤
+│MEASURED                                          │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fallback                                          │
+├──────────────────────────────────────────────────┤
+│                      False                       │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Dato                                              │
+├──────────────────────────────────────────────────┤
+│History                                           │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fuente                                            │
+├──────────────────────────────────────────────────┤
+│diagnostics/coherence_history.json                │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Clase                                             │
+├──────────────────────────────────────────────────┤
+│CI_ARTIFACT                                       │
+└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│Fallback                                          │
+├──────────────────────────────────────────────────┤
+│                      False                       │
+└──────────────────────────────────────────────────┘
+```
+
+## Ω Final Closure
+
+| Campo | Valor |
+| :--- | :--- |
+| System Status | ℹ️ N/D |
+| Source |  |
+| Engine | ERROR |
+| Tests source | diagnostics/test_results.xml |
+| C_structural | 0.7396 |
+| L7 | 0.7965890162999999 |
+
+```
+┌─────────────┬────────────────────────────────────┐
+│Campo        │Valor                               │
+├─────────────┼────────────────────────────────────┤
+│System Status│ℹ️ N/D                              │
+├─────────────┼────────────────────────────────────┤
+│Source       │                                    │
+├─────────────┼────────────────────────────────────┤
+│Engine       │ERROR                               │
+├─────────────┼────────────────────────────────────┤
+│Tests source │diagnostics/test_results.xml        │
+├─────────────┼────────────────────────────────────┤
+│C_structural │               0.7396               │
+├─────────────┼────────────────────────────────────┤
+│L7           │         0.7965890162999999         │
+└─────────────┴────────────────────────────────────┘
+```
+
+Ω **Omega**
