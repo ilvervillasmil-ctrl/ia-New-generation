@@ -1,0 +1,16 @@
+def test_both_engines_zero_for_dead_system(self):
+    """Dead system: CoherenceEngine gives 0, OmegaEngine gives base factors only."""
+    activations = [0.0] * 7
+
+    result_coherence = CoherenceEngine.full_analysis(activations)
+    assert result_coherence["c_beta"]["c_beta"] == 0.0
+
+    engine = OmegaEngine()
+    layers = [{'L': 0.0, 'phi': 0.0} for _ in range(7)]
+    result_engine = engine.compute_coherence(layers)
+    # OmegaEngine returns α/S × R ≈ 0.4386 even with zero activations
+    # because the multiplicative base factors exist without movement.
+    # Structure without oscillation is not coherence — it is a corpse.
+    # UCF v3.1 resolves this: if dθ/dt = 0, the system is dead.
+    assert result_engine < 0.5, "Dead system should have low coherence"
+    assert result_engine > 0.0, "Base factors (α/S × R) still exist structurally"

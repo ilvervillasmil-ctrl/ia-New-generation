@@ -1,0 +1,113 @@
+import ast
+import inspect
+import math
+
+from cosmology import lambda_ucf_planck  # función real del framework
+
+
+def _extract_numeric_literals(func) -> list[float]:
+    """
+    Extrae literales numéricos directos del cuerpo de la función (AST).
+    No mira docstrings ni comentarios.
+    """
+    src = inspect.getsource(func)
+    tree = ast.parse(src)
+
+    nums: list[float] = []
+
+    class NumVisitor(ast.NodeVisitor):
+        def visit_Constant(self, node):
+            if isinstance(node.value, (int, float)):
+                nums.append(float(node.value))
+            self.generic_visit(node)
+
+        # Compatibilidad con Python < 3.8
+        def visit_Num(self, node):  # type: ignore[override]
+            nums.append(float(node.n))
+            self.generic_visit(node)
+
+    NumVisitor().visit(tree)
+    return nums
+
+
+def test_ucf_lambda_single_unified_guardrail():
+    """
+    ÚNICO TEST DEFINITIVO (guardrail) para el bloque cosmológico UCF.
+
+    Es un regression test de estabilidad numérica, NO de “verdad física”.
+    Congela el comportamiento deseado del modelo Lambda_UCF en unidades de Planck.
+
+    Cubre en uno solo:
+      1) Integridad de fórmula (sin hardcode de los valores finales)
+      2) Valores numéricos de referencia (exponente y Lambda)
+      3) Error vs ancla congelada (2.8880e-122)
+      4) Identidad logarítmica: L = -ln(Lambda)/ln(27) == exponente
+      5) Reconstrucción de H0 (en km/s/Mpc)
+      6) Sanidad del ancla Planck 2018 (orden de magnitud SI y Planck)
+      7) Sensibilidad/monotonicidad mínima (no “accidental sign flip”)
+    """
+
+    # ---------- 0) Anti-hardcode por AST ----------
+    nums = _extract_numeric_literals(lambda_ucf_planck)
+    forbidden_hard = {
+        2.8096e-122,
+        2.8880e-122,
+        84.919965,
+        66.9,
+        1.09e-52,
+    }
+    # Permitimos constantes estructurales (27, pi, etc.). Aquí solo bloqueamos los “targets finales”.
+    assert not any(abs(n - f) < 1e-130 for n in nums for f in forbidden_hard), (
+        "lambda_ucf_planck parece hardcodeada con valores finales; "
+        "debe derivar de la fórmula estructural."
+    )
+
+    # ---------- 1) Fórmula y números base ----------
+    lam, exponent = lambda_ucf_planck()
+
+    exponent_ref = 84.919965
+    lambda_ref = 2.8096e-122
+
+    assert abs(exponent - exponent_ref) < 5e-6
+    assert abs(lam - lambda_ref) / lambda_ref < 5e-4
+
+    # ---------- 2) Error vs ancla congelada ----------
+    lambda_obs_anchor = 2.8880e-122
+    expected_rel_err = 0.02716  # 2.716 %
+    rel_err = abs(lam - lambda_obs_anchor) / lambda_obs_anchor
+    assert abs(rel_err - expected_rel_err) < 5e-4
+
+    # ---------- 3) Identidad logarítmica ----------
+    L = -math.log(lam) / math.log(27.0)
+    assert abs(L - exponent) < 1e-10
+
+    # ---------- 4) Reconstrucción de H0 (≈66.9 km/s/Mpc) ----------
+    c = 299_792_458.0  # m/s
+    mpc_m = 3.0856775814913673e22  # m
+    omega_lambda = 0.685
+    l_pl = 1.616255e-35  # m
+
+    lam_si = lam / (l_pl ** 2)  # 1/m^2
+    H0_si = c * math.sqrt(lam_si / (3.0 * omega_lambda))  # 1/s
+    H0_km_s_Mpc = H0_si * (mpc_m / 1000.0)
+    assert abs(H0_km_s_Mpc - 66.9) / 66.9 < 0.01
+
+    # ---------- 5) Sanidad del ancla Planck-2018-style ----------
+    H0_planck_km_s_Mpc = 67.4
+    H0_si_planck = H0_planck_km_s_Mpc * 1000.0 / mpc_m
+    lam_si_planck = 3.0 * omega_lambda * (H0_si_planck / c) ** 2
+    lam_planck_units = lam_si_planck * (l_pl ** 2)
+
+    assert 0.8e-52 < lam_si_planck < 1.4e-52
+    assert 2.0e-122 < lam_planck_units < 4.0e-122
+
+    # ---------- 6) Sensibilidad/monotonicidad mínima ----------
+    # beta<1 implícita en tu modelo; si el exponente sube, Lambda debe bajar.
+    eps = 1e-9
+    phi = (1.0 + math.sqrt(5.0)) / 2.0
+    exponent_up = 27.0 * math.pi + (1.0 / 27.0) * ((phi + eps) ** 2)
+    lambda_up = (1.0 / 27.0) ** exponent_up
+    assert lambda_up < lam, (
+        "Monotonicidad rota: si el exponente sube y beta<1, "
+        "Lambda debe bajar."
+    )

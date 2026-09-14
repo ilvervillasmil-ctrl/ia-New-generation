@@ -1,0 +1,29 @@
+    def test_structure_exists_without_movement(self):
+        """PREDICTION: The OmegaEngine with zero activations still returns
+        a non-zero value because the formula has base factors that exist
+        geometrically: harmony from maximum entropy, default external
+        coherence, and PHI/2 scaling.
+
+        The predicted value follows from the formula with zero activations:
+          entropy = 1.0 (hardcoded for zero energy)
+          harmony = 1 - entropy/ln(7)
+          i_ext = C1 + C2 = 2.0 (defaults, θ=0)
+          c_omega = α × harmony + β × i_ext
+          c_scaled = c_omega × φ/2
+
+        If actual matches prediction → the formula is self-consistent."""
+        s_max = math.log(7)
+        harmony = 1.0 - (1.0 / s_max)
+        i_ext = 2.0  # defaults: C1=1, C2=1, theta=0 → 1+1=2
+        c_omega = ALPHA * harmony + BETA * i_ext
+        predicted = c_omega * (PHI / 2)
+        predicted = min(1.0, max(0.0, predicted))
+
+        engine = OmegaEngine()
+        layers = [{'L': 0.0, 'phi': 0.0} for _ in range(7)]
+        actual = engine.compute_coherence(layers)
+
+        assert abs(actual - predicted) < 1e-10, (
+            f"Dead system should return exactly {predicted:.6f}, "
+            f"got {actual:.6f}"
+        )
