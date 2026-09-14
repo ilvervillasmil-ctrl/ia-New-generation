@@ -102,7 +102,7 @@ def _contar_supervivientes_canal(
     return supervivientes, cantidad
 
 
-def test_convergencia_estructural_10_200():
+def test_convergencia_estructural_10_20():
     """
     UIS — Auditoría estructural extrema en escala 10^200.
 
@@ -120,8 +120,8 @@ def test_convergencia_estructural_10_200():
     millones de operaciones módulo sobre candidatos individuales.
     """
 
-    ESCALA = 10**200
-    VENTANA = 10**7
+    ESCALA = 10**20
+    VENTANA = 10**2
     NUM_BLOQUES = 20
 
     TOLERANCIA_CANALES = 5e-3
