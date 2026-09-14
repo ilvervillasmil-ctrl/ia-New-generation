@@ -2677,7 +2677,7 @@ def build_report():
     ))
     lines.append("")
 
-    ax = ci_evidence["axioms"]
+    ax = ci_evidence.get("axioms") or {}
     lines.append("## {0} Axiomatic / Formal State".format(ICON_AX))
     lines.append("")
     if ax.get("data") and isinstance(ax["data"], dict):
@@ -2700,7 +2700,7 @@ def build_report():
         lines.append("{0} axioms_report.json no disponible".format(ICON_INFO))
     lines.append("")
 
-    gd = ci_evidence["generatividad"]
+    gd = ci_evidence.get("generatividad") or {}
     lines.append("## {0} Generativity".format(ICON_GEN))
     lines.append("")
     if isinstance(gd.get("data"), dict):
